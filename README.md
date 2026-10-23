@@ -27,7 +27,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 ## Phase 0 checklist
 
 - [x] Repo created and pushed public with the MIT license, detected by GitHub (Oct 22): https://github.com/morganwhite-dev/recall-runner
-- [ ] Next.js app deployed on Render
+- [x] Next.js app deployed on Render (free plan for now): https://recall-runner.onrender.com (Oct 22)
 - [x] Neon database connected: Postgres 18.6, tested from a local script (Oct 22)
 - [x] Sandbox order created and captured with a test card, no 3D Secure step (Oct 22)
 - [x] Refund succeeds (Oct 22)
