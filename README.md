@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Recall Runner
 
-## Getting Started
+An AI agent that watches the US product-recall feed (CPSC), finds the buyers of recalled products in a merchant's PayPal orders, and settles refunds, replacements or repairs through PayPal.
 
-First, run the development server:
+Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
+
+**Status:** Phase 0, setup. Not runnable yet.
+
+## Why
+
+Consumers act on about 6% of recalls announced only by press release, versus about 50% when buyers are notified directly (CPSC FY2013–16 data, as cited by consumer groups and Sedgwick). A merchant who sells through PayPal already holds every buyer's order record, so it can notify buyers directly and settle the remedy in one step.
+
+## Phase tracker
+
+| #   | Phase                                    | Target                       | Status      |
+| --- | ---------------------------------------- | ---------------------------- | ----------- |
+| 0   | Setup and PayPal spikes                  | Sat Oct 24                   | In progress |
+| 1   | Data and CPSC ingest                     | Sun Oct 25                   | Not started |
+| 2   | Money core and policy tests              | Tue Oct 27                   | Not started |
+| D   | UI design pass                           | Wed Oct 28                   | Not started |
+| 3   | AI agent                                 | Sat Oct 31                   | Not started |
+| 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                    | Not started |
+| 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)   | Not started |
+| 7   | Harden and package                       | Fri Nov 6                    | Not started |
+| 8   | Video and Devpost write-up               | Mon Nov 9, submit Tue Nov 10 | Not started |
+
+## Phase 0 checklist
+
+- [x] Repo created with MIT license
+- [ ] Next.js app deployed on Render
+- [ ] Neon database connected
+- [x] Sandbox order created and captured with a test card, no 3D Secure step (Oct 22)
+- [x] Refund succeeds (Oct 22)
+- [x] Payout to a sandbox personal account succeeds (Oct 22; PENDING for about 20s, then SUCCESS)
+- [ ] Real webhook received and signature verified
+- [ ] Log In with PayPal spike (drop on Oct 25 if it fails)
+- [ ] Anthropic call succeeds
+
+## Hackathon requirements
+
+- [ ] PayPal sandbox plus an AI model, with PayPal central
+- [ ] Working demo with run instructions
+- [ ] Public repo with the MIT license shown in the About section
+- [ ] Public YouTube video under 3 minutes
+- [ ] Sandbox test credentials for judges (README and Devpost testing field)
+
+## Run locally
 
 ```bash
+npm install
+cp .env.example .env.local   # then fill in your own values
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Next.js (App Router) and TypeScript, Neon Postgres, AG Grid, PayPal REST APIs, Claude via the Anthropic API.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Notes for judges
 
-## Learn More
+The demo merchant is fictional, seeded order dates are simulated, and the recalls are real CPSC data. This project is not affiliated with the CPSC or PayPal.
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT, see [LICENSE](LICENSE).
