@@ -22,20 +22,35 @@ export async function fetchPayPalIdentity(
   code: string,
   redirectUri: string,
 ): Promise<Record<string, unknown>> {
-  const tokenRes = await fetch(`${BASE}/v1/oauth2/token`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${paypalBasicAuth()}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      grant_type: "authorization_code",
-      code,
-      redirect_uri: redirectUri,
-    }),
-  });
-  if (!tokenRes.ok)
-    throw new Error(`code exchange failed: HTTP ${tokenRes.status}`);
+  // PayPal's docs show the exchange with only grant_type and code. Try that first, then the
+  // standard OAuth shape that also sends redirect_uri. Failures log PayPal's error text (no secrets).
+  const attempts: Record<string, string>[] = [
+    { grant_type: "authorization_code", code },
+    { grant_type: "authorization_code", code, redirect_uri: redirectUri },
+  ];
+  let tokenRes: Response | null = null;
+  for (const [i, params] of attempts.entries()) {
+    const res = await fetch(`${BASE}/v1/oauth2/token`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${paypalBasicAuth()}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams(params),
+    });
+    if (res.ok) {
+      tokenRes = res;
+      break;
+    }
+    const detail = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      error_description?: string;
+    };
+    console.error(
+      `paypal code exchange attempt ${i + 1} failed: HTTP ${res.status} ${detail.error ?? ""} ${detail.error_description ?? ""}`,
+    );
+  }
+  if (!tokenRes) throw new Error("code exchange failed on every attempt");
   const { access_token } = (await tokenRes.json()) as { access_token: string };
 
   const infoRes = await fetch(
