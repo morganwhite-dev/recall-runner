@@ -32,7 +32,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 - [x] Sandbox order created and captured with a test card, no 3D Secure step (Oct 22)
 - [x] Refund succeeds (Oct 22)
 - [x] Payout to a sandbox personal account succeeds (Oct 22; PENDING for about 20s, then SUCCESS)
-- [ ] Real webhook received and signature verified
+- [x] Real webhook received and signature verified: PAYMENT.CAPTURE.REFUNDED, verified=true, stored in Neon (Oct 22)
 - [ ] Log In with PayPal spike (drop on Oct 25 if it fails)
 - [ ] Anthropic call succeeds
 
