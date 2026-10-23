@@ -4,7 +4,7 @@ An AI agent that watches the US product-recall feed (CPSC), finds the buyers of 
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
 
-**Status:** Phase 0, setup. Not runnable yet.
+**Status:** Phase 0 (setup and risk spikes) is complete. The app is deployed but is still the starter page; the product is built from Phase 1 onward.
 
 ## Why
 
@@ -14,7 +14,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 
 | #   | Phase                                    | Target                       | Status      |
 | --- | ---------------------------------------- | ---------------------------- | ----------- |
-| 0   | Setup and PayPal spikes                  | Sat Oct 24                   | In progress |
+| 0   | Setup and PayPal spikes                  | Sat Oct 24                   | Done Oct 22 |
 | 1   | Data and CPSC ingest                     | Sun Oct 25                   | Not started |
 | 2   | Money core and policy tests              | Tue Oct 27                   | Not started |
 | D   | UI design pass                           | Wed Oct 28                   | Not started |
@@ -33,8 +33,18 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 - [x] Refund succeeds (Oct 22)
 - [x] Payout to a sandbox personal account succeeds (Oct 22; PENDING for about 20s, then SUCCESS)
 - [x] Real webhook received and signature verified: PAYMENT.CAPTURE.REFUNDED, verified=true, stored in Neon (Oct 22)
-- [ ] Log In with PayPal spike (drop on Oct 25 if it fails)
-- [ ] Anthropic call succeeds
+- [x] Log In with PayPal spike: sandbox personal account signed in on the Render URL, PayPal returned a verified email (email_verified true) (Oct 22)
+- [x] Anthropic call succeeds from a local script; model id `claude-sonnet-5-5` confirmed (Oct 22)
+
+## Decisions and lessons from Phase 0
+
+- **Seeding works with a test card.** Orders v2 with a card `payment_source` creates and captures an order in one call, with no buyer approval step. Demo orders can be created in code.
+- **Payouts are enabled** in the sandbox and settle in about 20 seconds.
+- **Webhooks need a registered webhook ID.** Signatures are checked with PayPal's verify endpoint; the simulator's fake events cannot be verified, so test with real refunds.
+- **Log In with PayPal code exchange:** send only `grant_type` and `code`, as PayPal's docs show. Adding `redirect_uri` is kept only as a fallback. Keep the "allow unconfirmed emails" option off.
+- **Neon needs TLS.** The pool asks for it in code, because the connection string's `sslmode` can be lost when pasted into Render.
+- **Render deploys:** the service builds from this GitHub repo and auto-deploys on each push. The free plan sleeps after 15 minutes, so the first visit can take about a minute. The plan moves to a paid instance from Nov 10 through Dec 15.
+- **Spike scripts** (`scripts/spike-*.mjs`) re-run each check against the sandbox: `node --env-file=.env.local scripts/spike-paypal.mjs`.
 
 ## Hackathon requirements
 
