@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recall Runner - Home (Plum 2, Centered)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#FBF9F7; --surface:#FFFFFF; --surface-sunk:#F2EDEF;
+  --ink:#1F1A21; --ink-muted:#5A525C; --line:#E0D9DD;
+  --brand:#3B1F3F; --on-brand:#FFFFFF;
+  --accent:#FF9E7A; --on-accent:#2A1530;
+  --on-ground:#FFFFFF; --on-ground-muted:#DCCBDD;
+  --recall:#9A4A12; --recall-bg:#FBE9DA;
+  --rule-bg:#1F1A21; --rule-ink:#FFFFFF;
+  --model-bg:#F1E7F2; --model-ink:#5B2A66;
+  --ok-bg:#DDF1E5; --ok-ink:#14633A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font:400 16px/1.55 'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+.light :focus-visible{outline-color:var(--brand)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 32px}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.field{background:var(--brand);color:var(--on-ground)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{display:flex;align-items:center;gap:10px;font:800 20px 'Bricolage Grotesque',sans-serif;text-decoration:none}
+.logo .mark{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:18px}
+nav ul{display:flex;gap:32px;list-style:none}
+nav ul a{text-decoration:none;font-weight:500;font-size:15px;color:var(--on-ground-muted)}
+nav ul a:hover{color:var(--on-ground);text-decoration:underline;text-underline-offset:6px;text-decoration-color:var(--accent)}
+
+.tag{display:inline-flex;align-items:center;gap:5px;font:700 11px/1 'DM Sans',sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:999px;white-space:nowrap}
+.tag .i{font-size:13px}
+.tag.rule{background:var(--rule-bg);color:var(--rule-ink)}
+.tag.model{background:var(--model-bg);color:var(--model-ink);border:1.5px dashed var(--model-ink);padding:3.5px 8px}
+.tag.tool{color:var(--ink);border:1px solid var(--ink-muted);padding:4.5px 8px}
+.tag.you{background:var(--surface-sunk);color:var(--ink-muted)}
+.status{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:13px;color:var(--ok-ink);background:var(--ok-bg);padding:3px 9px 3px 7px;border-radius:999px}
+.status .i{font-size:15px}
+.badge{display:inline-block;font-weight:700;font-size:12px;letter-spacing:.04em;color:var(--recall);background:var(--recall-bg);padding:4px 10px;border-radius:999px}
+
+/* centered hero */
+.hero{text-align:center;padding:36px 32px 208px;max-width:860px;margin:0 auto}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+.eyebrow:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}
+h1{font:800 clamp(38px,5.4vw,64px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.035em}
+h1 span{color:var(--accent)}
+.lede{font-size:18px;line-height:1.55;color:var(--on-ground-muted);margin:20px auto 0;max-width:34em}
+.cta{margin-top:28px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--on-accent);font:700 17px/1 'DM Sans',sans-serif;padding:18px 28px;border-radius:999px;text-decoration:none;transition:transform .15s,background .15s}
+.btn:hover{background:#FFB394;transform:translateY(-2px)}
+.btn .i{font-size:21px;transition:transform .15s}
+.btn:hover .i{transform:translateX(4px)}
+.note{font-size:14px;line-height:1.45;color:var(--on-ground-muted);max-width:30em}
+
+/* surface (only box): case, overlapping plum edge */
+.casewrap{position:relative;z-index:2;max-width:760px;margin:-168px auto 0;padding:0 32px}
+.case{background:var(--surface);color:var(--ink);border-radius:12px;padding:28px;box-shadow:0 24px 48px -24px rgba(31,26,33,.45)}
+.case-head{display:flex;gap:18px;align-items:center}
+.case-head svg{width:76px;height:76px;color:var(--brand);flex:none}
+.case h2{font:700 21px/1.2 'Bricolage Grotesque',sans-serif;margin:8px 0 4px;letter-spacing:-.01em}
+.remedy{font-size:14px;color:var(--ink-muted)}.remedy b{color:var(--ink)}
+.metrics{display:grid;grid-template-columns:1.35fr 1fr 1fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:20px}
+.metrics div{padding:12px 0;display:flex;flex-direction:column;justify-content:space-between}
+.metrics dt{font-size:12px;color:var(--ink-muted)}
+.metrics dd{font:800 32px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.metrics dd.s{font:700 15px/1.1 'DM Sans',sans-serif;padding-top:8px;display:flex;gap:5px;align-items:center;color:var(--ok-ink);letter-spacing:0}
+.ruleline{display:grid;grid-template-columns:auto 1fr;gap:14px;padding-top:16px;font-size:14px;line-height:1.5}
+.ruleline .status{margin-bottom:6px}
+code{font:500 12px 'DM Mono',monospace;background:var(--surface-sunk);padding:2px 6px;border-radius:4px;display:inline-block;margin-top:6px}
+
+/* light body: centered sections */
+.light section{padding:48px 0;border-top:1px solid var(--line)}
+.light section.first{border-top:0;padding-top:56px}
+.sh{text-align:center;margin-bottom:28px}
+h2.t{font:800 clamp(28px,3.2vw,36px)/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em}
+.sub{color:var(--ink-muted);margin-top:8px;font-size:15px}
+
+.stats{display:flex;justify-content:center;align-items:stretch;gap:48px;max-width:760px;margin:0 auto}
+.stat{text-align:center;flex:1}
+.stat .n{font:800 60px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:var(--brand);white-space:nowrap}
+.stat .tilde{margin-right:.08em;font-weight:700}
+.stat.hi .n{color:var(--ink)}
+.stat .bar{display:block;width:56px;height:6px;border-radius:3px;background:var(--line);margin:12px auto 0}
+.stat.hi .bar{background:var(--accent)}
+.stat p{font-weight:700;margin-top:14px}
+.stat p span{display:block;font-weight:400;font-size:14px;color:var(--ink-muted)}
+.sep{width:1px;background:var(--line);flex:none}
+.cite{text-align:center;font-size:14px;color:var(--ink-muted);max-width:44em;margin:24px auto 0}
+
+/* vertical stepper */
+.stepper{list-style:none;max-width:620px;margin:0 auto}
+.stepper li{position:relative;display:grid;grid-template-columns:24px 84px 1fr;column-gap:16px;align-items:start;padding-bottom:24px}
+.stepper li:last-child{padding-bottom:0}
+.stepper li:not(:last-child):before{content:"";position:absolute;left:11px;top:28px;bottom:4px;width:2px;background:var(--line)}
+.node{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--brand);color:var(--on-brand);font:700 12px/1 'DM Sans',sans-serif}
+.stepper .tag{justify-self:start;margin-top:1px}
+.stepper h3{font:700 17px/1.4 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em}
+.cap{font:400 14px/1.4 'DM Sans',system-ui,sans-serif;color:var(--ink-muted);margin-top:2px;letter-spacing:0}
+
+/* paypal definition list */
+.pp{max-width:760px;margin:0 auto}
+.pp div{display:grid;grid-template-columns:240px 1fr;gap:24px;padding:14px 0;border-top:1px solid var(--line)}
+.pp div:last-child{border-bottom:1px solid var(--line)}
+.pp dt{font:700 17px/1.4 'Bricolage Grotesque',sans-serif;letter-spacing:-.005em}
+.pp dd{font-size:15px;color:var(--ink-muted)}
+
+/* judges strip (open) */
+.strip{list-style:none;display:grid;grid-template-columns:repeat(5,1fr);counter-reset:j;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.strip li{counter-increment:j;padding:18px 16px;border-left:1px solid var(--line);font-weight:600;line-height:1.35;text-align:center}
+.strip li:first-child{border-left:0}
+.strip li:before{content:counter(j);display:block;font:800 32px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:var(--brand);margin-bottom:6px}
+.readme{text-align:center;margin-top:16px;font-size:15px;color:var(--ink-muted)}
+
+footer .wrap{border-top:1px solid var(--line);padding-top:20px;padding-bottom:36px;font-size:14px;color:var(--ink-muted);text-align:center}
+
+@media (max-width:860px){
+  .wrap{padding:0 20px}
+  nav ul{gap:16px}nav ul a{font-size:14px}
+  .hero{padding:24px 20px 140px}
+  .casewrap{padding:0 20px;margin-top:-100px}
+  .case{padding:20px}
+  .case-head svg{width:60px;height:60px}
+  .metrics dt{font-size:11px}.metrics dd{font-size:26px}
+  .light section{padding:40px 0}
+  .stats{gap:20px}
+  .stat .n{font-size:48px}
+  .stepper li{grid-template-columns:24px 1fr;row-gap:6px}
+  .stepper li>div{grid-column:2}
+  .stepper .tag{grid-column:2}
+  .node{grid-row:1/3}
+  .pp div{grid-template-columns:1fr;gap:2px}
+  .strip{grid-template-columns:1fr}
+  .strip li{border-left:0;border-top:1px solid var(--line);text-align:left;display:flex;gap:14px;align-items:center;padding:12px 0}
+  .strip li:first-child{border-top:0}
+  .strip li:before{margin:0;font-size:26px;min-width:28px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7zM19 7l-3 7a3.5 3.5 0 0 0 6 0l-3-7z"/></symbol>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></symbol>
+  <symbol id="code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></symbol>
+  <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="loop" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4"/></symbol>
+</svg>
+
+<div class="field">
+  <nav aria-label="Primary"><div class="wrap">
+    <a class="logo" href="#"><span class="mark"><svg class="i" aria-hidden="true"><use href="#loop"/></svg></span>Recall Runner</a>
+    <ul><li><a href="#">Dashboard</a></li><li><a href="#">Test results</a></li><li><a href="#">GitHub</a></li></ul>
+  </div></nav>
+  <header class="hero">
+    <p class="eyebrow">PayPal hackathon demo</p>
+    <h1>Recalled products, <span>refunded</span> through PayPal</h1>
+    <p class="lede">An AI agent watches the US government recall feed, finds a store’s affected buyers in its PayPal orders, and lets each buyer settle in one tap.</p>
+    <div class="cta">
+      <a class="btn" href="#">Start fresh demo <svg class="i" aria-hidden="true"><use href="#arrow"/></svg></a>
+      <p class="note">Creates a demo store with real recalls and sandbox PayPal orders. About 20 seconds.</p>
+    </div>
+  </header>
+</div>
+
+<div class="casewrap">
+  <aside class="case" aria-label="Example case">
+    <div class="case-head">
+      <svg viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="22" y="40" width="52" height="40" rx="12"/><rect x="30" y="48" width="36" height="24" rx="7" stroke-width="1.5" stroke-dasharray="3 4"/>
+        <path d="M36 30c-3-4 3-6 0-11M48 30c-3-4 3-6 0-11M60 30c-3-4 3-6 0-11"/>
+      </svg>
+      <div><span class="badge">CPSC #27011</span><h2>Rechargeable hand warmers recall</h2><p class="remedy">Remedy: <b>refund · $34.00 each</b></p></div>
+    </div>
+    <dl class="metrics">
+      <div><dt>Status</dt><dd class="s"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Approved</dd></div>
+      <div><dt>Buyers affected</dt><dd>6</dd></div>
+      <div><dt>Notified</dt><dd>6</dd></div>
+      <div><dt>Settled</dt><dd>3</dd></div>
+    </dl>
+    <div class="ruleline">
+      <span class="tag rule"><svg class="i" aria-hidden="true"><use href="#scale"/></svg>Rule</span>
+      <div>
+        <span class="status"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Settled</span>
+        <p>Morgan Demo paid 200 days ago, past PayPal’s 180-day refund window, so the buyer is paid by PayPal Payouts instead: $34.00.</p>
+        <code>REFUND_WINDOW_EXCEEDED</code>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<main class="wrap light">
+  <section class="first" aria-labelledby="s1">
+    <div class="sh"><h2 class="t" id="s1">Why notify directly</h2></div>
+    <div class="stats">
+      <div class="stat"><div class="n">6%</div><i class="bar" aria-hidden="true"></i><p>Press release only<span>Buyers who act</span></p></div>
+      <div class="sep" aria-hidden="true"></div>
+      <div class="stat hi"><div class="n"><span class="tilde" aria-hidden="true">~</span><span class="sr">About </span>50%</div><i class="bar" aria-hidden="true"></i><p>Notified directly<span>Buyers who act</span></p></div>
+    </div>
+    <p class="cite">About 6% of buyers act on a recall announced only by press release; about 50% act when notified directly. (CPSC data, FY2013–16, as cited by consumer groups)</p>
+  </section>
+
+  <section aria-labelledby="s2">
+    <div class="sh"><h2 class="t" id="s2">How it works</h2><p class="sub">AI suggests, you approve, fixed rules move the money.</p></div>
+    <ol class="stepper">
+      <li><span class="node" aria-hidden="true">1</span><span class="tag model"><svg class="i" aria-hidden="true"><use href="#spark"/></svg>Model</span><div><h3>The agent finds a matching recall</h3><p class="cap">AI</p></div></li>
+      <li><span class="node" aria-hidden="true">2</span><span class="tag you"><svg class="i" aria-hidden="true"><use href="#person"/></svg>You</span><div><h3>You approve the campaign</h3></div></li>
+      <li><span class="node" aria-hidden="true">3</span><span class="tag tool"><svg class="i" aria-hidden="true"><use href="#code"/></svg>Tool</span><div><h3>Buyers tap their link and sign in with PayPal</h3><p class="cap">Buyer</p></div></li>
+      <li><span class="node" aria-hidden="true">4</span><span class="tag rule"><svg class="i" aria-hidden="true"><use href="#scale"/></svg>Rule</span><div><h3>PayPal refunds, pays out, or tracks a replacement</h3><p class="cap">Rules decide which</p></div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="s3">
+    <div class="sh"><h2 class="t" id="s3">What PayPal does here</h2><p class="sub">All calls run in the PayPal sandbox.</p></div>
+    <dl class="pp">
+      <div><dt>Order records</dt><dd>Finds who bought the recalled item.</dd></div>
+      <div><dt>Log in with PayPal</dt><dd>Checks the buyer owns the order.</dd></div>
+      <div><dt>Refunds</dt><dd>Orders paid within 180 days.</dd></div>
+      <div><dt>Payouts</dt><dd>Orders paid more than 180 days ago.</dd></div>
+      <div><dt>Shipment tracking</dt><dd>Adds replacement tracking to the order.</dd></div>
+      <div><dt>Webhooks</dt><dd>Updates each case when PayPal reports back.</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="s4">
+    <div class="sh"><h2 class="t" id="s4">For judges</h2><p class="sub">About 2 minutes</p></div>
+    <ol class="strip">
+      <li>Start fresh demo</li><li>Approve the campaign</li><li>Open a buyer link from the Outbox</li><li>Sign in with the sandbox buyer</li><li>Watch the case settle</li>
+    </ol>
+    <p class="readme">Sandbox login is in the README.</p>
+  </section>
+</main>
+
+<footer><div class="wrap">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</div></footer>
+</body>
+</html>

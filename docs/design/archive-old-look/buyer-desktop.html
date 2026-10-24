@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recall Runner · Buyer page · desktop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111827; --ink-2: #4B5563; --ink-3: #6B7280;
+    --line: #E5E7EB; --line-2: #D1D5DB;
+    --bg: #FFFFFF; --bg-subtle: #F9FAFB; --canvas: #E9EBEF; --product-bg: #F5F3EF;
+    --action: #0F172A; --action-hover: #1E293B;
+    --accent: #1D4ED8; --accent-bg: #EFF6FF; --accent-line: #BFDBFE;
+    --danger: #B91C1C; --danger-bg: #FEF2F2; --danger-line: #FECACA;
+    --warn: #92400E; --warn-bg: #FFFBEB; --warn-line: #FDE68A;
+    --ok: #15803D; --ok-bg: #F0FDF4; --ok-line: #BBF7D0;
+    --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-pill: 999px;
+    --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); color: var(--ink); background: var(--canvas); -webkit-font-smoothing: antialiased;  }
+  .page-head { padding: 32px 48px 0; display: flex; align-items: baseline; gap: 16px; }
+  .page-head h1 { font-size: 20px; line-height: 28px; font-weight: 600; }
+  .page-head p { font-size: 14px; color: var(--ink-2); }
+  .stage { display: grid; grid-template-columns: repeat(4, 410px); gap: 40px; padding: 24px 48px 48px; }
+  .frame-label { font-size: 13px; font-weight: 600; color: var(--ink-2); margin-bottom: 12px; display: flex; gap: 8px; align-items: center; }
+  .frame-label b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--action); color: #fff; font-size: 12px; }
+
+  /* Phone frame */
+  .phone { width: 410px; padding: 10px; border-radius: 52px; background: #1F2937; box-shadow: 0 24px 48px -16px rgba(15,23,42,.35); }
+  .screen { position: relative; width: 390px; height: 844px; border-radius: 42px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; }
+  .statusbar { height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 28px 0 32px; font-size: 15px; font-weight: 600; }
+  .statusbar .sys { display: flex; gap: 6px; align-items: center; }
+  .urlbar { flex: none; margin: 0 16px 8px; height: 36px; border-radius: var(--r-md); background: #F3F4F6; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: var(--ink-2); }
+  .urlbar svg { width: 12px; height: 12px; }
+  .scroll { flex: 1; overflow: hidden; }
+
+  /* Product hero */
+  .product { position: relative; height: 140px; margin: 0 16px; border-radius: var(--r-lg); background: var(--product-bg); display: grid; place-items: center; }
+  .store-chip { position: absolute; top: 10px; left: 10px; font-size: 13px; font-weight: 600; background: #fff; border: 1px solid var(--line); border-radius: var(--r-pill); padding: 3px 10px; color: var(--ink); }
+  .content { padding: 16px 16px 0; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; border: 1px solid; }
+  .badge svg { width: 14px; height: 14px; }
+  .badge-recall { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-line); }
+  h2.title { font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: -0.01em; margin-top: 10px; }
+  .meta { font-size: 14px; line-height: 20px; color: var(--ink-2); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .label { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; margin: 16px 0 4px; display: flex; justify-content: space-between; }
+  .label span { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--ink-3); }
+  .body { font-size: 16px; line-height: 24px; }
+
+  /* Single remedy card */
+  .remedy { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border: 1.5px solid var(--accent-line); background: var(--accent-bg); border-radius: var(--r-lg); }
+  .remedy .ico { width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid var(--accent-line); display: grid; place-items: center; color: var(--accent); }
+  .remedy .ico svg { width: 22px; height: 22px; }
+  .remedy h3 { font-size: 16px; line-height: 22px; font-weight: 600; }
+  .remedy p { font-size: 14px; line-height: 20px; color: var(--ink-2); }
+  .remedy .amt { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .disclaimer { font-size: 13px; line-height: 18px; color: var(--ink-3); margin-top: 14px; }
+
+  /* Pinned action bar */
+  .actionbar { flex: none; border-top: 1px solid var(--line); background: #fff; padding: 12px 16px 0; box-shadow: 0 -8px 16px -12px rgba(15,23,42,.18); }
+  .btn { width: 100%; height: 52px; border-radius: 12px; font: 600 17px/1 var(--font); display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; cursor: pointer; }
+  .btn svg { width: 18px; height: 18px; }
+  .btn-primary { background: var(--action); color: #fff; }
+  .btn-primary:hover { background: var(--action-hover); }
+  .btn-secondary { background: #fff; color: var(--ink); border-color: var(--line-2); }
+  .btn + .btn { margin-top: 8px; }
+  .hint { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; line-height: 20px; color: var(--ink-2); margin-top: 8px; }
+  .hint svg { width: 14px; height: 14px; }
+  .home { width: 134px; height: 5px; border-radius: 3px; background: var(--ink); margin: 12px auto 8px; }
+
+  /* Result states */
+  .result { padding: 20px 16px 0; }
+  .result-icon { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; border: 1px solid; }
+  .result-icon svg { width: 28px; height: 28px; }
+  .result-icon.ok { background: var(--ok-bg); border-color: var(--ok-line); color: var(--ok); }
+  .result-icon.warn { background: var(--warn-bg); border-color: var(--warn-line); color: var(--warn); }
+  .lead { font-size: 17px; line-height: 26px; color: var(--ink); margin-top: 6px; }
+  .card { border: 1px solid var(--line); border-radius: var(--r-lg); margin-top: 20px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; padding: 0 14px; border-top: 1px solid var(--line); font-size: 16px; }
+  .row:first-child { border-top: 0; }
+  .row dt { color: var(--ink-2); }
+  .row dd { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+  .row.stack { flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 14px; }
+  .ref { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .ref code { font-family: var(--mono); font-size: 15px; font-weight: 600; }
+  .icon-btn { width: 44px; height: 44px; margin-right: -10px; border-radius: 10px; border: 0; background: transparent; color: var(--ink-2); display: grid; place-items: center; }
+  .icon-btn svg { width: 18px; height: 18px; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; border: 1px solid; }
+  .pill svg { width: 13px; height: 13px; }
+  .pill.ok { color: var(--ok); background: var(--ok-bg); border-color: var(--ok-line); }
+  .item { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center; padding: 10px 14px; }
+  .thumb { width: 56px; height: 56px; border-radius: 10px; background: var(--product-bg); display: grid; place-items: center; }
+  .item h3 { font-size: 15px; line-height: 20px; font-weight: 600; }
+  .item p { font-size: 14px; line-height: 20px; color: var(--ink-2); }
+  .callout { display: grid; grid-template-columns: 20px 1fr; gap: 10px; padding: 12px 14px; border-radius: var(--r-lg); background: var(--bg-subtle); border: 1px solid var(--line); margin-top: 16px; font-size: 16px; line-height: 24px; }
+  .callout svg { width: 20px; height: 20px; margin-top: 2px; color: var(--ink-2); }
+  .masked { font-weight: 600; }
+  .note { font-size: 16px; line-height: 24px; color: var(--ink-2); margin-top: 16px; }
+
+  /* Multi-recall */
+  .stepper { flex: none; display: flex; align-items: center; gap: 10px; margin: 0 16px 10px; }
+  .stepper .pos { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .stepper .segs { flex: 1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  .stepper .segs i { height: 4px; border-radius: 2px; background: var(--line); }
+  .stepper .segs i.on { background: var(--action); }
+  .pager { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-top: 8px; border-top: 1px solid var(--line); padding-top: 4px; }
+  .pager a { display: inline-flex; align-items: center; gap: 4px; height: 44px; padding: 0 8px; font-size: 16px; font-weight: 600; color: var(--accent); text-decoration: none; border-radius: 10px; }
+  .pager a svg { width: 16px; height: 16px; }
+  .pager a[aria-disabled="true"] { color: var(--ink-3); opacity: .55; pointer-events: none; }
+  .pager .next { justify-self: end; }
+  .pager .dots { display: flex; gap: 6px; }
+  .pager .dots i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--ink-2); }
+  .pager .dots i.on { background: var(--ink); border-color: var(--ink); }
+  .remedy.repair { grid-template-columns: 44px 1fr auto; }
+
+  /* Desktop view: the same buyer page as a centered card in a laptop browser */
+  body { background: var(--canvas); }
+  .laptop { width: 1440px; margin: 32px auto; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 24px 48px -16px rgba(15,23,42,.35); border: 1px solid var(--line-2); }
+  .chrome { height: 52px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: #F3F4F6; border-bottom: 1px solid var(--line); }
+  .dots3 { display: flex; gap: 8px; } .dots3 i { width: 12px; height: 12px; border-radius: 50%; background: #D1D5DB; }
+  .addr { flex: 1; max-width: 640px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 14px; color: var(--ink-2); }
+  .addr svg { width: 12px; height: 12px; }
+  .viewport { height: 900px; background: var(--bg-subtle); display: flex; flex-direction: column; align-items: center; padding: 40px 0 24px; }
+  .topline { width: 480px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--ink-2); margin-bottom: 14px; }
+  .topline b { color: var(--ink); font-weight: 600; }
+  .dcard { width: 480px; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 16px 0 20px; box-shadow: 0 8px 24px -16px rgba(15,23,42,.25); }
+  .dcard .actions { padding: 18px 16px 0; }
+  .foot { width: 480px; margin-top: 14px; font-size: 13px; line-height: 18px; color: var(--ink-3); text-align: center; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-refund" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 1-5-5L13 2l-2 2"/><path d="M3 21l6-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-user-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="m17 8 5 5M22 8l-5 5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+    <!-- Hand warmer 2-pack, line illustration -->
+    <symbol id="art-warmer" viewBox="0 0 240 150">
+      <g fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M86 26c-5-5 5-9 0-15M104 24c-5-5 5-9 0-15M122 26c-5-5 5-9 0-15" stroke="#C2410C" stroke-width="2"/>
+        <g transform="rotate(9 156 88)">
+          <rect x="120" y="38" width="74" height="100" rx="30" fill="#FFFFFF"/>
+          <rect x="130" y="48" width="54" height="80" rx="22" stroke="#9CA3AF" stroke-width="1.5"/>
+          <circle cx="157" cy="64" r="6"/>
+          <rect x="149" y="132" width="16" height="3" rx="1.5"/>
+        </g>
+        <g transform="rotate(-6 100 90)">
+          <rect x="62" y="36" width="80" height="106" rx="32" fill="#FFFFFF"/>
+          <rect x="72" y="46" width="60" height="86" rx="24" stroke="#9CA3AF" stroke-width="1.5"/>
+          <circle cx="102" cy="66" r="8"/>
+          <path d="M102 60v5"/>
+          <circle cx="92" cy="114" r="2.2" fill="#374151" stroke="none"/>
+          <circle cx="102" cy="114" r="2.2" fill="#374151" stroke="none"/>
+          <circle cx="112" cy="114" r="2.2" fill="#9CA3AF" stroke="none"/>
+          <rect x="94" y="136" width="16" height="3" rx="1.5"/>
+        </g>
+      </g>
+    </symbol>
+    <!-- 8-drawer dresser, line illustration -->
+    <symbol id="art-dresser" viewBox="0 0 240 150">
+      <g fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="44" y="18" width="152" height="112" rx="5" fill="#FFFFFF"/>
+        <path d="M120 24v100" stroke-width="1.5" stroke="#9CA3AF"/>
+        <g stroke-width="1.75">
+          <rect x="50" y="24" width="64" height="23" rx="2"/><rect x="126" y="24" width="64" height="23" rx="2"/>
+          <rect x="50" y="51" width="64" height="23" rx="2"/><rect x="126" y="51" width="64" height="23" rx="2"/>
+          <rect x="50" y="78" width="64" height="23" rx="2"/><rect x="126" y="78" width="64" height="23" rx="2"/>
+          <rect x="50" y="105" width="64" height="20" rx="2"/><rect x="126" y="105" width="64" height="20" rx="2"/>
+        </g>
+        <g stroke-width="2.5"><path d="M76 35.5h12M152 35.5h12M76 62.5h12M152 62.5h12M76 89.5h12M152 89.5h12M76 115h12M152 115h12"/></g>
+        <path d="M54 130v8M186 130v8"/>
+        <path d="M30 140h180" stroke="#9CA3AF" stroke-width="1.5"/>
+      </g>
+    </symbol>
+    <symbol id="sys" viewBox="0 0 68 12">
+      <g fill="#111827"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/>
+      <path d="M30 3.5a9 9 0 0 1 12 0l-1.4 1.5a7 7 0 0 0-9.2 0Zm2.8 3a5 5 0 0 1 6.4 0L36 10Z"/>
+      <rect x="44.5" y="0.5" width="21" height="11" rx="3" fill="none" stroke="#111827" opacity=".4"/><rect x="46" y="2" width="16" height="8" rx="1.5"/><rect x="66.5" y="4" width="1.5" height="4" rx=".7" opacity=".4"/></g>
+    </symbol>
+  </defs>
+</svg>
+
+
+<div class="laptop">
+  <div class="chrome">
+    <div class="dots3"><i></i><i></i><i></i></div>
+    <div class="addr"><svg><use href="#i-lock"/></svg>recall-runner.onrender.com/r/7f3a91c2</div>
+  </div>
+  <div class="viewport">
+    <div class="topline"><b>Brightnest Home</b><span>Product safety notice</span></div>
+    <div class="dcard">
+      <div class="product" role="img" aria-label="Illustration of two rechargeable hand warmers">
+        <svg width="216" height="135"><use href="#art-warmer"/></svg>
+      </div>
+      <div class="content">
+        <span class="badge badge-recall"><svg><use href="#i-alert"/></svg>Recalled · CPSC #27011</span>
+        <h2 class="title">Your HotHands hand warmers were recalled</h2>
+        <p class="meta">Rechargeable, 2-pack · $34.00 · ordered 45 days ago</p>
+        <h3 class="label">The hazard <span>CPSC, Oct 1, 2026</span></h3>
+        <p class="body">The lithium-ion battery and electrical components in the recalled hand warmers can overheat and ignite, posing a risk of serious injury from fire and burn hazards.</p>
+        <h3 class="label">Your remedy</h3>
+        <div class="remedy">
+          <span class="ico"><svg><use href="#i-refund"/></svg></span>
+          <div><h3>Full refund</h3><p>To your original payment method</p></div>
+          <span class="amt">$34.00</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary">Confirm with PayPal</button>
+        <p class="hint"><svg><use href="#i-lock"/></svg>Sign in so only you can claim this.</p>
+      </div>
+    </div>
+    <p class="foot">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Recall Runner · Merchant dashboard · mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111827; --ink-2: #4B5563; --ink-3: #6B7280;
+    --line: #E5E7EB; --line-2: #D1D5DB; --line-soft: #F3F4F6;
+    --bg: #FFFFFF; --bg-subtle: #F9FAFB; --canvas: #F3F4F6;
+    --action: #0F172A;
+    --accent: #1D4ED8; --accent-bg: #EFF6FF; --accent-line: #BFDBFE;
+    --ok: #15803D; --ok-bg: #F0FDF4; --ok-line: #BBF7D0;
+    --warn: #92400E; --warn-bg: #FFFBEB; --warn-line: #FDE68A;
+    --danger: #B91C1C; --danger-bg: #FEF2F2; --danger-line: #FECACA;
+    --model: #6D28D9; --model-bg: #F5F3FF; --model-line: #C4B5FD;
+    --rule: #0F172A; --rule-bg: #F8FAFC; --rule-line: #CBD5E1;
+    --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-pill: 999px;
+    --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 1440px; min-height: 900px; font-family: var(--font); font-size: 14px; line-height: 20px; color: var(--ink); background: var(--canvas); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  svg.i { width: 16px; height: 16px; flex: none; }
+
+  /* Top bar */
+  .topbar { height: 60px; background: #fff; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 24px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--action); color: #fff; display: grid; place-items: center; }
+  .logo svg { width: 18px; height: 18px; }
+  .brand b { font-size: 15px; font-weight: 700; }
+  .sep { width: 1px; height: 22px; background: var(--line); }
+  .merchant { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .merchant .av { width: 26px; height: 26px; border-radius: 50%; background: #F5F3EF; border: 1px solid var(--line); display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--ink-2); }
+  .switcher { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px 0 14px; border: 1px solid var(--line-2); border-radius: var(--r-md); background: #fff; font: 500 14px var(--font); color: var(--ink); cursor: pointer; }
+  .switcher small { font-size: 12px; color: var(--ink-2); font-weight: 500; }
+  .right { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; border: 1px solid; white-space: nowrap; }
+  .pill svg { width: 13px; height: 13px; }
+  .pill.ok { color: var(--ok); background: var(--ok-bg); border-color: var(--ok-line); }
+  .pill.info { color: var(--accent); background: var(--accent-bg); border-color: var(--accent-line); }
+  .pill.warn { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-line); }
+  .pill.lg { height: 30px; padding: 0 12px; }
+  .approved-by { font-size: 13px; color: var(--ink-2); }
+
+  /* Layout */
+  .main { display: grid; grid-template-columns: 1fr 472px; gap: 24px; padding: 24px; align-items: start; }
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg); }
+
+  .recall-head { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; margin-bottom: 16px; }
+  .eyebrow { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); display: flex; gap: 8px; align-items: center; }
+  .tag-recall { color: var(--danger); background: var(--danger-bg); border: 1px solid var(--danger-line); border-radius: var(--r-pill); padding: 1px 8px; display: inline-flex; gap: 4px; align-items: center; letter-spacing: 0; text-transform: none; font-size: 12px; }
+  .tag-recall svg { width: 12px; height: 12px; }
+  .recall-head h1 { font-size: 20px; line-height: 28px; font-weight: 600; margin-top: 6px; max-width: 760px; }
+  .recall-meta { margin-top: 4px; color: var(--ink-2); display: flex; gap: 6px; flex-wrap: wrap; }
+  .recall-meta span + span::before { content: "·"; margin-right: 6px; color: var(--ink-3); }
+  .thumb { width: 72px; height: 72px; border-radius: 10px; background: #F5F3EF; border: 1px solid var(--line); display: grid; place-items: center; }
+
+  /* KPIs */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+  .kpi { padding: 14px 16px; height: 96px; }
+  .kpi .k-label { font-size: 13px; color: var(--ink-2); font-weight: 500; }
+  .kpi .k-value { font-size: 28px; line-height: 36px; font-weight: 700; margin-top: 2px; letter-spacing: -0.01em; }
+  .kpi .k-sub { font-size: 13px; color: var(--ink-2); }
+  .kpi .k-row { display: flex; align-items: center; gap: 10px; }
+  .bar { flex: 1; height: 6px; border-radius: 3px; background: var(--line-soft); overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 50%; background: var(--ok); }
+
+  /* Grid (AG Grid Quartz look) */
+  .grid-card { overflow: hidden; }
+  .grid-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+  .grid-toolbar h2 { font-size: 15px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+  .count { font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--line-soft); border-radius: var(--r-pill); padding: 0 8px; line-height: 20px; }
+  .search { display: flex; align-items: center; gap: 8px; width: 240px; height: 36px; padding: 0 10px; border: 1px solid var(--line-2); border-radius: var(--r-md); color: var(--ink-3); }
+  .ag { --cols: 1.35fr 1fr 0.8fr 1.15fr 1fr; }
+  .ag-row, .ag-header { display: grid; grid-template-columns: var(--cols); align-items: center; }
+  .ag-header { height: 40px; background: var(--bg-subtle); border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .ag-hcell { position: relative; padding: 0 16px; display: flex; align-items: center; gap: 4px; height: 100%; }
+  .ag-hcell:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 13px; height: 14px; width: 1px; background: var(--line-2); }
+  .ag-hcell.num { justify-content: flex-end; }
+  .ag-hcell sup { color: var(--ink-2); font-size: 12px; }
+  .ag-row { height: 44px; border-bottom: 1px solid var(--line); position: relative; cursor: pointer; }
+  .ag-row:last-child { border-bottom: 0; }
+  .ag-row:hover, .ag-row.is-hover { background: var(--bg-subtle); }
+  .ag-row.is-selected { background: var(--accent-bg); }
+  .ag-row.is-selected::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+  .ag-cell { padding: 0 16px; display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; }
+  .ag-cell.num { justify-content: flex-end; font-weight: 500; }
+  .ag-cell .trunc { overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+  .ag-cell .name { font-weight: 600; }
+  .ini { width: 24px; height: 24px; border-radius: 50%; background: var(--line-soft); border: 1px solid var(--line); font-size: 10px; font-weight: 700; color: var(--ink-2); display: grid; place-items: center; flex: none; }
+  .path svg { color: var(--ink-2); }
+  .ag-footer { display: flex; justify-content: space-between; align-items: center; height: 40px; padding: 0 16px; border-top: 1px solid var(--line); background: var(--bg-subtle); font-size: 13px; color: var(--ink-2); }
+
+  /* Rules strip */
+  .rules { margin-top: 16px; padding: 14px 16px 16px; }
+  .rules-head { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .rules-head small { font-weight: 400; color: var(--ink-2); font-size: 13px; }
+  .rules-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .rule-cell { border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 12px; }
+  .rule-cell h3 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .rule-cell p { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+  .rule-cell .n { margin-top: 8px; font-size: 13px; font-weight: 600; }
+  .rule-cell.off { background: var(--bg-subtle); border-style: dashed; }
+  .rule-cell.off h3, .rule-cell.off .n { color: var(--ink-2); }
+
+  /* Actor tags */
+  .tag { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: .06em; border: 1px solid; }
+  .tag svg { width: 12px; height: 12px; }
+  .tag-model { color: var(--model); background: var(--model-bg); border: 1px dashed var(--model); }
+  .tag-rule { color: #fff; background: var(--rule); border-color: var(--rule); }
+  .tag-tool { color: var(--ink-2); background: #fff; border-color: var(--line-2); }
+  .tag-you { color: var(--accent); background: var(--accent-bg); border-color: var(--accent-line); }
+
+  /* Detail panel */
+  .detail { position: sticky; top: 24px; }
+  .d-head { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: flex-start; }
+  .d-head .eyebrow { margin-bottom: 4px; }
+  .d-head h2 { font-size: 20px; line-height: 28px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .close { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: var(--r-md); background: #fff; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); border-bottom: 1px solid var(--line); }
+  .fact { padding: 10px 20px; }
+  .fact:nth-child(even) { border-left: 1px solid var(--line); }
+  .fact:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .fact dt { font-size: 12px; color: var(--ink-2); }
+  .fact dd { font-weight: 600; margin-top: 1px; }
+  .fact dd sup { color: var(--ink-2); font-weight: 500; }
+  .why { padding: 16px 20px 20px; }
+  .why h3 { font-size: 15px; font-weight: 600; }
+  .legend { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 12px; margin: 10px 0 18px; padding: 10px 12px; background: var(--bg-subtle); border: 1px solid var(--line); border-radius: var(--r-md); }
+  .legend div { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+  .legend .tag { width: 72px; justify-content: center; }
+
+  .timeline { list-style: none; }
+  .step { position: relative; display: grid; grid-template-columns: 24px 1fr; gap: 12px; padding-bottom: 14px; }
+  .step:not(:last-child)::before { content: ""; position: absolute; left: 11px; top: 24px; bottom: 0; width: 2px; background: var(--line); }
+  .node { width: 24px; height: 24px; display: grid; place-items: center; background: #fff; position: relative; z-index: 1; }
+  .node.model { border-radius: 50%; border: 2px dashed var(--model); color: var(--model); }
+  .node.rule { border-radius: 5px; background: var(--rule); color: #fff; }
+  .node.tool { border-radius: 50%; border: 2px solid var(--line-2); color: var(--ink-2); }
+  .node.you { border-radius: 50%; background: var(--accent); color: #fff; }
+  .node svg { width: 12px; height: 12px; }
+  .s-body > p { margin-top: 6px; }
+  .s-box { margin-top: 6px; padding: 10px 12px; border-radius: var(--r-md); }
+  .s-box p + p { margin-top: 4px; }
+  .s-box.model { background: var(--model-bg); border: 1px dashed var(--model-line); }
+  .s-box.rule { background: var(--rule-bg); border: 1px solid var(--rule-line); border-left: 3px solid var(--rule); }
+  .evidence { font-size: 13px; color: var(--ink-2); }
+  .conf { font-weight: 600; color: var(--model); white-space: nowrap; }
+  .code { font-family: var(--mono); font-size: 12.5px; }
+  .rule-code { display: inline-flex; margin-top: 6px; padding: 1px 6px; background: #fff; border: 1px solid var(--rule-line); border-radius: 4px; font-weight: 600; color: var(--ink); }
+  .money { font-weight: 700; }
+  .ok-text { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; }
+  .ok-text svg { width: 13px; height: 13px; color: var(--ok); }
+  .decoy { margin-top: 2px; padding: 12px; border: 1px dashed var(--line-2); border-radius: var(--r-md); display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
+  .decoy p { color: var(--ink-2); }
+  .decoy strong { color: var(--ink); font-weight: 600; }
+
+  .foot { padding: 0 24px 24px; font-size: 13px; color: var(--ink-2); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+    <symbol id="i-refund" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 1-5-5L13 2l-2 2"/><path d="M3 21l6-6"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M5 7h14"/><path d="m5 7-3 7a3 3 0 0 0 6 0Z"/><path d="m19 7-3 7a3 3 0 0 0 6 0Z"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4M16 8l4 4-4 4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4h-4"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+    <symbol id="art-warmer" viewBox="0 0 240 150">
+      <g fill="none" stroke="#374151" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M86 26c-5-5 5-9 0-15M104 24c-5-5 5-9 0-15M122 26c-5-5 5-9 0-15" stroke="#C2410C" stroke-width="2.5"/>
+        <g transform="rotate(9 156 88)"><rect x="120" y="38" width="74" height="100" rx="30" fill="#FFFFFF"/><circle cx="157" cy="64" r="6"/></g>
+        <g transform="rotate(-6 100 90)"><rect x="62" y="36" width="80" height="106" rx="32" fill="#FFFFFF"/><circle cx="102" cy="66" r="8"/><path d="M102 60v5"/><circle cx="92" cy="114" r="2.5" fill="#374151" stroke="none"/><circle cx="102" cy="114" r="2.5" fill="#374151" stroke="none"/><circle cx="112" cy="114" r="2.5" fill="#9CA3AF" stroke="none"/></g>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo"><svg><use href="#i-logo"/></svg></span><b>Recall Runner</b>
+    <span class="sep"></span>
+    <span class="merchant"><span class="av">BH</span>Brightnest Home</span>
+  </div>
+  <button class="switcher" aria-haspopup="listbox">
+    <small>Campaign</small>Rechargeable hand warmers recall (CPSC #27011)<svg class="i"><use href="#i-chev"/></svg>
+  </button>
+  <div class="right">
+    <span class="approved-by">You approved this campaign</span>
+    <span class="pill ok lg"><svg><use href="#i-check"/></svg>Approved</span>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Left column -->
+  <section>
+    <div class="recall-head">
+      <div>
+        <div class="eyebrow"><span class="tag-recall"><svg><use href="#i-alert"/></svg>CPSC #27011</span>Recall · Oct 1, 2026</div>
+        <h1>Kobayashi Recalls Rechargeable Hand Warmers Due to Risk of Serious Injury from Fire and Burn Hazards</h1>
+        <div class="recall-meta"><span>Product: HotHands Rechargeable Hand Warmers, 2-pack</span><span>Remedy: refund</span><span>$34.00 each</span></div>
+      </div>
+      <div class="thumb" role="img" aria-label="Hand warmer illustration"><svg width="62" height="39"><use href="#art-warmer"/></svg></div>
+    </div>
+
+    <div class="kpis">
+      <div class="panel kpi"><div class="k-label">Buyers affected</div><div class="k-value">6</div><div class="k-sub">Found in PayPal orders</div></div>
+      <div class="panel kpi"><div class="k-label">Notified</div><div class="k-value">6</div><div class="k-sub">6 of 6 buyers</div></div>
+      <div class="panel kpi"><div class="k-label">Settled</div><div class="k-value">3</div><div class="k-sub">2 refunds · 1 payout</div></div>
+      <div class="panel kpi"><div class="k-label">Products fixed</div><div class="k-value">50%</div><div class="k-row"><span class="bar" aria-hidden="true"><i></i></span><span class="k-sub">3 of 6</span></div></div>
+    </div>
+
+    <div class="panel grid-card">
+      <div class="grid-toolbar">
+        <h2>Cases <span class="count">6</span></h2>
+        <div class="search"><svg class="i"><use href="#i-search"/></svg>Search buyers</div>
+      </div>
+      <div class="ag" role="grid" aria-rowcount="7">
+        <div class="ag-header" role="row">
+          <div class="ag-hcell" role="columnheader">Buyer</div>
+          <div class="ag-hcell" role="columnheader" aria-sort="ascending">Ordered<sup>*</sup><svg class="i" style="width:14px;height:14px"><use href="#i-up"/></svg></div>
+          <div class="ag-hcell num" role="columnheader">Amount</div>
+          <div class="ag-hcell" role="columnheader">Path</div>
+          <div class="ag-hcell" role="columnheader">Status</div>
+        </div>
+        <div class="ag-row" role="row">
+          <div class="ag-cell"><span class="ini">SN</span><span class="name">Sam Novak</span></div>
+          <div class="ag-cell">12 days ago</div>
+          <div class="ag-cell num">$34.00</div>
+          <div class="ag-cell path"><svg class="i"><use href="#i-refund"/></svg>Refund</div>
+          <div class="ag-cell"><span class="pill info"><svg><use href="#i-mail"/></svg>Notified</span></div>
+        </div>
+        <div class="ag-row" role="row">
+          <div class="ag-cell"><span class="ini">AR</span><span class="name">Alicia Rivera</span></div>
+          <div class="ag-cell">45 days ago</div>
+          <div class="ag-cell num">$34.00</div>
+          <div class="ag-cell path"><svg class="i"><use href="#i-refund"/></svg>Refund</div>
+          <div class="ag-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Settled</span></div>
+        </div>
+        <div class="ag-row is-hover" role="row">
+          <div class="ag-cell"><span class="ini">JO</span><span class="name">James Okafor</span></div>
+          <div class="ag-cell">120 days ago</div>
+          <div class="ag-cell num">$34.00</div>
+          <div class="ag-cell path"><svg class="i"><use href="#i-refund"/></svg>Refund</div>
+          <div class="ag-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Settled</span></div>
+        </div>
+        <div class="ag-row" role="row">
+          <div class="ag-cell"><span class="ini">MC</span><span class="name">Mei Chen</span></div>
+          <div class="ag-cell">165 days ago</div>
+          <div class="ag-cell num">$34.00</div>
+          <div class="ag-cell path"><svg class="i"><use href="#i-refund"/></svg>Refund</div>
+          <div class="ag-cell"><span class="pill warn"><svg><use href="#i-clock"/></svg>Waiting</span></div>
+        </div>
+        <div class="ag-row is-selected" role="row" aria-selected="true">
+          <div class="ag-cell"><span class="ini">MD</span><span class="name">Morgan Demo</span></div>
+          <div class="ag-cell">200 days ago</div>
+          <div class="ag-cell num">$34.00</div>
+          <div class="ag-cell path"><svg class="i"><use href="#i-send"/></svg>PayPal Payout</div>
+          <div class="ag-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Settled</span></div>
+        </div>
+        <div class="ag-row" role="row">
+          <div class="ag-cell"><span class="ini">PN</span><span class="name">Priya Nair</span></div>
+          <div class="ag-cell">260 days ago</div>
+          <div class="ag-cell num">$34.00</div>
+          <div class="ag-cell path"><svg class="i"><use href="#i-send"/></svg>PayPal Payout</div>
+          <div class="ag-cell"><span class="pill info"><svg><use href="#i-mail"/></svg>Notified</span></div>
+        </div>
+      </div>
+      <div class="ag-footer"><span>* Simulated order dates</span><span>1 to 6 of 6</span></div>
+    </div>
+
+    <div class="panel rules">
+      <div class="rules-head"><span class="tag tag-rule"><svg><use href="#i-scale"/></svg>RULE</span>How money moves <small>Fixed rules, not the AI, pick the path for each order.</small></div>
+      <div class="rules-grid">
+        <div class="rule-cell"><h3><svg class="i"><use href="#i-refund"/></svg>Refund</h3><p>Paid within 180 days</p><div class="n">4 cases</div></div>
+        <div class="rule-cell"><h3><svg class="i"><use href="#i-send"/></svg>PayPal Payout</h3><p>Paid more than 180 days ago</p><div class="n">2 cases</div></div>
+        <div class="rule-cell off"><h3><svg class="i"><use href="#i-box"/></svg>Replacement</h3><p>Tracking added to the order</p><div class="n">Not in this recall</div></div>
+        <div class="rule-cell off"><h3><svg class="i"><use href="#i-wrench"/></svg>Repair</h3><p>Kit request, no money</p><div class="n">Not in this recall</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right column: detail panel -->
+  <aside class="panel detail" aria-label="Case detail">
+    <div class="d-head">
+      <div>
+        <div class="eyebrow">Case</div>
+        <h2>Morgan Demo <span class="pill ok"><svg><use href="#i-check"/></svg>Settled</span></h2>
+      </div>
+      <button class="close" aria-label="Close detail"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+    <dl class="facts">
+      <div class="fact"><dt>Ordered</dt><dd>200 days ago<sup>*</sup></dd></div>
+      <div class="fact"><dt>Amount</dt><dd>$34.00</dd></div>
+      <div class="fact"><dt>Path</dt><dd>PayPal Payout</dd></div>
+      <div class="fact"><dt>Payout ID</dt><dd class="code">ZCNAPBE8ZE9U8</dd></div>
+    </dl>
+
+    <div class="why">
+      <h3>Why this happened</h3>
+      <div class="legend">
+        <div><span class="tag tag-model"><svg><use href="#i-sparkle"/></svg>MODEL</span>AI reads and explains</div>
+        <div><span class="tag tag-rule"><svg><use href="#i-scale"/></svg>RULE</span>Fixed code decides money</div>
+        <div><span class="tag tag-tool"><svg><use href="#i-tool"/></svg>TOOL</span>PayPal or CPSC call</div>
+        <div><span class="tag tag-you"><svg><use href="#i-user"/></svg>YOU</span>Your decision</div>
+      </div>
+
+      <ol class="timeline">
+        <li class="step">
+          <span class="node model"><svg><use href="#i-sparkle"/></svg></span>
+          <div class="s-body">
+            <span class="tag tag-model">MODEL</span>
+            <div class="s-box model">
+              <p>Matched recall #27011 to ‘HotHands Rechargeable Hand Warmers, 2-pack’.</p>
+              <p class="evidence">Evidence: brand HotHands, product type rechargeable hand warmer. <span class="conf">Confidence 0.94</span></p>
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <span class="node you"><svg><use href="#i-user"/></svg></span>
+          <div class="s-body"><span class="tag tag-you">YOU</span><p>Campaign approved by Brightnest Home.</p></div>
+        </li>
+        <li class="step">
+          <span class="node tool"><svg><use href="#i-tool"/></svg></span>
+          <div class="s-body"><span class="tag tag-tool">TOOL</span><p>Found 6 orders containing this product in PayPal order records.</p></div>
+        </li>
+        <li class="step">
+          <span class="node rule"><svg><use href="#i-scale"/></svg></span>
+          <div class="s-body">
+            <span class="tag tag-rule">RULE</span>
+            <div class="s-box rule">
+              <p>Paid 200 days ago, past PayPal’s 180-day refund window, so the buyer is paid by PayPal Payouts instead: <span class="money">$34.00</span>.</p>
+              <span class="code rule-code">REFUND_WINDOW_EXCEEDED</span>
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <span class="node tool"><svg><use href="#i-tool"/></svg></span>
+          <div class="s-body"><span class="tag tag-tool">TOOL</span><p>PayPal Payout <span class="code">ZCNAPBE8ZE9U8</span> sent. Status: <span class="ok-text"><svg><use href="#i-check"/></svg>SUCCESS</span>.</p></div>
+        </li>
+      </ol>
+
+      <div class="decoy">
+        <span class="tag tag-model"><svg><use href="#i-sparkle"/></svg>MODEL</span>
+        <p><strong>Not matched: ‘Emberly Rechargeable Hand Warmer’.</strong> Different brand, so its buyers were left out.</p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer class="foot">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</footer>
+
+</body>
+</html>

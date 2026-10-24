@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Recall Runner · Test results · mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111827; --ink-2: #4B5563; --ink-3: #6B7280;
+    --line: #E5E7EB; --line-2: #D1D5DB; --line-soft: #F3F4F6;
+    --bg: #FFFFFF; --bg-subtle: #F9FAFB; --canvas: #F3F4F6; --desk: #E9EBEF; --product-bg: #F5F3EF;
+    --action: #0F172A; --action-hover: #1E293B;
+    --accent: #1D4ED8; --accent-bg: #EFF6FF; --accent-line: #BFDBFE;
+    --ok: #15803D; --ok-bg: #F0FDF4; --ok-line: #BBF7D0;
+    --warn: #92400E; --warn-bg: #FFFBEB; --warn-line: #FDE68A;
+    --danger: #B91C1C; --danger-bg: #FEF2F2; --danger-line: #FECACA;
+    --model: #6D28D9; --model-bg: #F5F3FF; --model-line: #C4B5FD;
+    --rule: #0F172A; --rule-bg: #F8FAFC; --rule-line: #CBD5E1;
+    --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-pill: 999px;
+    --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); font-size: 14px; line-height: 20px; color: var(--ink); background: var(--desk); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  svg.i { width: 16px; height: 16px; flex: none; }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Browser frame (presentation only) */
+  .laptop { width: 1440px; margin: 32px auto; border-radius: 14px; overflow: hidden; background: var(--canvas); box-shadow: 0 24px 48px -16px rgba(15,23,42,.35); border: 1px solid var(--line-2); }
+  .chrome { height: 52px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: #F3F4F6; border-bottom: 1px solid var(--line); }
+  .dots3 { display: flex; gap: 8px; } .dots3 i { width: 12px; height: 12px; border-radius: 50%; background: #D1D5DB; }
+  .addr { flex: 1; max-width: 640px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 14px; color: var(--ink-2); }
+  .addr svg { width: 12px; height: 12px; }
+
+  /* Top bar (same as home.html) */
+  .wrap { width: 1120px; margin: 0 auto; }
+  .topbar { height: 60px; background: #fff; border-bottom: 1px solid var(--line); }
+  .topbar .wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--action); color: #fff; display: grid; place-items: center; }
+  .logo svg { width: 18px; height: 18px; }
+  .brand b { font-size: 15px; font-weight: 700; }
+  .links { display: flex; align-items: center; gap: 4px; margin-right: -12px; }
+  .links a { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: var(--r-md); font-size: 14px; font-weight: 500; color: var(--ink-2); }
+  .links a:hover { background: var(--bg-subtle); color: var(--ink); }
+  .links a[aria-current="page"] { color: var(--ink); font-weight: 600; background: var(--line-soft); }
+  .links svg { width: 14px; height: 14px; }
+
+  .page-head { padding: 24px 0 16px; display: flex; align-items: baseline; justify-content: space-between; }
+  .page-head h1 { font-size: 20px; line-height: 28px; font-weight: 600; }
+  .page-head p { color: var(--ink-2); }
+
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg); }
+
+  /* Summary strip: 3 equal cards, KPI card style from dashboard.html */
+  .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+  .kpi { padding: 14px 16px; height: 96px; }
+  .kpi .k-label { font-size: 13px; color: var(--ink-2); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .kpi .k-value { font-size: 28px; line-height: 36px; font-weight: 700; margin-top: 2px; letter-spacing: -0.01em; }
+  .kpi .k-value small { font-size: 16px; font-weight: 600; color: var(--ink-2); }
+  .kpi .k-value.muted { font-size: 20px; color: var(--ink-2); font-weight: 600; }
+  .kpi .k-row { display: flex; align-items: center; gap: 10px; }
+  .kpi .k-sub { font-size: 13px; color: var(--ink-2); }
+  .bar { flex: 1; height: 6px; border-radius: 3px; background: var(--line-soft); overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 100%; background: var(--ok); }
+
+  /* Pills (same as dashboard.html) + neutral "Skipped" style from the spec */
+  .pill { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; border: 1px solid; white-space: nowrap; }
+  .pill svg { width: 13px; height: 13px; }
+  .pill.ok { color: var(--ok); background: var(--ok-bg); border-color: var(--ok-line); }
+  .pill.neutral { color: var(--ink-2); background: var(--bg-subtle); border-color: var(--line-2); }
+
+  /* Actor tags (same as dashboard.html) */
+  .tag { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: .06em; border: 1px solid; }
+  .tag svg { width: 12px; height: 12px; }
+  .tag-model { color: var(--model); background: var(--model-bg); border: 1px dashed var(--model); }
+  .tag-rule { color: #fff; background: var(--rule); border-color: var(--rule); }
+
+  /* Test sections */
+  .suite { overflow: hidden; margin-bottom: 16px; }
+  .suite.model { border-style: dashed; border-color: var(--model-line); }
+  .suite-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .suite-head h2 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .suite-head h2 small { font-size: 13px; font-weight: 400; color: var(--ink-2); }
+  .suite-head .meta { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--ink-2); }
+
+  .banner { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: center; margin: 12px 16px; padding: 10px 12px; border: 1px dashed var(--line-2); border-radius: var(--r-md); background: var(--bg-subtle); font-weight: 600; }
+  .banner svg { width: 18px; height: 18px; color: var(--ink-2); }
+
+  .t { --cols: 56px 1fr 200px 160px; }
+  .t-row, .t-header { display: grid; grid-template-columns: var(--cols); align-items: center; }
+  .t-header { height: 40px; background: var(--bg-subtle); border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .suite .banner + .t .t-header { border-top: 1px solid var(--line); }
+  .t-hcell { position: relative; padding: 0 16px; height: 100%; display: flex; align-items: center; }
+  .t-hcell:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 13px; height: 14px; width: 1px; background: var(--line-2); }
+  .t-row { height: 40px; border-bottom: 1px solid var(--line); }
+  .t-row:last-child { border-bottom: 0; }
+  .t-row:hover { background: var(--bg-subtle); }
+  .t-cell { padding: 0 16px; display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; }
+  .t-cell.n { font-family: var(--mono); font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+  .t-cell.name { white-space: normal; }
+  .t-cell.area { color: var(--ink-2); }
+  .t-cell.area svg { color: var(--ink-2); }
+  .suite.model .t-row .name { color: var(--ink-2); }
+
+  .pagefoot { width: 1120px; margin: 8px auto 0; padding: 14px 0 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-2); text-align: center; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4h-4"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 12h12"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-refund" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 1-5-5L13 2l-2 2"/><path d="M3 21l6-6"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M5 7h14"/><path d="m5 7-3 7a3 3 0 0 0 6 0Z"/><path d="m19 7-3 7a3 3 0 0 0 6 0Z"/></symbol>
+  </defs>
+</svg>
+
+<div class="laptop">
+  <div class="chrome"><div class="dots3"><i></i><i></i><i></i></div>
+    <div class="addr"><svg><use href="#i-lock"/></svg>recall-runner.onrender.com/evals</div></div>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="#"><span class="logo"><svg><use href="#i-logo"/></svg></span><b>Recall Runner</b></a>
+      <nav class="links" aria-label="Main">
+        <a href="#">Dashboard</a>
+        <a href="#" aria-current="page">Test results</a>
+        <a href="#">GitHub<svg aria-hidden="true"><use href="#i-ext"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Test results</h1>
+      <p>Fixed rules move the money; the AI only reads and explains. Both are tested separately.</p>
+    </div>
+
+    <!-- Summary strip: 3 equal cards -->
+    <section class="summary" aria-label="Summary">
+      <div class="panel kpi">
+        <div class="k-label"><span class="tag tag-rule"><svg><use href="#i-scale"/></svg>RULE</span>Money rules</div>
+        <div class="k-row"><span class="k-value">11/11</span><span class="pill ok"><svg><use href="#i-check"/></svg>Passing</span><span class="bar" aria-hidden="true"><i></i></span></div>
+      </div>
+      <div class="panel kpi">
+        <div class="k-label"><span class="tag tag-model"><svg><use href="#i-sparkle"/></svg>MODEL</span>AI tests</div>
+        <div class="k-row"><span class="k-value muted" style="line-height:36px">Not run yet</span><span class="pill neutral"><svg><use href="#i-dash"/></svg>Phase 3</span></div>
+      </div>
+      <div class="panel kpi">
+        <div class="k-label"><svg class="i"><use href="#i-calendar"/></svg>Last run</div>
+        <div class="k-value">Oct 23, 2026</div>
+      </div>
+    </section>
+
+    <!-- Money rules: real results -->
+    <section class="panel suite" aria-labelledby="money-title">
+      <div class="suite-head">
+        <h2 id="money-title"><span class="tag tag-rule"><svg><use href="#i-scale"/></svg>RULE</span>Money rules <small>The fixed code that decides refunds, payouts, replacements and repairs.</small></h2>
+        <div class="meta">Run Oct 23, 2026<span class="pill ok"><svg><use href="#i-check"/></svg>11 of 11 passing</span></div>
+      </div>
+      <div class="t" role="table" aria-label="Money rules tests">
+        <div class="t-header" role="row">
+          <div class="t-hcell" role="columnheader">#</div>
+          <div class="t-hcell" role="columnheader">Test</div>
+          <div class="t-hcell" role="columnheader">Area</div>
+          <div class="t-hcell" role="columnheader">Result</div>
+        </div>
+        <div class="t-row" role="row"><div class="t-cell n">01</div><div class="t-cell name">an order paid 179 days ago is refunded</div><div class="t-cell area"><svg class="i"><use href="#i-refund"/></svg>Refund</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">02</div><div class="t-cell name">an order paid exactly 180 days ago is still refunded (the window includes day 180)</div><div class="t-cell area"><svg class="i"><use href="#i-refund"/></svg>Refund</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">03</div><div class="t-cell name">one millisecond past 180 days switches to PayPal Payouts</div><div class="t-cell area"><svg class="i"><use href="#i-send"/></svg>PayPal Payout</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">04</div><div class="t-cell name">an order paid 400 days ago is paid by Payouts, and the reason says so</div><div class="t-cell area"><svg class="i"><use href="#i-send"/></svg>PayPal Payout</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">05</div><div class="t-cell name">a replacement adds tracking and moves no money</div><div class="t-cell area"><svg class="i"><use href="#i-box"/></svg>Replacement</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">06</div><div class="t-cell name">a repair records the kit request and moves no money</div><div class="t-cell area"><svg class="i"><use href="#i-wrench"/></svg>Repair</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">07</div><div class="t-cell name">a buyer cannot pick a remedy the recall does not offer</div><div class="t-cell area"><svg class="i"><use href="#i-shield"/></svg>Guard</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">08</div><div class="t-cell name">no PayPal payment on record means no money, even inside the window</div><div class="t-cell area"><svg class="i"><use href="#i-shield"/></svg>Guard</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">09</div><div class="t-cell name">never pays more than the order total</div><div class="t-cell area"><svg class="i"><use href="#i-shield"/></svg>Guard</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">10</div><div class="t-cell name">rejects zero, negative or fractional amounts</div><div class="t-cell area"><svg class="i"><use href="#i-shield"/></svg>Guard</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">11</div><div class="t-cell name">refunds only the recalled item, not the whole order</div><div class="t-cell area"><svg class="i"><use href="#i-shield"/></svg>Guard</div><div class="t-cell"><span class="pill ok"><svg><use href="#i-check"/></svg>Passed</span></div></div>
+      </div>
+    </section>
+
+    <!-- AI matching and safety: planned, not built -->
+    <section class="panel suite model" aria-labelledby="ai-title">
+      <div class="suite-head">
+        <h2 id="ai-title"><span class="tag tag-model"><svg><use href="#i-sparkle"/></svg>MODEL</span>AI matching and safety <small>How the AI matches recalls, refuses near misses and ignores injected text.</small></h2>
+        <div class="meta"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div>
+      </div>
+      <p class="banner" role="note"><svg><use href="#i-info"/></svg>Example layout. Results appear after the AI tests are built (Phase 3).</p>
+      <div class="t" role="table" aria-label="AI matching and safety tests (planned)">
+        <div class="t-header" role="row">
+          <div class="t-hcell" role="columnheader">#</div>
+          <div class="t-hcell" role="columnheader">Planned case</div>
+          <div class="t-hcell" role="columnheader">Area</div>
+          <div class="t-hcell" role="columnheader">Status</div>
+        </div>
+        <div class="t-row" role="row"><div class="t-cell n">01</div><div class="t-cell name">correct match from a reworded title</div><div class="t-cell area"><svg class="i"><use href="#i-target"/></svg>Matching</div><div class="t-cell"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">02</div><div class="t-cell name">match by brand plus product type</div><div class="t-cell area"><svg class="i"><use href="#i-target"/></svg>Matching</div><div class="t-cell"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">03</div><div class="t-cell name">near-miss product correctly refused</div><div class="t-cell area"><svg class="i"><use href="#i-x"/></svg>Refusal</div><div class="t-cell"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">04</div><div class="t-cell name">different brand correctly refused (the Emberly decoy)</div><div class="t-cell area"><svg class="i"><use href="#i-x"/></svg>Refusal</div><div class="t-cell"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">05</div><div class="t-cell name">a product description that tries to instruct the AI (prompt injection) has no effect</div><div class="t-cell area"><svg class="i"><use href="#i-shield"/></svg>Prompt injection</div><div class="t-cell"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">06</div><div class="t-cell name">a recall text with an injected link adds no link to the buyer notice</div><div class="t-cell area"><svg class="i"><use href="#i-shield"/></svg>Prompt injection</div><div class="t-cell"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">07</div><div class="t-cell name">the buyer notice quotes the recall word for word</div><div class="t-cell area"><svg class="i"><use href="#i-quote"/></svg>Quoting</div><div class="t-cell"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div></div>
+        <div class="t-row" role="row"><div class="t-cell n">08</div><div class="t-cell name">a missing AI key falls back to templates</div><div class="t-cell area"><svg class="i"><use href="#i-refund"/></svg>Fallback</div><div class="t-cell"><span class="pill neutral"><svg><use href="#i-dash"/></svg>Not run yet</span></div></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pagefoot">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</footer>
+</div>
+
+</body>
+</html>

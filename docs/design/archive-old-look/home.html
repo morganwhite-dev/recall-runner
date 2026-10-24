@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Recall Runner · Home · mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111827; --ink-2: #4B5563; --ink-3: #6B7280;
+    --line: #E5E7EB; --line-2: #D1D5DB; --line-soft: #F3F4F6;
+    --bg: #FFFFFF; --bg-subtle: #F9FAFB; --canvas: #F3F4F6; --desk: #E9EBEF; --product-bg: #F5F3EF;
+    --action: #0F172A; --action-hover: #1E293B;
+    --accent: #1D4ED8; --accent-bg: #EFF6FF; --accent-line: #BFDBFE;
+    --ok: #15803D; --ok-bg: #F0FDF4; --ok-line: #BBF7D0;
+    --warn: #92400E; --warn-bg: #FFFBEB; --warn-line: #FDE68A;
+    --danger: #B91C1C; --danger-bg: #FEF2F2; --danger-line: #FECACA;
+    --model: #6D28D9; --model-bg: #F5F3FF; --model-line: #C4B5FD;
+    --rule: #0F172A; --rule-bg: #F8FAFC; --rule-line: #CBD5E1;
+    --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 14px; --r-pill: 999px;
+    --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); font-size: 14px; line-height: 20px; color: var(--ink); background: var(--desk); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  svg.i { width: 16px; height: 16px; flex: none; }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Browser frame (presentation only, same as buyer-desktop-full.html) */
+  .laptop { width: 1440px; margin: 32px auto; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 24px 48px -16px rgba(15,23,42,.35); border: 1px solid var(--line-2); }
+  .chrome { height: 52px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: #F3F4F6; border-bottom: 1px solid var(--line); }
+  .dots3 { display: flex; gap: 8px; } .dots3 i { width: 12px; height: 12px; border-radius: 50%; background: #D1D5DB; }
+  .addr { flex: 1; max-width: 640px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 14px; color: var(--ink-2); }
+  .addr svg { width: 12px; height: 12px; }
+
+  /* Top bar (brand block from dashboard.html) */
+  .topbar { height: 60px; background: #fff; border-bottom: 1px solid var(--line); }
+  .topbar .wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--action); color: #fff; display: grid; place-items: center; }
+  .logo svg { width: 18px; height: 18px; }
+  .brand b { font-size: 15px; font-weight: 700; }
+  .links { display: flex; align-items: center; gap: 4px; margin-right: -12px; }
+  .links a { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: var(--r-md); font-size: 14px; font-weight: 500; color: var(--ink-2); }
+  .links a:hover { background: var(--bg-subtle); color: var(--ink); }
+  .links svg { width: 14px; height: 14px; }
+
+  /* Shared 1120px column; every row below uses the same 4-column grid edges (268px + 16px gaps) */
+  .wrap { width: 1120px; margin: 0 auto; }
+  .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  /* Hero: text spans columns 1-2, demo preview spans columns 3-4 */
+  .hero { padding: 32px 0 16px; align-items: stretch; }
+  .hero-text { grid-column: 1 / span 2; display: flex; flex-direction: column; justify-content: center; padding-right: 24px; }
+  .eyebrow { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); }
+  .hero h1 { font-size: 40px; line-height: 46px; font-weight: 700; letter-spacing: -0.02em; margin-top: 8px; }
+  .hero .sub { font-size: 17px; line-height: 26px; color: var(--ink-2); margin-top: 12px; }
+  .cta { margin-top: 20px; display: flex; align-items: center; gap: 16px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 20px; border-radius: var(--r-lg); font: 600 16px/1 var(--font); border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
+  .btn svg { width: 18px; height: 18px; }
+  .btn-primary { background: var(--action); color: #fff; }
+  .btn-primary:hover { background: var(--action-hover); }
+  .btn-primary:active { transform: scale(.98); }
+  .note { display: flex; gap: 6px; font-size: 13px; line-height: 18px; color: var(--ink-2); max-width: 300px; }
+  .note svg { width: 14px; height: 14px; margin-top: 2px; flex: none; }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg); }
+
+  /* Demo preview panel: a compact slice of the real dashboard */
+  .preview { grid-column: 3 / span 2; overflow: hidden; }
+  .pv-head { display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .thumb { width: 48px; height: 48px; border-radius: 10px; background: var(--product-bg); border: 1px solid var(--line); display: grid; place-items: center; }
+  .pv-head b { display: block; font-size: 14px; font-weight: 600; }
+  .pv-head small { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+  .tag-recall { color: var(--danger); background: var(--danger-bg); border: 1px solid var(--danger-line); border-radius: var(--r-pill); padding: 0 7px; display: inline-flex; gap: 4px; align-items: center; font-size: 12px; font-weight: 600; line-height: 18px; }
+  .tag-recall svg { width: 11px; height: 11px; }
+  .pv-kpis { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+  .pv-kpis div { padding: 8px 14px; }
+  .pv-kpis div + div { border-left: 1px solid var(--line); }
+  .pv-kpis span { font-size: 12px; color: var(--ink-2); }
+  .pv-kpis b { display: block; font-size: 22px; line-height: 28px; font-weight: 700; }
+  .pv-step { display: grid; grid-template-columns: 24px 1fr; gap: 10px; padding: 12px 14px; }
+  .node { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 5px; background: var(--rule); color: #fff; }
+  .node svg { width: 12px; height: 12px; }
+  .pv-step .top { display: flex; align-items: center; justify-content: space-between; }
+  .s-box { margin-top: 6px; padding: 8px 10px; border-radius: var(--r-md); background: var(--rule-bg); border: 1px solid var(--rule-line); border-left: 3px solid var(--rule); font-size: 13px; line-height: 18px; }
+  .code { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+  .rule-code { display: inline-flex; margin-top: 6px; padding: 1px 6px; background: #fff; border: 1px solid var(--rule-line); border-radius: 4px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: var(--r-pill); font-size: 13px; font-weight: 600; border: 1px solid; white-space: nowrap; }
+  .pill svg { width: 13px; height: 13px; }
+  .pill.ok { color: var(--ok); background: var(--ok-bg); border-color: var(--ok-line); }
+
+  /* Actor tags (same as dashboard.html) */
+  .tag { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: .06em; border: 1px solid; }
+  .tag svg { width: 12px; height: 12px; }
+  .tag-model { color: var(--model); background: var(--model-bg); border: 1px dashed var(--model); }
+  .tag-rule { color: #fff; background: var(--rule); border-color: var(--rule); }
+  .tag-tool { color: var(--ink-2); background: #fff; border-color: var(--line-2); }
+  .tag-you { color: var(--accent); background: var(--accent-bg); border-color: var(--accent-line); }
+
+  /* Evidence: two-number comparison on columns 1-2, exact sentence + source on columns 3-4 */
+  .evidence { margin-top: 16px; }
+  .stat { height: 88px; padding: 12px 16px; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
+  .stat b { font-size: 36px; line-height: 40px; font-weight: 700; letter-spacing: -0.02em; }
+  .stat.hi { border-color: var(--ink); border-width: 1.5px; }
+  .stat span { font-size: 14px; line-height: 20px; color: var(--ink-2); }
+  .stat span strong { display: block; color: var(--ink); font-weight: 600; }
+  .quote { grid-column: 3 / span 2; height: 88px; padding: 12px 16px; background: var(--bg-subtle); display: flex; flex-direction: column; justify-content: center; font-size: 14px; line-height: 20px; }
+  .quote span { color: var(--ink-2); font-size: 13px; }
+
+  /* Sections */
+  .section { padding-top: 28px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+  .section-head h2 { font-size: 18px; line-height: 26px; font-weight: 600; }
+  .section-head p { font-size: 13px; color: var(--ink-2); }
+
+  /* How it works: 4 equal steps joined by a connector */
+  .how { list-style: none; }
+  .how li { position: relative; height: 104px; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between; }
+  .how li:not(:last-child)::after { content: ""; position: absolute; top: 26px; right: -17px; width: 16px; height: 2px; background: var(--line-2); }
+  .how .top { display: flex; align-items: center; justify-content: space-between; }
+  .num { width: 26px; height: 26px; border-radius: 50%; background: var(--action); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 600; flex: none; }
+  .how h3 { font-size: 15px; line-height: 20px; font-weight: 600; }
+  .how h3 small { display: block; font-size: 13px; font-weight: 400; color: var(--ink-2); margin-top: 2px; }
+
+  /* What PayPal does here: 6 equal cards (3 per pair of grid columns keeps edges aligned at 1-2 and 3-4) */
+  .pp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+  .pp .card { height: 84px; padding: 12px 14px; display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-content: center; align-items: start; }
+  .pp .ico { width: 32px; height: 32px; border-radius: var(--r-md); background: var(--bg-subtle); border: 1px solid var(--line); display: grid; place-items: center; }
+  .pp .ico svg { width: 16px; height: 16px; }
+  .pp h3 { font-size: 14px; line-height: 18px; font-weight: 600; }
+  .pp p { font-size: 12.5px; line-height: 17px; color: var(--ink-2); margin-top: 2px; }
+
+  /* For judges */
+  .judges { margin-top: 28px; padding: 14px 16px 16px; background: var(--bg-subtle); }
+  .judges-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .judges-head h2 { font-size: 16px; line-height: 24px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .judges-head .time { font-size: 13px; font-weight: 500; color: var(--ink-2); }
+  .judges-head p { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; }
+  .judges-head p svg { width: 14px; height: 14px; color: var(--ink-2); }
+  .judges ol { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .judges li { position: relative; height: 56px; display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: center; padding: 0 12px; background: #fff; border: 1px solid var(--line); border-radius: var(--r-md); font-size: 14px; line-height: 18px; }
+  .judges li:not(:last-child)::after { content: ""; position: absolute; top: 27px; right: -13px; width: 12px; height: 2px; background: var(--line-2); }
+  .judges .num { background: #fff; color: var(--ink); border: 1px solid var(--line-2); }
+
+  .pagefoot { width: 1120px; margin: 28px auto 0; padding: 14px 0 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); text-align: center; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4h-4"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-refund" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M5 7h14"/><path d="m5 7-3 7a3 3 0 0 0 6 0Z"/><path d="m19 7-3 7a3 3 0 0 0 6 0Z"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4M16 8l4 4-4 4"/></symbol>
+    <symbol id="art-warmer" viewBox="0 0 240 150">
+      <g fill="none" stroke="#374151" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M86 26c-5-5 5-9 0-15M104 24c-5-5 5-9 0-15M122 26c-5-5 5-9 0-15" stroke="#C2410C" stroke-width="2.5"/>
+        <g transform="rotate(9 156 88)"><rect x="120" y="38" width="74" height="100" rx="30" fill="#FFFFFF"/><circle cx="157" cy="64" r="6"/></g>
+        <g transform="rotate(-6 100 90)"><rect x="62" y="36" width="80" height="106" rx="32" fill="#FFFFFF"/><circle cx="102" cy="66" r="8"/><path d="M102 60v5"/><circle cx="92" cy="114" r="2.5" fill="#374151" stroke="none"/><circle cx="102" cy="114" r="2.5" fill="#374151" stroke="none"/><circle cx="112" cy="114" r="2.5" fill="#9CA3AF" stroke="none"/></g>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="laptop">
+  <div class="chrome"><div class="dots3"><i></i><i></i><i></i></div>
+    <div class="addr"><svg><use href="#i-lock"/></svg>recall-runner.onrender.com/</div></div>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="#"><span class="logo"><svg><use href="#i-logo"/></svg></span><b>Recall Runner</b></a>
+      <nav class="links" aria-label="Main">
+        <a href="#">Dashboard</a>
+        <a href="#">Test results</a>
+        <a href="#">GitHub<svg aria-hidden="true"><use href="#i-ext"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Hero: headline left (cols 1-2), compact demo preview right (cols 3-4) -->
+    <section class="hero g4">
+      <div class="hero-text">
+        <p class="eyebrow">PayPal hackathon demo</p>
+        <h1>Recalled products, refunded through PayPal</h1>
+        <p class="sub">An AI agent watches the US government recall feed, finds a store’s affected buyers in its PayPal orders, and lets each buyer settle in one tap.</p>
+        <div class="cta">
+          <button class="btn btn-primary">Start fresh demo<svg><use href="#i-arrow"/></svg></button>
+          <p class="note"><svg><use href="#i-clock"/></svg>Creates a demo store with real recalls and sandbox PayPal orders. About 20 seconds.</p>
+        </div>
+      </div>
+
+      <figure class="card preview" aria-label="Preview of the demo dashboard">
+        <div class="pv-head">
+          <span class="thumb" role="img" aria-label="Hand warmer illustration"><svg width="42" height="26"><use href="#art-warmer"/></svg></span>
+          <div><b>Rechargeable hand warmers recall</b><small><span class="tag-recall"><svg><use href="#i-alert"/></svg>CPSC #27011</span>Remedy: refund · $34.00 each</small></div>
+          <span class="pill ok"><svg><use href="#i-check"/></svg>Approved</span>
+        </div>
+        <div class="pv-kpis">
+          <div><span>Buyers affected</span><b>6</b></div>
+          <div><span>Notified</span><b>6</b></div>
+          <div><span>Settled</span><b>3</b></div>
+        </div>
+        <div class="pv-step">
+          <span class="node" aria-hidden="true"><svg><use href="#i-scale"/></svg></span>
+          <div>
+            <div class="top"><span class="tag tag-rule">RULE</span><span class="pill ok"><svg><use href="#i-check"/></svg>Settled</span></div>
+            <div class="s-box">Morgan Demo paid 200 days ago, past PayPal’s 180-day refund window, so the buyer is paid by PayPal Payouts instead: <b>$34.00</b>.<br><span class="code rule-code">REFUND_WINDOW_EXCEEDED</span></div>
+          </div>
+        </div>
+      </figure>
+    </section>
+
+    <!-- Evidence: same 4 column edges as the hero and the steps -->
+    <section class="evidence g4" aria-label="Why direct notice matters">
+      <div class="card stat"><b>6%</b><span><strong>Press release only</strong>Buyers who act</span></div>
+      <div class="card stat hi"><b>~50%</b><span><strong>Notified directly</strong>Buyers who act</span></div>
+      <p class="card quote">About 6% of buyers act on a recall announced only by press release; about 50% act when notified directly.<span>(CPSC data, FY2013–16, as cited by consumer groups)</span></p>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>How it works</h2><p>AI suggests, you approve, fixed rules move the money.</p></div>
+      <ol class="how g4">
+        <li class="card"><div class="top"><span class="num">1</span><span class="tag tag-model"><svg><use href="#i-sparkle"/></svg>MODEL</span></div><h3>The agent finds a matching recall<small>AI</small></h3></li>
+        <li class="card"><div class="top"><span class="num">2</span><span class="tag tag-you"><svg><use href="#i-user"/></svg>YOU</span></div><h3>You approve the campaign<small>You</small></h3></li>
+        <li class="card"><div class="top"><span class="num">3</span><span class="tag tag-tool"><svg><use href="#i-tool"/></svg>TOOL</span></div><h3>Buyers tap their link and sign in with PayPal<small>Buyer</small></h3></li>
+        <li class="card"><div class="top"><span class="num">4</span><span class="tag tag-rule"><svg><use href="#i-scale"/></svg>RULE</span></div><h3>PayPal refunds, pays out, or tracks a replacement<small>Rules decide which</small></h3></li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>What PayPal does here</h2><p>All calls run in the PayPal sandbox.</p></div>
+      <div class="pp">
+        <div class="card"><span class="ico"><svg><use href="#i-list"/></svg></span><div><h3>Order records</h3><p>Finds who bought the recalled item</p></div></div>
+        <div class="card"><span class="ico"><svg><use href="#i-user"/></svg></span><div><h3>Log In with PayPal</h3><p>Checks the buyer owns the order</p></div></div>
+        <div class="card"><span class="ico"><svg><use href="#i-refund"/></svg></span><div><h3>Refunds</h3><p>Orders paid within 180 days</p></div></div>
+        <div class="card"><span class="ico"><svg><use href="#i-send"/></svg></span><div><h3>Payouts</h3><p>Orders paid more than 180 days ago</p></div></div>
+        <div class="card"><span class="ico"><svg><use href="#i-box"/></svg></span><div><h3>Shipment tracking</h3><p>Adds replacement tracking to the order</p></div></div>
+        <div class="card"><span class="ico"><svg><use href="#i-bell"/></svg></span><div><h3>Webhooks</h3><p>Updates each case when PayPal reports back</p></div></div>
+      </div>
+    </section>
+
+    <section class="card judges" aria-labelledby="judges-title">
+      <div class="judges-head">
+        <h2 id="judges-title">For judges <span class="time">About 2 minutes</span></h2>
+        <p><svg><use href="#i-lock"/></svg>Sandbox login is in the README.</p>
+      </div>
+      <ol>
+        <li><span class="num">1</span>Start fresh demo</li>
+        <li><span class="num">2</span>Approve the campaign</li>
+        <li><span class="num">3</span>Open a buyer link from the Outbox</li>
+        <li><span class="num">4</span>Sign in with the sandbox buyer</li>
+        <li><span class="num">5</span>Watch the case settle</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="pagefoot">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</footer>
+</div>
+
+</body>
+</html>

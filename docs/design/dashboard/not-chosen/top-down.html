@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recall Runner - Merchant dashboard (2, Top-down story)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#FBF9F7; --surface:#FFFFFF; --surface-sunk:#F2EDEF;
+  --ink:#1F1A21; --ink-muted:#5A525C; --line:#E0D9DD;
+  --brand:#3B1F3F; --on-brand:#FFFFFF;
+  --accent:#FF9E7A; --on-accent:#2A1530;
+  --on-ground:#FFFFFF; --on-ground-muted:#DCCBDD;
+  --recall:#9A4A12; --recall-bg:#FBE9DA;
+  --rule-bg:#1F1A21; --rule-ink:#FFFFFF;
+  --model-bg:#F1E7F2; --model-ink:#5B2A66;
+  --ok-bg:#DDF1E5; --ok-ink:#14633A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{background:var(--ground);color:var(--ink);font:400 15px/1.5 'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:4px}
+.field :focus-visible{outline-color:var(--accent)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:'DM Mono',monospace}
+
+/* surface 1: plum band */
+.field{background:var(--brand);color:var(--on-ground)}
+.top{display:flex;align-items:center;gap:24px;min-height:72px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.18)}
+.logo{display:flex;align-items:center;gap:10px;font:800 19px 'Bricolage Grotesque',sans-serif;text-decoration:none}
+.logo .mark{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:18px}
+.store{font-size:14px;color:var(--on-ground-muted);padding-left:24px;border-left:1px solid rgba(255,255,255,.28)}
+.store b{color:var(--on-ground);font-weight:600}
+.switch{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.4);border-radius:10px;font-size:14px;font-weight:500;color:var(--on-ground);margin-left:auto;text-align:left}
+.switch small{font-size:12px;color:var(--on-ground-muted);font-weight:400}
+.switch:hover{background:rgba(255,255,255,.08)}
+.approval{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--on-ground-muted)}
+
+.tag{display:inline-flex;align-items:center;gap:5px;font:700 11px/1 'DM Sans',sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:999px;white-space:nowrap}
+.tag .i{font-size:13px}
+.tag.rule{background:var(--rule-bg);color:var(--rule-ink)}
+.tag.model{background:var(--model-bg);color:var(--model-ink);border:1.5px dashed var(--model-ink);padding:3.5px 8px}
+.tag.tool{color:var(--ink);border:1px solid var(--ink-muted);padding:4.5px 8px}
+.tag.you{background:var(--surface-sunk);color:var(--ink-muted)}
+.st{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:13px;padding:2px 9px 2px 7px;border-radius:999px;white-space:nowrap;line-height:20px}
+.st .i{font-size:15px}
+.st.settled,.st.approved{background:var(--ok-bg);color:var(--ok-ink)}
+.st.notified{border:1px solid var(--ink-muted);color:var(--ink);padding:1px 8px 1px 6px}
+.st.waiting{border:1px dashed var(--ink-muted);color:var(--ink-muted);padding:1px 8px 1px 6px}
+.badge{display:inline-block;font-weight:700;font-size:12px;letter-spacing:.04em;color:var(--recall);background:var(--recall-bg);padding:4px 10px;border-radius:999px}
+code{font:500 12px 'DM Mono',monospace;background:var(--surface-sunk);padding:2px 6px;border-radius:4px;display:inline-block}
+
+.story{display:grid;grid-template-columns:104px 1fr;gap:24px;padding:32px 0 24px;align-items:center}
+.story svg.art{width:104px;height:104px;color:var(--accent)}
+.meta{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--on-ground-muted)}
+.story h1{font:800 34px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;margin:10px 0 8px;max-width:30em}
+.story .sub{font-size:15px;color:var(--on-ground-muted)}.story .sub b{color:var(--on-ground);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(255,255,255,.22)}
+.kpis>div{padding:16px 24px 20px;border-left:1px solid rgba(255,255,255,.22)}
+.kpis>div:first-child{padding-left:0;border-left:0}
+.kpis dt{font-size:12px;color:var(--on-ground-muted);font-weight:500}
+.kpis dd{font:800 36px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:var(--on-ground)}
+.kpis p{font-size:13px;color:var(--on-ground-muted)}
+.bar{height:6px;border-radius:3px;background:rgba(255,255,255,.25);margin:6px 0 2px;overflow:hidden;max-width:200px}
+.bar i{display:block;height:100%;width:50%;background:var(--accent)}
+
+/* compact rule bar */
+.rulebar{display:grid;grid-template-columns:240px repeat(4,1fr);margin-top:24px;border-bottom:1px solid var(--line);padding-bottom:16px}
+.rulebar .intro h2{font:800 17px 'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;margin-top:6px}
+.rulebar .intro p{font-size:13px;color:var(--ink-muted);line-height:1.4;margin-top:2px;max-width:20em}
+.rulebar ol{display:contents;list-style:none}
+.rulebar li{display:grid;grid-template-columns:24px 1fr;column-gap:10px;padding:2px 16px;border-left:1px solid var(--line);align-content:start}
+.rulebar li:before{counter-increment:r;content:counter(r);width:22px;height:22px;border-radius:50%;background:var(--brand);color:var(--on-brand);font:700 12px/22px 'DM Sans',sans-serif;text-align:center}
+.rulebar ol{counter-reset:r}
+.rulebar b{display:flex;align-items:center;gap:6px;font:700 15px/1.3 'Bricolage Grotesque',sans-serif}
+.rulebar b .i{font-size:16px;color:var(--brand)}
+.rulebar span{display:block;font-size:13px;line-height:1.4;color:var(--ink-muted);margin-top:2px}
+.rulebar li.off:before{background:transparent;color:var(--ink-muted);border:1.5px dashed var(--ink-muted);line-height:19px}
+.rulebar li.off b,.rulebar li.off b .i{color:var(--ink-muted)}
+.rulebar li.off{border-left:1px dashed var(--ink-muted)}
+.rulebar .off em{font-style:normal;font-weight:600}
+
+/* tabs + surface 2: grid */
+.stage{position:relative;padding:20px 0 8px;min-height:660px;transition:padding .2s}
+.stage.open{padding-right:464px}
+.tabs{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.tabs button{position:relative;min-height:44px;padding:0 14px;font-weight:600;font-size:15px;color:var(--ink-muted);display:flex;align-items:center;gap:8px}
+.tabs button .n{font:500 12px 'DM Mono',monospace;background:var(--surface-sunk);padding:2px 7px;border-radius:999px;color:var(--ink-muted)}
+.tabs button[aria-selected=true]{color:var(--ink)}
+.tabs button[aria-selected=true]:after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:4px;border-radius:2px;background:var(--accent)}
+.tabs button:hover{color:var(--ink)}
+.grid{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
+th{height:40px;background:var(--surface-sunk);border-bottom:1px solid var(--line);text-align:left;padding:0}
+th button{display:flex;align-items:center;gap:6px;width:100%;height:40px;padding:0 16px;font-weight:600;font-size:12px;color:var(--ink-muted);text-align:left}
+th button:hover{color:var(--ink)}
+th .i{font-size:14px;opacity:.8}
+th.r button{justify-content:flex-end}td.r{text-align:right}
+td{height:44px;padding:0 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#F8F4F6}
+tbody tr[aria-selected=true]{background:var(--surface-sunk)}
+tbody tr[aria-selected=true] td:first-child{box-shadow:inset 3px 0 0 var(--brand)}
+.who{display:flex;align-items:center;gap:10px;font-weight:600}
+.av{width:28px;height:28px;border-radius:50%;background:var(--brand);color:var(--on-brand);font:700 11px/1 'DM Sans',sans-serif;display:grid;place-items:center;flex:none}
+.path{display:inline-flex;align-items:center;gap:7px}.path .i{font-size:16px;color:var(--brand)}
+.num{font-variant-numeric:tabular-nums}
+.gfoot{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:40px;padding:0 16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-muted)}
+.link{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--brand);text-decoration:underline;text-underline-offset:3px}
+
+/* surface 3: slide-over drawer */
+.drawer{position:absolute;top:20px;right:0;bottom:8px;width:440px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:-18px 0 40px -24px rgba(31,26,33,.45);padding:20px 24px 24px;overflow:auto;transition:transform .2s}
+.stage:not(.open) .drawer{transform:translateX(calc(100% + 40px));visibility:hidden}
+.dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.drawer h2{font:800 22px/1.2 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.x{width:44px;height:44px;display:grid;place-items:center;border-radius:10px;margin:-8px -10px 0 0;font-size:20px;color:var(--ink-muted)}
+.x:hover{background:var(--surface-sunk);color:var(--ink)}
+.for{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--ink-muted);margin:4px 0 16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.steps{list-style:none;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 16px 38px}
+.steps li:before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--brand);color:var(--on-brand);font:700 12px/24px 'DM Sans',sans-serif;text-align:center}
+.steps li:not(:last-child):after{content:"";position:absolute;left:11px;top:28px;bottom:4px;width:2px;background:var(--line)}
+.steps li:last-child{padding-bottom:0}
+.steps p{font-size:14px;line-height:1.4;margin-top:6px}
+.steps code{margin-top:6px}
+.dl{display:grid;grid-template-columns:72px 1fr;gap:4px 12px;font-size:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.dl dt{color:var(--ink-muted)}
+.subj{font:700 16px/1.3 'Bricolage Grotesque',sans-serif;margin:14px 0 8px}
+.body p{font-size:14px;line-height:1.55;margin-bottom:10px}
+.body q{display:block;border-left:3px solid var(--line);padding-left:12px;quotes:none}
+.ai-note{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink-muted);margin:14px 0}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;background:var(--brand);color:var(--on-brand);font-weight:700;text-decoration:none}
+.btn:hover{background:#4d2b52}.btn .i{font-size:16px}
+
+footer .wrap{border-top:1px solid var(--line);padding-top:16px;padding-bottom:32px;font-size:13px;color:var(--ink-muted)}
+
+@media (max-width:999px){
+  .wrap{padding:0 20px}
+  .store{padding-left:0;border-left:0}.switch{margin-left:0}
+  .story{grid-template-columns:64px 1fr}.story svg.art{width:64px;height:64px}
+  .story h1{font-size:25px}
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpis>div:nth-child(odd){padding-left:0;border-left:0}
+  .kpis>div:nth-child(n+3){border-top:1px solid rgba(255,255,255,.22)}
+  .rulebar{grid-template-columns:1fr 1fr;row-gap:16px}
+  .rulebar .intro{grid-column:1/-1}
+  .rulebar li:nth-child(odd){border-left:0;padding-left:0}
+  .stage,.stage.open{padding-right:0;min-height:0}
+  .drawer{position:static;width:100%;margin-top:24px;box-shadow:none}
+  .stage:not(.open) .drawer{display:none}
+}
+@media (max-width:560px){.rulebar{grid-template-columns:1fr}.kpis dd{font-size:30px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7zM19 7l-3 7a3.5 3.5 0 0 0 6 0l-3-7z"/></symbol>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></symbol>
+  <symbol id="code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></symbol>
+  <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></symbol>
+  <symbol id="loop" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4"/></symbol>
+  <symbol id="refund" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+  <symbol id="payout" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></symbol>
+  <symbol id="truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+  <symbol id="wrench" viewBox="0 0 24 24"><path d="M14.5 6a4.5 4.5 0 0 0 5.5 5.5L11 20.5a2.1 2.1 0 0 1-3-3l9-9"/><path d="M14.5 6L17 3.5"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="sort" viewBox="0 0 24 24"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5"/></symbol>
+</svg>
+
+<header class="field">
+  <div class="wrap">
+    <div class="top">
+      <a class="logo" href="#"><span class="mark"><svg class="i" aria-hidden="true"><use href="#loop"/></svg></span>Recall Runner</a>
+      <p class="store">Store <b>Brightnest Home</b></p>
+      <button class="switch" aria-haspopup="listbox"><span><small>Campaign</small><br>Rechargeable hand warmers recall (CPSC #27011)</span><svg class="i" aria-hidden="true"><use href="#chev"/></svg></button>
+      <p class="approval">You approved this campaign <span class="st approved"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Approved</span></p>
+    </div>
+
+    <section class="story" aria-labelledby="title">
+      <svg class="art" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="22" y="40" width="52" height="40" rx="12"/><rect x="30" y="48" width="36" height="24" rx="7" stroke-width="1.5" stroke-dasharray="3 4"/>
+        <path d="M36 30c-3-4 3-6 0-11M48 30c-3-4 3-6 0-11M60 30c-3-4 3-6 0-11"/>
+      </svg>
+      <div>
+        <p class="meta"><span class="badge">CPSC #27011</span><span>Recall · Oct 1, 2026</span></p>
+        <h1 id="title">Kobayashi Recalls Rechargeable Hand Warmers Due to Risk of Serious Injury from Fire and Burn Hazards</h1>
+        <p class="sub"><b>Product:</b> HotHands Rechargeable Hand Warmers, 2-pack · <b>Remedy:</b> refund · $34.00 each</p>
+      </div>
+    </section>
+
+    <dl class="kpis" aria-label="Campaign results">
+      <div><dt>Buyers affected</dt><dd>6</dd><p>Found in PayPal orders</p></div>
+      <div><dt>Notified</dt><dd>6</dd><p>6 of 6 buyers</p></div>
+      <div><dt>Settled</dt><dd>3</dd><p>2 refunds · 1 payout</p></div>
+      <div><dt>Products fixed</dt><dd>50%</dd><div class="bar" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Products fixed, 3 of 6"><i></i></div><p>3 of 6</p></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="rulebar" aria-labelledby="money">
+    <div class="intro">
+      <span class="tag rule"><svg class="i" aria-hidden="true"><use href="#scale"/></svg>Rule</span>
+      <h2 id="money">How money moves</h2>
+      <p>Fixed rules, not the AI, pick the path for each order</p>
+    </div>
+    <ol>
+      <li><div><b><svg class="i" aria-hidden="true"><use href="#refund"/></svg>Refund</b><span>Paid within 180 days · 4 cases</span></div></li>
+      <li><div><b><svg class="i" aria-hidden="true"><use href="#payout"/></svg>PayPal Payout</b><span>Paid more than 180 days ago · 2 cases</span></div></li>
+      <li class="off"><div><b><svg class="i" aria-hidden="true"><use href="#truck"/></svg>Replacement</b><span>Tracking added to the order · <em>Not in this recall</em></span></div></li>
+      <li class="off"><div><b><svg class="i" aria-hidden="true"><use href="#wrench"/></svg>Repair</b><span>Kit request, no money · <em>Not in this recall</em></span></div></li>
+    </ol>
+  </section>
+
+  <div class="stage open" id="stage">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="t-cases" data-tab="cases" aria-selected="true">Cases <span class="n">6</span></button>
+      <button role="tab" id="t-outbox" data-tab="outbox" aria-selected="false" tabindex="-1">Outbox <span class="n">6</span></button>
+    </div>
+
+    <div class="grid" data-pane="cases" role="tabpanel" aria-labelledby="t-cases">
+      <div class="scroll"><table>
+        <caption class="sr">Cases, one row per affected buyer</caption>
+        <thead><tr>
+          <th scope="col"><button>Buyer <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col"><button>Order paid <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col"><button>Remedy path <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col" class="r"><button>Amount <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col"><button>Status <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+        </tr></thead>
+        <tbody>
+          <tr tabindex="0"><td><span class="who"><span class="av">SN</span>Sam Novak</span></td><td>12 days ago</td><td><span class="path"><svg class="i" aria-hidden="true"><use href="#refund"/></svg>Refund</span></td><td class="r num">$34.00</td><td><span class="st notified"><svg class="i" aria-hidden="true"><use href="#bell"/></svg>Notified</span></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">AR</span>Alicia Rivera</span></td><td>45 days ago</td><td><span class="path"><svg class="i" aria-hidden="true"><use href="#refund"/></svg>Refund</span></td><td class="r num">$34.00</td><td><span class="st settled"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Settled</span></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">JO</span>James Okafor</span></td><td>90 days ago</td><td><span class="path"><svg class="i" aria-hidden="true"><use href="#refund"/></svg>Refund</span></td><td class="r num">$34.00</td><td><span class="st settled"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Settled</span></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">MC</span>Mei Chen</span></td><td>60 days ago</td><td><span class="path"><svg class="i" aria-hidden="true"><use href="#refund"/></svg>Refund</span></td><td class="r num">$34.00</td><td><span class="st waiting"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Waiting</span></td></tr>
+          <tr tabindex="0" aria-selected="true"><td><span class="who"><span class="av">MD</span>Morgan Demo</span></td><td>200 days ago</td><td><span class="path"><svg class="i" aria-hidden="true"><use href="#payout"/></svg>PayPal Payout</span></td><td class="r num">$34.00</td><td><span class="st settled"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Settled</span></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">PN</span>Priya Nair</span></td><td>250 days ago</td><td><span class="path"><svg class="i" aria-hidden="true"><use href="#payout"/></svg>PayPal Payout</span></td><td class="r num">$34.00</td><td><span class="st notified"><svg class="i" aria-hidden="true"><use href="#bell"/></svg>Notified</span></td></tr>
+        </tbody>
+      </table></div>
+      <div class="gfoot"><span>1 to 6 of 6</span><span>Select a row to open why it happened</span></div>
+    </div>
+
+    <div class="grid" data-pane="outbox" role="tabpanel" aria-labelledby="t-outbox" hidden>
+      <div class="scroll"><table style="min-width:760px">
+        <caption class="sr">Outbox, notices sent to buyers</caption>
+        <thead><tr>
+          <th scope="col"><button>Buyer <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col"><button>Sent to <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col"><button>Sent <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col"><button>Opened <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col"><button>Status <svg class="i" aria-hidden="true"><use href="#sort"/></svg></button></th>
+          <th scope="col"><span class="sr">Action</span></th>
+        </tr></thead>
+        <tbody>
+          <tr tabindex="0" aria-selected="true"><td><span class="who"><span class="av">SN</span>Sam Novak</span></td><td class="mono">s•••@example.com</td><td>2 min ago</td><td>No</td><td><span class="st notified"><svg class="i" aria-hidden="true"><use href="#bell"/></svg>Notified</span></td><td><a class="link" href="#">Open buyer page</a></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">AR</span>Alicia Rivera</span></td><td class="mono">a•••@example.com</td><td>2 min ago</td><td>Yes</td><td><span class="st settled"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Settled</span></td><td><a class="link" href="#">Open buyer page</a></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">JO</span>James Okafor</span></td><td class="mono">j•••@example.com</td><td>2 min ago</td><td>Yes</td><td><span class="st settled"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Settled</span></td><td><a class="link" href="#">Open buyer page</a></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">MC</span>Mei Chen</span></td><td class="mono">m•••@example.com</td><td>2 min ago</td><td>Yes</td><td><span class="st waiting"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Waiting</span></td><td><a class="link" href="#">Open buyer page</a></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">MD</span>Morgan Demo</span></td><td class="mono">m•••@example.com</td><td>2 min ago</td><td>Yes</td><td><span class="st settled"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Settled</span></td><td><a class="link" href="#">Open buyer page</a></td></tr>
+          <tr tabindex="0"><td><span class="who"><span class="av">PN</span>Priya Nair</span></td><td class="mono">p•••@example.com</td><td>2 min ago</td><td>No</td><td><span class="st notified"><svg class="i" aria-hidden="true"><use href="#bell"/></svg>Notified</span></td><td><a class="link" href="#">Open buyer page</a></td></tr>
+        </tbody>
+      </table></div>
+      <div class="gfoot"><span>Delivery: in-app outbox (demo). Real email is not sent.</span></div>
+    </div>
+
+    <aside class="drawer" id="drawer" role="dialog" aria-label="Case detail">
+      <div data-pane="cases">
+        <div class="dhead"><h2>Why this happened</h2><button class="x" data-close aria-label="Close panel"><svg class="i" aria-hidden="true"><use href="#x"/></svg></button></div>
+        <p class="for"><span class="av">MD</span>Morgan Demo · $34.00 · <span class="st settled"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Settled</span></p>
+        <ol class="steps">
+          <li><span class="tag model"><svg class="i" aria-hidden="true"><use href="#spark"/></svg>Model</span><p>Matched the recall to HotHands Rechargeable Hand Warmers</p></li>
+          <li><span class="tag you"><svg class="i" aria-hidden="true"><use href="#person"/></svg>You</span><p>You approved the campaign</p></li>
+          <li><span class="tag tool"><svg class="i" aria-hidden="true"><use href="#code"/></svg>Tool</span><p>Buyer signed in with PayPal and the account matched the order</p></li>
+          <li><span class="tag rule"><svg class="i" aria-hidden="true"><use href="#scale"/></svg>Rule</span><p>Paid 200 days ago, past PayPal’s 180-day refund window, so pay by PayPal Payouts instead: $34.00</p><code>REFUND_WINDOW_EXCEEDED</code></li>
+          <li><span class="tag tool"><svg class="i" aria-hidden="true"><use href="#code"/></svg>Tool</span><p>PayPal Payouts sent $34.00</p></li>
+          <li><span class="tag tool"><svg class="i" aria-hidden="true"><use href="#code"/></svg>Tool</span><p>Webhook confirmed: case settled</p></li>
+        </ol>
+      </div>
+      <div data-pane="outbox" hidden>
+        <div class="dhead"><h2>Message preview</h2><button class="x" data-close aria-label="Close panel"><svg class="i" aria-hidden="true"><use href="#x"/></svg></button></div>
+        <p class="for"><span class="av">SN</span>Sam Novak · <span class="st notified"><svg class="i" aria-hidden="true"><use href="#bell"/></svg>Notified</span></p>
+        <dl class="dl">
+          <dt>To</dt><dd class="mono">s•••@example.com</dd>
+          <dt>Sent</dt><dd>2 min ago</dd>
+          <dt>Opened</dt><dd>No</dd>
+          <dt>Remedy</dt><dd>Full refund · $34.00</dd>
+        </dl>
+        <p class="subj">Safety recall: your HotHands hand warmers</p>
+        <div class="body">
+          <p>Hi Sam, Kobayashi has recalled the HotHands Rechargeable Hand Warmers, 2-pack, that you bought from Brightnest Home. The CPSC says:</p>
+          <p><q>“The lithium-ion battery and electrical components in the recalled hand warmers can overheat and ignite, posing a risk of serious injury from fire and burn hazards.”</q></p>
+          <p>Please stop using them. We will refund $34.00 through PayPal. Start here: <span class="mono" style="font-size:13px">recall-runner.onrender.com/r/7f3a91c2</span></p>
+        </div>
+        <p class="ai-note"><span class="tag model"><svg class="i" aria-hidden="true"><use href="#spark"/></svg>Model</span><span>Drafted by the AI from the CPSC record; hazard and remedy quoted word for word</span></p>
+        <a class="btn" href="#">Open buyer page <svg class="i" aria-hidden="true"><use href="#ext"/></svg></a>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer><div class="wrap">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</div></footer>
+
+<script>
+var stage=document.getElementById('stage');
+document.querySelectorAll('[role=tab]').forEach(function(t){t.addEventListener('click',function(){
+  var k=t.dataset.tab;
+  document.querySelectorAll('[role=tab]').forEach(function(x){var on=x.dataset.tab===k;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1});
+  document.querySelectorAll('[data-pane]').forEach(function(p){p.hidden=p.dataset.pane!==k});
+})});
+document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',function(){stage.classList.remove('open')})});
+document.querySelectorAll('tbody tr').forEach(function(r){r.addEventListener('click',function(){stage.classList.add('open')})});
+</script>
+</body>
+</html>
