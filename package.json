@@ -11,7 +11,10 @@
     "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "cpsc:fetch": "tsx scripts/fetch-cpsc.ts",
     "cpsc:ingest": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/ingest-recalls.ts",
-    "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed-demo.ts"
+    "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed-demo.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "paypal:attach": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/attach-captures.ts",
+    "demo:money": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/demo-money.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",

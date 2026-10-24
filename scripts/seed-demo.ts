@@ -117,11 +117,11 @@ const BUYERS = [
 // buyer index, days ago, SKUs. Orders older than 180 days are past PayPal's refund window.
 const ORDERS: [number, number, string[]][] = [
   // Hand warmers (recall 27011, refund)
-  [0, 12, ["BH-HW-2P"]],
+  [4, 12, ["BH-HW-2P"]],
   [1, 45, ["BH-HW-2P", "BH-CA-3"]],
   [2, 120, ["BH-HW-2P"]],
   [3, 165, ["BH-HW-2P"]],
-  [4, 200, ["BH-HW-2P"]],
+  [0, 200, ["BH-HW-2P"]], // the sandbox buyer: past 180 days, so the Payouts path lands in a real sandbox account
   [5, 260, ["BH-HW-2P"]],
   // Chair battery packs (recall 26791, replacement)
   [6, 30, ["BH-RC-BP"]],

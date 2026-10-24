@@ -114,3 +114,69 @@ export const recalls = pgTable("recalls", {
     .notNull()
     .defaultNow(),
 });
+
+// One recall the merchant is acting on. Nothing is paid until a person approves it.
+// Status: DRAFT (proposed), APPROVED (merchant said yes), CLOSED.
+export const campaigns = pgTable("campaigns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  merchantId: uuid("merchant_id")
+    .notNull()
+    .references(() => merchants.id, { onDelete: "cascade" }),
+  recallId: uuid("recall_id")
+    .notNull()
+    .references(() => recalls.id, { onDelete: "cascade" }),
+  status: text("status").notNull().default("DRAFT"),
+  approvedAt: timestamp("approved_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// One buyer's affected purchase inside a campaign: which order, which recalled product, what the
+// buyer chose, and what the policy engine decided. One row per campaign + order + product, so the
+// same purchase can never become two cases.
+export const cases = pgTable(
+  "cases",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    campaignId: uuid("campaign_id")
+      .notNull()
+      .references(() => campaigns.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    // What the buyer picked: refund, replacement or repair. Empty until they choose.
+    choice: text("choice"),
+    // OPEN, REJECTED, REFUNDED, PAYOUT_SENT, REPLACEMENT_SHIPPED, REPAIR_KIT_REQUESTED, FAILED
+    status: text("status").notNull().default("OPEN"),
+    // The policy engine's decision, kept so the dashboard can show exactly why.
+    action: text("action"),
+    ruleApplied: text("rule_applied"),
+    rationale: text("rationale"),
+    amountCents: integer("amount_cents"),
+    // The PayPal id for what happened: refund id, payout batch id or tracking number.
+    paypalRef: text("paypal_ref"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("cases_campaign_order_product").on(t.campaignId, t.orderId, t.productId)],
+);
+
+// The ledger: every PayPal call that moves money or ships a replacement. A row is written as
+// PENDING before the call and updated after, so a crash mid-call leaves a trace. The request id is
+// unique and is also sent to PayPal, which is what makes a retry unable to pay twice.
+export const paypalActions = pgTable("paypal_actions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  caseId: uuid("case_id")
+    .notNull()
+    .references(() => cases.id, { onDelete: "cascade" }),
+  op: text("op").notNull(), // REFUND, PAYOUT or TRACKING
+  requestId: text("request_id").notNull().unique(),
+  status: text("status").notNull().default("PENDING"), // PENDING, SUCCEEDED, FAILED
+  httpStatus: integer("http_status"),
+  paypalRef: text("paypal_ref"),
+  response: jsonb("response"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});

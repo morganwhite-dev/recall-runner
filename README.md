@@ -4,7 +4,7 @@ An AI agent that watches the US product-recall feed (CPSC), finds the buyers of 
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
 
-**Status:** Phases 0 (setup and risk spikes) and 1 (data and recalls) are complete. The database holds 189 real CPSC recalls and a fictional demo store. The app itself is still the starter page; the agent and screens come next.
+**Status:** Phases 0, 1 and 2 are complete. The money core works end to end against the PayPal sandbox: refunds inside PayPal's 180-day window, Payouts past it, tracking for replacements, and repair notices, each at most once per case. The app's screens and the AI agent come next.
 
 ## Why
 
@@ -16,7 +16,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 | --- | ---------------------------------------- | ---------------------------- | ----------- |
 | 0   | Setup and PayPal spikes                  | Sat Oct 24                   | Done Oct 22 |
 | 1   | Data and CPSC ingest                     | Sun Oct 25                   | Done Oct 23 |
-| 2   | Money core and policy tests              | Tue Oct 27                   | Not started |
+| 2   | Money core and policy tests              | Tue Oct 27                   | Done Oct 23  |
 | D   | UI design pass                           | Wed Oct 28                   | Not started |
 | 3   | AI agent                                 | Sat Oct 31                   | Not started |
 | 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                    | Not started |
@@ -69,6 +69,9 @@ npm run db:migrate    # create or update the tables in Neon
 npm run cpsc:fetch    # refresh data/cpsc-snapshot.json from the CPSC API
 npm run cpsc:ingest   # load the snapshot into the recalls table
 npm run db:seed       # rebuild the fictional demo store (safe to re-run)
+npm run paypal:attach # give every seeded order a real sandbox payment
+npm test              # policy engine tests
+npm run demo:money    # run every money path against the sandbox
 ```
 
 ## Tech
