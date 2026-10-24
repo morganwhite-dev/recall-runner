@@ -17,6 +17,8 @@
     "demo:money": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/demo-money.ts"
   },
   "dependencies": {
+    "ag-grid-community": "^36.2.0",
+    "ag-grid-react": "^36.2.0",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
     "pg": "^8.23.1",

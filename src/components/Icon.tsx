@@ -11,7 +11,12 @@ export type IconName =
   | "refund"
   | "payout"
   | "truck"
-  | "bell";
+  | "bell"
+  | "wrench"
+  | "clock"
+  | "minus"
+  | "chev"
+  | "ext";
 
 // Inline SVG symbol set. Render <IconSprite /> once per page, then use <Icon />.
 export function IconSprite() {
@@ -60,6 +65,24 @@ export function IconSprite() {
       </symbol>
       <symbol id="bell" viewBox="0 0 24 24">
         <path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4" />
+      </symbol>
+      <symbol id="wrench" viewBox="0 0 24 24">
+        <path d="M14.5 6a4.5 4.5 0 0 0 5.5 5.5L11 20.5a2.1 2.1 0 0 1-3-3l9-9" />
+        <path d="M14.5 6L17 3.5" />
+      </symbol>
+      <symbol id="clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </symbol>
+      <symbol id="minus" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M8 12h8" />
+      </symbol>
+      <symbol id="chev" viewBox="0 0 24 24">
+        <path d="M6 9l6 6 6-6" />
+      </symbol>
+      <symbol id="ext" viewBox="0 0 24 24">
+        <path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5" />
       </symbol>
     </svg>
   );
