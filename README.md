@@ -4,7 +4,7 @@ An AI agent that watches the US product-recall feed (CPSC), finds the buyers of 
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
 
-**Status:** Phase 0 (setup and risk spikes) is complete. The app is deployed but is still the starter page; the product is built from Phase 1 onward.
+**Status:** Phases 0 (setup and risk spikes) and 1 (data and recalls) are complete. The database holds 189 real CPSC recalls and a fictional demo store. The app itself is still the starter page; the agent and screens come next.
 
 ## Why
 
@@ -15,7 +15,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 | #   | Phase                                    | Target                       | Status      |
 | --- | ---------------------------------------- | ---------------------------- | ----------- |
 | 0   | Setup and PayPal spikes                  | Sat Oct 24                   | Done Oct 22 |
-| 1   | Data and CPSC ingest                     | Sun Oct 25                   | Not started |
+| 1   | Data and CPSC ingest                     | Sun Oct 25                   | Done Oct 23 |
 | 2   | Money core and policy tests              | Tue Oct 27                   | Not started |
 | D   | UI design pass                           | Wed Oct 28                   | Not started |
 | 3   | AI agent                                 | Sat Oct 31                   | Not started |
@@ -60,6 +60,15 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 npm install
 cp .env.example .env.local   # then fill in your own values
 npm run dev
+```
+
+Database and data commands (all need `.env.local`):
+
+```bash
+npm run db:migrate    # create or update the tables in Neon
+npm run cpsc:fetch    # refresh data/cpsc-snapshot.json from the CPSC API
+npm run cpsc:ingest   # load the snapshot into the recalls table
+npm run db:seed       # rebuild the fictional demo store (safe to re-run)
 ```
 
 ## Tech

@@ -6,9 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
+    "cpsc:fetch": "tsx scripts/fetch-cpsc.ts",
+    "cpsc:ingest": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/ingest-recalls.ts",
+    "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed-demo.ts"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
     "pg": "^8.23.1",
     "react": "19.3.0",
@@ -19,8 +25,10 @@
     "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
