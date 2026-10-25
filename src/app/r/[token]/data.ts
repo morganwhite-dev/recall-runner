@@ -28,19 +28,23 @@ export function artFor(sku: string): ArtKind {
   return ART_BY_SKU[sku] ?? "box";
 }
 
-// Product names carry extras ("Hand Warmers, 2-pack", "Dresser (white)"). Headlines use the part
-// before the first comma or bracket.
+// Product names carry extras ("Hand Warmers, 2-pack", "Battery Pack for Reclining Chairs",
+// "The Blue Cactus ..."). Headlines use the core name: no leading "The", and nothing after the
+// first comma, bracket or " for ".
 export function shortName(productName: string): string {
-  return productName.split(/[,(]/)[0].trim();
+  return productName
+    .split(/,|\(| for /)[0]
+    .replace(/^the\s+/i, "")
+    .trim();
 }
 
-// "Hand Warmers" -> them, "Dresser" -> it. A plain plural check, good enough for product names.
+// "Hand Warmers" -> them, "Dresser" -> it. A plain plural check on the last word of the core name.
 export function pronounFor(productName: string): "it" | "them" {
   const last = shortName(productName).split(/\s+/).pop()?.toLowerCase() ?? "";
   return last.endsWith("s") && !last.endsWith("ss") ? "them" : "it";
 }
 
-export function remedyCopy(kind: RemedyKind, productName: string): Remedy {
+export function remedyCopy(kind: RemedyKind): Remedy {
   switch (kind) {
     case "refund":
       return {
@@ -53,9 +57,9 @@ export function remedyCopy(kind: RemedyKind, productName: string): Remedy {
     case "replace":
       return {
         icon: "box",
-        name: `Free replacement ${productName}`,
+        name: "Free replacement",
         short: "Free replacement",
-        detail: "No money. Tracking is added to your order.",
+        detail: "No money. A new one ships, and tracking is added to your order.",
         rule: "Replacement: the recall offers a new one",
       };
     case "repair":

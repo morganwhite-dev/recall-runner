@@ -165,8 +165,8 @@ export function SeveralFlow({
                           <Icon name="check" />
                         </span>
                         <span>
-                          <b>{remedyCopy(kind, recall.productName).short}</b>
-                          <span className="sr-only">. {remedyCopy(kind, recall.productName).detail}</span>
+                          <b>{remedyCopy(kind).short}</b>
+                          <span className="sr-only">. {remedyCopy(kind).detail}</span>
                         </span>
                         <span className={styles.a}>{remedyAmount(recall, kind)}</span>
                       </label>

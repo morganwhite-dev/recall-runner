@@ -46,7 +46,7 @@ function outcome(c: BuyerCase) {
         label: "Refund sent",
         big: money,
         title: "Your refund is on its way",
-        lede: "PayPal refunds usually show in 3 to 5 business days.",
+        lede: "The store sent your money back to PayPal.",
         next: `sent ${money} back to the PayPal account you signed in with.`,
         timing: "PayPal refunds usually show in 3 to 5 business days.",
         kind: "refund" as const,
@@ -66,7 +66,7 @@ export function Success({
   others: boolean; // does this buyer have other recalls to go back to?
 }) {
   const o = outcome(c);
-  const remedy = remedyCopy(o.kind, c.productName);
+  const remedy = remedyCopy(o.kind);
   const pronoun = pronounFor(c.productName);
   return (
     <>

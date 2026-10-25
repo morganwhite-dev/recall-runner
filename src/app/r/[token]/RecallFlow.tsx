@@ -28,7 +28,7 @@ export function RecallFlow({
   recall: BuyerCase;
 }) {
   const kind = recall.offers[0];
-  const remedy = remedyCopy(kind, recall.productName);
+  const remedy = remedyCopy(kind);
   const pronoun = pronounFor(recall.productName);
   const price = formatUsd(recall.priceCents);
 
