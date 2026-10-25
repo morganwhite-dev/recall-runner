@@ -137,34 +137,37 @@ const CASE_COLUMNS: ColDef<BuyerCase>[] = [
   },
 ];
 
+// Column minimums add up to less than the left column at 1280px, so the grid never scrolls sideways.
 const OUTBOX_COLUMNS: ColDef<BuyerCase>[] = [
-  CASE_COLUMNS[0],
+  { ...CASE_COLUMNS[0], flex: 1.2, minWidth: 150 },
   {
     colId: "to",
     headerName: "Sent to",
     field: "email",
-    flex: 1.5,
-    minWidth: 170,
+    flex: 1.3,
+    minWidth: 140,
     cellClass: [cell, styles.mono],
   },
   {
     colId: "sent",
     headerName: "Sent",
     field: "sent",
-    flex: 0.9,
-    minWidth: 100,
+    flex: 0.8,
+    minWidth: 88,
     cellClass: cell,
   },
   {
     colId: "opened",
     headerName: "Opened",
     field: "opened",
+    // Without this AG Grid infers a boolean column and draws a checkbox instead of the word.
+    cellDataType: false,
     valueFormatter: (p) => (p.value ? "Yes" : "No"),
-    flex: 0.8,
-    minWidth: 90,
+    flex: 0.7,
+    minWidth: 76,
     cellClass: cell,
   },
-  { ...CASE_COLUMNS[4], flex: 1 },
+  { ...CASE_COLUMNS[4], flex: 1, minWidth: 112 },
   {
     colId: "action",
     headerName: "Action",
