@@ -1,0 +1,1 @@
+ALTER TABLE "campaigns" ADD COLUMN "matched_skus" text[] DEFAULT '{}' NOT NULL;

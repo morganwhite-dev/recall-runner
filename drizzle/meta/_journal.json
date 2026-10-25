@@ -15,6 +15,20 @@
       "when": 1792801503704,
       "tag": "0001_hot_adam_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792965659590,
+      "tag": "0002_slimy_colonel_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792965832221,
+      "tag": "0003_busy_skrulls",
+      "breakpoints": true
     }
   ]
 }

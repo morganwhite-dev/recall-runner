@@ -126,8 +126,12 @@ export const campaigns = pgTable("campaigns", {
     .notNull()
     .references(() => recalls.id, { onDelete: "cascade" }),
   status: text("status").notNull().default("DRAFT"),
+  // The store's products the agent matched to this recall (SKUs). Approval opens cases for them.
+  matchedSkus: text("matched_skus").array().notNull().default([]),
   approvedAt: timestamp("approved_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 // One buyer's affected purchase inside a campaign: which order, which recalled product, what the
@@ -157,10 +161,20 @@ export const cases = pgTable(
     amountCents: integer("amount_cents"),
     // The PayPal id for what happened: refund id, payout batch id or tracking number.
     paypalRef: text("paypal_ref"),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
-  (t) => [unique("cases_campaign_order_product").on(t.campaignId, t.orderId, t.productId)],
+  (t) => [
+    unique("cases_campaign_order_product").on(
+      t.campaignId,
+      t.orderId,
+      t.productId,
+    ),
+  ],
 );
 
 // The ledger: every PayPal call that moves money or ships a replacement. A row is written as
@@ -177,6 +191,78 @@ export const paypalActions = pgTable("paypal_actions", {
   httpStatus: integer("http_status"),
   paypalRef: text("paypal_ref"),
   response: jsonb("response"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+// The audit trail: one row per agent step. It feeds the "Why this happened" timeline.
+// actor: MODEL (the AI), RULE (fixed code), TOOL (a lookup or PayPal call), YOU (the merchant).
+// step: DETECT, MATCH, INVESTIGATE, PLAN, APPROVE, NOTIFY.
+export const agentDecisions = pgTable("agent_decisions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  merchantId: uuid("merchant_id")
+    .notNull()
+    .references(() => merchants.id, { onDelete: "cascade" }),
+  campaignId: uuid("campaign_id").references(() => campaigns.id, {
+    onDelete: "cascade",
+  }),
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  step: text("step").notNull(),
+  actor: text("actor").notNull(),
+  summary: text("summary").notNull(), // the one line shown on the dashboard
+  detail: jsonb("detail"), // evidence, inputs and outputs, for the expandable view
+  model: text("model"), // which AI model, when actor is MODEL
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+// The message drafted for each buyer (what the Outbox shows). The hazard and remedy are
+// quoted word for word from the CPSC record; draftedBy says whether the AI or a template wrote it.
+export const notices = pgTable("notices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  caseId: uuid("case_id")
+    .notNull()
+    .unique()
+    .references(() => cases.id, { onDelete: "cascade" }),
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  hazardQuote: text("hazard_quote").notNull(),
+  remedyQuote: text("remedy_quote").notNull(),
+  draftedBy: text("drafted_by").notNull(), // MODEL or TEMPLATE
+  fallbackReason: text("fallback_reason"), // why the template was used, if it was
+  sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+  openedAt: timestamp("opened_at", { withTimezone: true }),
+});
+
+// Saved AI answers, keyed by a fingerprint of the task, its inputs and the prompt version,
+// so repeating the same step doesn't pay for the same answer twice.
+export const llmCache = pgTable("llm_cache", {
+  key: text("key").primaryKey(),
+  task: text("task").notNull(),
+  model: text("model").notNull(),
+  output: jsonb("output").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+// Results of the AI tests (npm run eval). Each run of the suite shares one runGroup.
+export const evalRuns = pgTable("eval_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  runGroup: text("run_group").notNull(),
+  caseNo: integer("case_no").notNull(),
+  name: text("name").notNull(),
+  area: text("area").notNull(),
+  attempt: integer("attempt").notNull(),
+  passed: boolean("passed").notNull(),
+  detail: jsonb("detail"),
+  model: text("model"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });

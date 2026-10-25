@@ -14,16 +14,20 @@
     "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed-demo.ts",
     "test": "tsx --test tests/*.test.ts",
     "paypal:attach": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/attach-captures.ts",
-    "demo:money": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/demo-money.ts"
+    "demo:money": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/demo-money.ts",
+    "agent:run": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/run-agent.ts",
+    "eval": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/run-evals.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
     "ag-grid-community": "^36.2.0",
     "ag-grid-react": "^36.2.0",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
     "pg": "^8.23.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^20",
