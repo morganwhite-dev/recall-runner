@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StartFreshDemo } from "@/components/StartFreshDemo";
 import { Icon, type IconName } from "@/components/Icon";
 import { StatusPill } from "@/components/StatusPill";
 import { Tag, type TagKind } from "@/components/Tag";
@@ -9,17 +10,45 @@ const GITHUB_URL = "https://github.com/morganwhite-dev/recall-runner";
 const STEPS: { tag: TagKind; title: string; cap?: string }[] = [
   { tag: "model", title: "The agent finds a matching recall", cap: "AI" },
   { tag: "you", title: "You approve the campaign" },
-  { tag: "tool", title: "Buyers tap their link and sign in with PayPal", cap: "Buyer" },
-  { tag: "rule", title: "PayPal refunds, pays out, or tracks a replacement", cap: "Rules decide which" },
+  {
+    tag: "tool",
+    title: "Buyers tap their link and sign in with PayPal",
+    cap: "Buyer",
+  },
+  {
+    tag: "rule",
+    title: "PayPal refunds, pays out, or tracks a replacement",
+    cap: "Rules decide which",
+  },
 ];
 
 const PAYPAL: { icon: IconName; title: string; text: string }[] = [
-  { icon: "orders", title: "Order records", text: "Finds who bought the recalled item." },
-  { icon: "key", title: "Log in with PayPal", text: "Checks the buyer owns the order." },
+  {
+    icon: "orders",
+    title: "Order records",
+    text: "Finds who bought the recalled item.",
+  },
+  {
+    icon: "key",
+    title: "Log in with PayPal",
+    text: "Checks the buyer owns the order.",
+  },
   { icon: "refund", title: "Refunds", text: "Orders paid within 180 days." },
-  { icon: "payout", title: "Payouts", text: "Orders paid more than 180 days ago." },
-  { icon: "truck", title: "Shipment tracking", text: "Adds replacement tracking to the order." },
-  { icon: "bell", title: "Webhooks", text: "Updates each case when PayPal reports back." },
+  {
+    icon: "payout",
+    title: "Payouts",
+    text: "Orders paid more than 180 days ago.",
+  },
+  {
+    icon: "truck",
+    title: "Shipment tracking",
+    text: "Adds replacement tracking to the order.",
+  },
+  {
+    icon: "bell",
+    title: "Webhooks",
+    text: "Updates each case when PayPal reports back.",
+  },
 ];
 
 const JUDGE_STEPS = [
@@ -36,7 +65,7 @@ export default function Home() {
       <header className={`${styles.field} on-plum`}>
         <nav aria-label="Primary">
           <div className={styles.wrap}>
-            <Link className={styles.logo} href="/">
+            <Link className={`${styles.logo} logo-turn`} href="/">
               <span className={styles.mark}>
                 <Icon name="loop" />
               </span>
@@ -70,13 +99,10 @@ export default function Home() {
               in one tap.
             </p>
             <div className={styles.cta}>
-              {/* TODO: switch to a form posting to /api/demo/start once it exists. */}
-              <Link className="button" href="/dashboard">
-                Start fresh demo <Icon name="arrow" />
-              </Link>
+              <StartFreshDemo />
               <p className={styles.note}>
-                Creates a demo store with real recalls and sandbox PayPal
-                orders. About 20 seconds.
+                Resets the demo store: real recalls waiting for your approval
+                and sandbox PayPal orders. About 20 seconds.
               </p>
             </div>
           </div>
@@ -106,7 +132,9 @@ export default function Home() {
               </svg>
               <div>
                 <span className={styles.badge}>CPSC #27011</span>
-                <h2 className={styles.caseTitle}>Rechargeable hand warmers recall</h2>
+                <h2 className={styles.caseTitle}>
+                  Rechargeable hand warmers recall
+                </h2>
                 <p className={styles.remedy}>
                   Remedy: <b>refund · $34.00 each</b>
                 </p>
@@ -141,7 +169,8 @@ export default function Home() {
                 </span>
                 <p>
                   Morgan Demo paid 200 days ago, past PayPal’s 180-day refund
-                  window, so the buyer is paid by PayPal Payouts instead: $34.00.
+                  window, so the buyer is paid by PayPal Payouts instead:
+                  $34.00.
                 </p>
                 <code className={styles.code}>REFUND_WINDOW_EXCEEDED</code>
               </div>
@@ -151,10 +180,15 @@ export default function Home() {
       </header>
 
       <main className={styles.wrap}>
-        <section className={`${styles.section} ${styles.first}`} aria-labelledby="s1">
+        <section
+          className={`${styles.section} ${styles.first}`}
+          aria-labelledby="s1"
+        >
           <div className={styles.row}>
             <div>
-              <h2 className={styles.title} id="s1">Why notify directly</h2>
+              <h2 className={styles.title} id="s1">
+                Why notify directly
+              </h2>
             </div>
             <div className={styles.stats}>
               <div className={styles.stat}>
@@ -166,7 +200,9 @@ export default function Home() {
               </div>
               <div className={`${styles.stat} ${styles.hi}`}>
                 <div className={styles.n}>
-                  <span className={styles.tilde} aria-hidden="true">~</span>
+                  <span className={styles.tilde} aria-hidden="true">
+                    ~
+                  </span>
                   <span className="sr-only">About </span>50%
                 </div>
                 <span className={styles.bar} aria-hidden="true" />
@@ -186,13 +222,19 @@ export default function Home() {
         <section className={styles.section} aria-labelledby="s2">
           <div className={styles.row}>
             <div>
-              <h2 className={styles.title} id="s2">How it works</h2>
-              <p className={styles.sub}>AI suggests, you approve, fixed rules move the money.</p>
+              <h2 className={styles.title} id="s2">
+                How it works
+              </h2>
+              <p className={styles.sub}>
+                AI suggests, you approve, fixed rules move the money.
+              </p>
             </div>
             <ol className={styles.timeline}>
               {STEPS.map((step, i) => (
                 <li className={styles.step} key={step.title}>
-                  <span className={styles.node} aria-hidden="true">{i + 1}</span>
+                  <span className={styles.node} aria-hidden="true">
+                    {i + 1}
+                  </span>
                   <Tag kind={step.tag} />
                   <h3 className={styles.stepTitle}>{step.title}</h3>
                   {step.cap && <p className={styles.cap}>{step.cap}</p>}
@@ -205,7 +247,9 @@ export default function Home() {
         <section className={styles.section} aria-labelledby="s3">
           <div className={styles.row}>
             <div>
-              <h2 className={styles.title} id="s3">What PayPal does here</h2>
+              <h2 className={styles.title} id="s3">
+                What PayPal does here
+              </h2>
               <p className={styles.sub}>All calls run in the PayPal sandbox.</p>
             </div>
             <ul className={styles.pp}>
@@ -222,7 +266,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.judges}`} aria-labelledby="s4">
+        <section
+          className={`${styles.section} ${styles.judges}`}
+          aria-labelledby="s4"
+        >
           <div className={styles.judgesHead}>
             <h2 id="s4">For judges</h2>
             <span className={styles.when}>About 2 minutes</span>
@@ -238,7 +285,8 @@ export default function Home() {
 
       <footer>
         <div className={`${styles.wrap} ${styles.footer}`}>
-          Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.
+          Demo store. The merchant and order dates are made up; the recalls are
+          real CPSC data. Not affiliated with CPSC or PayPal.
         </div>
       </footer>
     </>

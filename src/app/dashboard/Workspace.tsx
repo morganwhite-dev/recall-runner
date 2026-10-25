@@ -2,8 +2,9 @@
 
 import { useState, type KeyboardEvent } from "react";
 import { CaseGrid, type GridKind } from "./CaseGrid";
-import { CASES, DEFAULT_CASE_ID } from "./data";
+import type { BuyerCase } from "./data";
 import { DetailPanel, MessagePreview } from "./DetailPanel";
+import delight from "./delight.module.css";
 import styles from "./page.module.css";
 
 const TABS: { id: GridKind; label: string }[] = [
@@ -11,10 +12,26 @@ const TABS: { id: GridKind; label: string }[] = [
   { id: "outbox", label: "Outbox" },
 ];
 
-export function Workspace() {
+export function Workspace({
+  cases: CASES,
+  approved,
+}: {
+  cases: BuyerCase[];
+  approved: boolean;
+}) {
   const [tab, setTab] = useState<GridKind>("cases");
-  const [selectedId, setSelectedId] = useState(DEFAULT_CASE_ID);
+  const [selectedId, setSelectedId] = useState(CASES[0]?.id ?? "");
   const selected = CASES.find((c) => c.id === selectedId) ?? CASES[0];
+
+  if (!selected) {
+    return (
+      <p className={styles.empty}>
+        {approved
+          ? "This campaign has no affected orders, so there's nobody to notify."
+          : "Nothing here yet. Approve the campaign and we'll open a case for each affected order and notify the buyers. Nothing is sent or paid until you do."}
+      </p>
+    );
+  }
 
   // Arrow keys, Home and End move between tabs and activate them.
   function onTabKeyDown(e: KeyboardEvent<HTMLButtonElement>, index: number) {
@@ -44,6 +61,7 @@ export function Workspace() {
               key={t.id}
               type="button"
               role="tab"
+              className={delight.tab}
               id={`tab-${t.id}`}
               aria-selected={tab === t.id}
               aria-controls={`panel-${t.id}`}
@@ -72,11 +90,15 @@ export function Workspace() {
           <div className={styles.gridFoot}>
             {tab === "cases" ? (
               <>
-                <span>1 to {CASES.length} of {CASES.length}</span>
+                <span>
+                  1 to {CASES.length} of {CASES.length}
+                </span>
                 <span>Select a row to see why it happened</span>
               </>
             ) : (
-              <span>Delivery: in-app outbox (demo). Real email is not sent.</span>
+              <span>
+                Delivery: in-app outbox (demo). Real email is not sent.
+              </span>
             )}
           </div>
         </div>

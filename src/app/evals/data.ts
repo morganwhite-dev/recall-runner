@@ -7,7 +7,7 @@ export type TestGroup = {
   tests: { n: number; text: string }[];
 };
 
-// Numbers run 01 to 11 in the order of tests/policy.test.ts.
+// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18 tests/buyer.test.ts, 19 to 27 tests/dashboard.test.ts.
 export const MONEY_GROUPS: TestGroup[] = [
   {
     id: "refund",
@@ -51,9 +51,39 @@ export const MONEY_GROUPS: TestGroup[] = [
       { n: 11, text: "refunds only the recalled item, not the whole order" },
     ],
   },
+  {
+    id: "identity",
+    label: "Identity and settling",
+    icon: "lock",
+    tests: [
+      { n: 12, text: "a verified PayPal email is accepted, ignoring case" },
+      { n: 13, text: "an email PayPal has not verified is never accepted" },
+      { n: 14, text: "a different PayPal account does not match the order" },
+      { n: 15, text: "an emails list counts only if the primary one is confirmed" },
+      { n: 16, text: "a refund event points at the refund id" },
+      { n: 17, text: "payout item and batch events point at the payout batch id" },
+      { n: 18, text: "other events, or events with no id, settle nothing" },
+    ],
+  },
+  {
+    id: "dashboard",
+    label: "Dashboard status and numbers",
+    icon: "info",
+    tests: [
+      { n: 19, text: "a refund or payout is Settled only after PayPal's webhook, not when the request is accepted" },
+      { n: 20, text: "replacements and repair kits are Settled at once, because PayPal sends no webhook for them" },
+      { n: 21, text: "an open case is Notified until the buyer opens the notice, then Waiting" },
+      { n: 22, text: "a refused or failed case shows as Problem, never as waiting or settled" },
+      { n: 23, text: "before a decision, the path comes from the recall's remedy and the order's age" },
+      { n: 24, text: "once the policy engine has decided, its action wins over the preview" },
+      { n: 25, text: "emails are masked to the first letter and the domain" },
+      { n: 26, text: "time ago reads in minutes, hours and days" },
+      { n: 27, text: "the numbers count settled cases per path, and 'products fixed' is settled over affected" },
+    ],
+  },
 ];
 
-// Planned, not run yet (Phase 3).
+// The AI tests (npm run eval): 8 cases, each run several times.
 export const AI_GROUPS: TestGroup[] = [
   {
     id: "match",
@@ -106,13 +136,9 @@ export const WINDOW_STOPS: {
   { day: "Day 400", remedy: "payout", why: "The reason on the order says so.", test: 4 },
 ];
 
-// Copied from a real `npm test` run (11 pass, 0 fail, 71 ms); generate this from the test output later.
 export const RUN = {
-  file: "tests/policy.test.ts",
+  file: "tests/*.test.ts",
   command: "npm test",
-  runTime: "71 ms",
-  lastRun: "Oct 24, 2026",
-  failing: 0,
 };
 
 const count = (groups: TestGroup[]) =>
@@ -129,17 +155,15 @@ const PERIOD = (2 * Math.PI * RADIUS) / TOTAL_COUNT;
 const DASH = PERIOD - GAP;
 const r4 = (n: number) => Number(n.toFixed(4));
 
-const repeat = (pattern: string, times: number) =>
-  Array.from({ length: times }, () => pattern).join(" ");
-
-export const RING = {
-  radius: RADIUS,
-  // Solid plum segments for the passed tests.
-  passed: `${repeat(`${r4(DASH)} ${GAP}`, MONEY_COUNT)} 0 600`,
-  // Pale fill for the planned tests, starting after the passed ones.
-  plannedFill: `0 ${r4(MONEY_COUNT * PERIOD)} ${repeat(`${r4(DASH)} ${GAP}`, AI_COUNT)} 0 600`,
-  // Dashed centre line over the planned segments.
-  plannedLine: `0 ${r4(MONEY_COUNT * PERIOD)} ${repeat("3 5", Math.round((AI_COUNT * PERIOD) / 8) - 2)} 0 600`,
-};
+// Pale segments for every test, then solid plum on top for each one that passed, in order.
+// A segment that did not pass is skipped in the solid ring, so it stays pale.
+export function ringFor(passed: boolean[]) {
+  const seg = `${r4(DASH)} ${GAP}`;
+  return {
+    radius: RADIUS,
+    all: `${Array.from({ length: TOTAL_COUNT }, () => seg).join(" ")} 0 600`,
+    passed: `${passed.map((ok) => (ok ? seg : `0 ${r4(PERIOD)}`)).join(" ")} 0 600`,
+  };
+}
 
 export const pad = (n: number) => String(n).padStart(2, "0");

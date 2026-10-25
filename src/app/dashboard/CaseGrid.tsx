@@ -14,11 +14,7 @@ import {
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { Icon } from "@/components/Icon";
-import {
-  buyerPagePath,
-  formatMoney,
-  type BuyerCase,
-} from "./data";
+import { amountLabel, type BuyerCase } from "./data";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./page.module.css";
 
@@ -63,11 +59,18 @@ function BuyerCell({ data }: ICellRendererParams<BuyerCase>) {
   );
 }
 
+const PATH_ICON = {
+  Refund: "refund",
+  "PayPal Payout": "payout",
+  Replacement: "truck",
+  Repair: "wrench",
+} as const;
+
 function PathCell({ data }: ICellRendererParams<BuyerCase>) {
   if (!data) return null;
   return (
     <span className={styles.path}>
-      <Icon name={data.path === "Refund" ? "refund" : "payout"} />
+      <Icon name={PATH_ICON[data.path]} />
       {data.path}
     </span>
   );
@@ -78,9 +81,9 @@ function StatusCell({ data }: ICellRendererParams<BuyerCase>) {
 }
 
 function LinkCell({ data }: ICellRendererParams<BuyerCase>) {
-  if (!data) return null;
+  if (!data || !data.buyerPath) return null;
   return (
-    <Link className={styles.link} href={buyerPagePath(data)}>
+    <Link className={styles.link} href={data.buyerPath}>
       Open buyer page
     </Link>
   );
@@ -120,7 +123,7 @@ const CASE_COLUMNS: ColDef<BuyerCase>[] = [
     colId: "amount",
     headerName: "Amount",
     field: "amountCents",
-    valueFormatter: (p) => formatMoney(p.value),
+    valueFormatter: (p) => (p.data ? amountLabel(p.data) : ""),
     type: "rightAligned",
     flex: 0.8,
     minWidth: 100,

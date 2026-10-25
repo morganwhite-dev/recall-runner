@@ -4,7 +4,7 @@ An AI agent that watches the US product-recall feed (CPSC), finds the buyers of 
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
 
-**Status:** Phases 0–3 are complete. The money core works end to end against the PayPal sandbox, and the AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing). The pages are built but still show sample data; connecting them is next.
+**Status:** Phases 0–4 are complete; Phase 5 (dashboard on real data, approve campaign, demo reset) is built and waiting for a live check on Render. The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs.
 
 ## Why
 
@@ -16,11 +16,11 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 | --- | ---------------------------------------- | ---------------------------- | ----------- |
 | 0   | Setup and PayPal spikes                  | Sat Oct 24                   | Done Oct 22 |
 | 1   | Data and CPSC ingest                     | Sun Oct 25                   | Done Oct 23 |
-| 2   | Money core and policy tests              | Tue Oct 27                   | Done Oct 23  |
+| 2   | Money core and policy tests              | Tue Oct 27                   | Done Oct 23 |
 | D   | UI design pass (plum, Claude Design tab) | Wed Oct 28                   | Done Oct 24 |
 | 3   | AI agent                                 | Sat Oct 31                   | Done Oct 25 |
-| 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                    | Not started |
-| 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)   | Not started |
+| 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                    | Done Oct 25 |
+| 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)   | Built Oct 25, live check pending |
 | 7   | Harden and package                       | Fri Nov 6                    | Not started |
 | 8   | Video and Devpost write-up               | Mon Nov 9, submit Tue Nov 10 | Not started |
 
@@ -70,10 +70,12 @@ npm run cpsc:fetch    # refresh data/cpsc-snapshot.json from the CPSC API
 npm run cpsc:ingest   # load the snapshot into the recalls table
 npm run db:seed       # rebuild the fictional demo store (safe to re-run)
 npm run paypal:attach # give every seeded order a real sandbox payment
-npm test              # policy engine tests
+npm test              # policy, buyer-identity and dashboard tests
+npm run test:record   # run them and save the results the Test results page shows
 npm run demo:money    # run every money path against the sandbox
 npm run agent:run     # run the AI agent on the demo store and print its audit trail
 npm run eval          # run the 8 AI tests, 3 times each
+npm run buyer:links   # give each buyer a private link and print them
 ```
 
 ## Tech

@@ -1,5 +1,6 @@
 "use client";
 
+import { ConfirmLink } from "@/components/ConfirmLink";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
 import type { BuyerCase } from "@/lib/buyer";
@@ -127,9 +128,9 @@ export function RecallFlow({
             </div>
             <div className={styles.sumAct}>
               {/* Plain anchor: the login route redirects off-site, so no client navigation or prefetch. */}
-              <a className={styles.btn} href={loginHref(token, recall.caseId, kind)}>
+              <ConfirmLink className={styles.btn} href={loginHref(token, recall.caseId, kind)}>
                 Confirm with PayPal
-              </a>
+              </ConfirmLink>
               <Reassure className={styles.reassureDesktop} />
             </div>
           </aside>

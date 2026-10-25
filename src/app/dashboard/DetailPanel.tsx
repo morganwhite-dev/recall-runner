@@ -1,14 +1,9 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
-import {
-  buyerPagePath,
-  formatMoney,
-  HAZARD,
-  messageFor,
-  timelineFor,
-  type BuyerCase,
-} from "./data";
+import { amountLabel, remedyLabel, type BuyerCase } from "./data";
+import delight from "./delight.module.css";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./page.module.css";
 
@@ -18,7 +13,7 @@ function CaseHeading({ c, withAmount }: { c: BuyerCase; withAmount: boolean }) {
       <span className={styles.avatar} aria-hidden="true">
         {c.initials}
       </span>
-      {c.name} · {withAmount && <>{formatMoney(c.amountCents)} · </>}
+      {c.name} · {withAmount && <>{amountLabel(c)} · </>}
       <StatusBadge status={c.status} />
     </p>
   );
@@ -30,8 +25,11 @@ function Timeline({ c }: { c: BuyerCase }) {
       <h2 className={styles.panelTitle}>Why this happened</h2>
       <CaseHeading c={c} withAmount />
       <ol className={styles.steps}>
-        {timelineFor(c).map((step) => (
-          <li key={`${step.tag}-${step.text}`}>
+        {c.timeline.map((step, i) => (
+          <li
+            key={`${i}-${step.tag}-${step.text}`}
+            style={{ "--i": i } as CSSProperties}
+          >
             <Tag kind={step.tag} />
             <p>{step.text}</p>
             {step.code && <code>{step.code}</code>}
@@ -42,8 +40,8 @@ function Timeline({ c }: { c: BuyerCase }) {
   );
 }
 
+// The notice exactly as it was stored for this buyer, link included.
 export function MessagePreview({ c }: { c: BuyerCase }) {
-  const m = messageFor(c);
   return (
     <section className={styles.message} aria-label="Message preview">
       <div className={styles.messageMeta}>
@@ -51,35 +49,33 @@ export function MessagePreview({ c }: { c: BuyerCase }) {
         <CaseHeading c={c} withAmount={false} />
         <dl className={styles.dl}>
           <dt>To</dt>
-          <dd className={styles.mono}>{m.to}</dd>
+          <dd className={styles.mono}>{c.email}</dd>
           <dt>Sent</dt>
-          <dd>{m.sent}</dd>
+          <dd>{c.sent}</dd>
           <dt>Opened</dt>
-          <dd>{m.opened}</dd>
+          <dd>{c.opened ? "Yes" : "No"}</dd>
           <dt>Remedy</dt>
-          <dd>{m.remedy}</dd>
+          <dd>{remedyLabel(c)}</dd>
         </dl>
-        <Link className={styles.btn} href={buyerPagePath(c)}>
-          Open buyer page <Icon name="ext" />
-        </Link>
+        {c.buyerPath && (
+          <Link className={`${styles.btn} ${delight.lift}`} href={c.buyerPath}>
+            Open buyer page <Icon name="ext" />
+          </Link>
+        )}
       </div>
       <div className={styles.messageBody}>
-        <p className={styles.subject}>{m.subject}</p>
+        <p className={styles.subject}>{c.subject || "No notice yet"}</p>
         <div className={styles.body}>
-          <p>{m.greeting}</p>
-          <p>
-            <q>“{HAZARD}”</q>
-          </p>
-          <p>
-            {m.promise}
-            <span className={`${styles.mono} ${styles.small}`}>{m.link}</span>
-          </p>
+          {c.body.split("\n\n").map((paragraph, i) => (
+            <p key={i}>{paragraph}</p>
+          ))}
         </div>
         <p className={styles.aiNote}>
-          <Tag kind="model" />
+          <Tag kind={c.draftedBy === "MODEL" ? "model" : "rule"} />
           <span>
-            Drafted by the AI from the CPSC record; hazard and remedy quoted
-            word for word
+            {c.draftedBy === "MODEL"
+              ? "Drafted by the AI from the CPSC record; hazard and remedy quoted word for word"
+              : "Written from a fixed template; hazard and remedy quoted word for word from the CPSC record"}
           </span>
         </p>
       </div>

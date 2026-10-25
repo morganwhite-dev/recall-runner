@@ -13,6 +13,7 @@
     "cpsc:ingest": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/ingest-recalls.ts",
     "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed-demo.ts",
     "test": "tsx --test tests/*.test.ts",
+    "test:record": "tsx scripts/record-tests.ts",
     "paypal:attach": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/attach-captures.ts",
     "demo:money": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/demo-money.ts",
     "buyer:links": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/make-buyer-links.ts",

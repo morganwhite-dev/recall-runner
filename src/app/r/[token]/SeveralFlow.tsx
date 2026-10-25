@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ConfirmLink } from "@/components/ConfirmLink";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
 import Link from "next/link";
@@ -122,7 +123,7 @@ export function SeveralFlow({
                     </span>
                     <span className={styles.stat}>
                       <Icon name={claimable ? "info" : done ? "check" : "pause"} />
-                      {claimable ? "Needs your choice" : done ? "Done" : "Could not complete"}
+                      {claimable ? "Needs your choice" : done ? "Done" : "Couldn't complete"}
                     </span>
                   </div>
 
@@ -204,9 +205,9 @@ export function SeveralFlow({
                         </Link>
                       ) : choice ? (
                         // Plain anchor: the login route redirects off-site, so no client navigation or prefetch.
-                        <a className={styles.btn} href={loginHref(token, recall.caseId, choice)}>
+                        <ConfirmLink className={styles.btn} href={loginHref(token, recall.caseId, choice)}>
                           Confirm with PayPal
-                        </a>
+                        </ConfirmLink>
                       ) : (
                         <button type="button" className={styles.btn} disabled>
                           Choose a remedy

@@ -242,6 +242,56 @@
   background: var(--brand);
 }
 
+/* Numbers count up, the bar fills, and timeline steps rise in order. All off for reduced motion. */
+@property --n {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+.countUp {
+  --n: var(--v);
+  counter-reset: n var(--n);
+}
+
+.countUp::after {
+  content: counter(n) var(--unit, "");
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .countUp {
+    animation: countup 0.9s ease-out both;
+  }
+
+  .bar i {
+    animation: fill 0.9s ease-out both;
+  }
+
+  .steps li {
+    animation: rise 0.35s ease-out both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+}
+
+@keyframes countup {
+  from {
+    --n: 0;
+  }
+}
+
+@keyframes fill {
+  from {
+    width: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
 /* Master-detail split */
 .split {
   display: grid;
@@ -770,4 +820,36 @@ footer .wrap {
     padding-left: 0 !important;
     border-left: 0 !important;
   }
+}
+
+/* A case the rules refused or PayPal rejected: solid outline, so it never reads as "waiting". */
+.problem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  padding: 1px 8px 1px 6px;
+  border-radius: 999px;
+}
+
+.problem :global(.icon) {
+  font-size: 15px;
+}
+
+/* Shown instead of the grid when there is nothing to list yet. */
+.empty {
+  margin: 32px 0;
+  padding: 24px;
+  border: 1px dashed var(--ink-muted);
+  border-radius: 14px;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+/* Notice paragraphs keep the line breaks the notice was stored with. */
+.body p {
+  white-space: pre-line;
 }

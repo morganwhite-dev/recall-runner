@@ -3,7 +3,13 @@ import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
 import { StatusPill } from "@/components/StatusPill";
 import { Tag } from "@/components/Tag";
-import { CASES, campaignStats, formatMoney, PRODUCT } from "./data";
+import { Suspense } from "react";
+import { ART_PATHS } from "@/components/ProductArt";
+import { loadDashboard } from "@/lib/dashboard";
+import { Count } from "@/components/Count";
+import { ApproveButton } from "./ApproveButton";
+import { CampaignSwitch } from "./CampaignSwitch";
+import { campaignStats, formatDate, formatMoney } from "./data";
 import styles from "./page.module.css";
 import { Workspace } from "./Workspace";
 
@@ -11,10 +17,25 @@ export const metadata: Metadata = {
   title: "Merchant dashboard | Recall Runner",
 };
 
-const CAMPAIGN = "Rechargeable hand warmers recall (CPSC #27011)";
-
-export default function DashboardPage() {
-  const stats = campaignStats(CASES);
+async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
+  const { campaign } = await searchParams;
+  const data = await loadDashboard(
+    typeof campaign === "string" ? campaign : undefined,
+  );
+  if (!data) {
+    return (
+      <main className={styles.wrap}>
+        <p className={styles.empty}>
+          Nothing here yet. Head back to the home page and choose Start fresh
+          demo to set up a store.
+        </p>
+      </main>
+    );
+  }
+  const { header, cases: CASES } = data;
+  const approved = header.status === "APPROVED";
+  const stats = campaignStats(CASES, data.affected);
+  const offers = header.remedies;
 
   const paths: {
     icon: IconName;
@@ -22,17 +43,37 @@ export default function DashboardPage() {
     text: string;
     count: number | null;
   }[] = [
-    { icon: "refund", title: "Refund", text: "Paid within 180 days", count: stats.refundCases },
-    { icon: "payout", title: "PayPal Payout", text: "Paid more than 180 days ago", count: stats.payoutCases },
-    { icon: "truck", title: "Replacement", text: "Tracking added to the order", count: null },
-    { icon: "wrench", title: "Repair", text: "Kit request, no money", count: null },
+    {
+      icon: "refund",
+      title: "Refund",
+      text: "Paid within 180 days",
+      count: offers.includes("Refund") ? stats.byPath.Refund : null,
+    },
+    {
+      icon: "payout",
+      title: "PayPal Payout",
+      text: "Paid more than 180 days ago",
+      count: offers.includes("Refund") ? stats.byPath["PayPal Payout"] : null,
+    },
+    {
+      icon: "truck",
+      title: "Replacement",
+      text: "Tracking added to the order",
+      count: offers.includes("Replace") ? stats.byPath.Replacement : null,
+    },
+    {
+      icon: "wrench",
+      title: "Repair",
+      text: "Kit request, no money",
+      count: offers.includes("Repair") ? stats.byPath.Repair : null,
+    },
   ];
 
   return (
     <>
       <header className={`${styles.top} on-plum`}>
         <div className={`${styles.wrap} ${styles.topBar}`}>
-          <Link className={styles.logo} href="/">
+          <Link className={`${styles.logo} logo-turn`} href="/">
             <span className={styles.mark}>
               <Icon name="loop" />
             </span>
@@ -44,16 +85,19 @@ export default function DashboardPage() {
           <nav aria-label="Primary" className={styles.topNav}>
             <Link href="/evals">Test results</Link>
           </nav>
-          <label className={styles.switch}>
-            <span className={styles.switchLabel}>Campaign</span>
-            <select defaultValue="27011">
-              <option value="27011">{CAMPAIGN}</option>
-            </select>
-            <Icon name="chev" />
-          </label>
-          <p className={styles.approval}>
-            You approved this campaign <StatusPill>Approved</StatusPill>
-          </p>
+          <CampaignSwitch
+            options={data.campaigns}
+            current={header.recallNumber}
+          />
+          {approved ? (
+            <p className={styles.approval}>
+              You approved this campaign <StatusPill>Approved</StatusPill>
+            </p>
+          ) : (
+            <div className={styles.approval}>
+              <ApproveButton campaignId={header.id} />
+            </div>
+          )}
         </div>
       </header>
 
@@ -69,22 +113,20 @@ export default function DashboardPage() {
             strokeLinejoin="round"
             aria-hidden="true"
           >
-            <rect x="22" y="40" width="52" height="40" rx="12" />
-            <rect x="30" y="48" width="36" height="24" rx="7" strokeWidth="1.5" strokeDasharray="3 4" />
-            <path d="M36 30c-3-4 3-6 0-11M48 30c-3-4 3-6 0-11M60 30c-3-4 3-6 0-11" />
+            {ART_PATHS[header.art]}
           </svg>
           <div>
             <p className={styles.meta}>
-              <span className={styles.badge}>CPSC #27011</span>
-              <span>Recall · Oct 1, 2026</span>
+              <span className={styles.badge}>CPSC #{header.recallNumber}</span>
+              <span>Recall · {formatDate(header.recallDate)}</span>
             </p>
-            <h1 id="title">
-              Kobayashi Recalls Rechargeable Hand Warmers Due to Risk of Serious
-              Injury from Fire and Burn Hazards
-            </h1>
+            <h1 id="title">{header.title}</h1>
             <p className={styles.sub}>
-              <b>Product:</b> {PRODUCT}, 2-pack · <b>Remedy:</b> refund ·{" "}
-              {formatMoney(CASES[0].amountCents)} each
+              <b>Product:</b> {header.productNames.join(", ")} · <b>Remedy:</b>{" "}
+              {header.remedies.map((r) => r.toLowerCase()).join(" or ")}
+              {header.priceCents !== null && offers.includes("Refund") && (
+                <> · {formatMoney(header.priceCents)} each</>
+              )}
             </p>
           </div>
         </section>
@@ -92,26 +134,41 @@ export default function DashboardPage() {
         <dl className={styles.kpis} aria-label="Campaign results">
           <div>
             <dt>Buyers affected</dt>
-            <dd>{stats.affected}</dd>
+            <dd>
+              <Count className={styles.countUp} value={stats.affected} />
+            </dd>
             <p>Found in PayPal orders</p>
           </div>
           <div>
             <dt>Notified</dt>
-            <dd>{stats.notified}</dd>
+            <dd>
+              <Count className={styles.countUp} value={stats.notified} />
+            </dd>
             <p>
               {stats.notified} of {stats.affected} buyers
             </p>
           </div>
           <div>
             <dt>Settled</dt>
-            <dd>{stats.settled}</dd>
+            <dd>
+              <Count className={styles.countUp} value={stats.settled} />
+            </dd>
             <p>
-              {stats.settledRefunds} refunds · {stats.settledPayouts} payout
+              {stats.settledRefunds} refunds · {stats.settledPayouts} payouts
+              {stats.settledOther > 0 && (
+                <> · {stats.settledOther} kits or replacements</>
+              )}
             </p>
           </div>
           <div>
             <dt>Products fixed</dt>
-            <dd>{stats.fixedPercent}%</dd>
+            <dd>
+              <Count
+                className={styles.countUp}
+                value={stats.fixedPercent}
+                unit="%"
+              />
+            </dd>
             <div
               className={styles.bar}
               role="progressbar"
@@ -128,7 +185,7 @@ export default function DashboardPage() {
           </div>
         </dl>
 
-        <Workspace />
+        <Workspace cases={CASES} approved={approved} key={header.id} />
 
         <section className={styles.money} aria-labelledby="money">
           <header>
@@ -138,7 +195,10 @@ export default function DashboardPage() {
           </header>
           <ul className={styles.paths}>
             {paths.map((p) => (
-              <li key={p.title} className={p.count === null ? styles.off : undefined}>
+              <li
+                key={p.title}
+                className={p.count === null ? styles.off : undefined}
+              >
                 <Icon name={p.icon} />
                 <div>
                   <b>{p.title}</b>
@@ -169,5 +229,13 @@ export default function DashboardPage() {
         </div>
       </footer>
     </>
+  );
+}
+
+export default function DashboardPage(props: PageProps<"/dashboard">) {
+  return (
+    <Suspense fallback={null}>
+      <Dashboard {...props} />
+    </Suspense>
   );
 }

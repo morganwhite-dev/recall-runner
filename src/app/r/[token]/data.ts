@@ -6,7 +6,7 @@ import { formatUsd } from "@/lib/policy";
 // come from the database through loadBuyerPage in src/lib/buyer.ts.
 
 export type { RemedyKind };
-export type ArtKind = "warmer" | "battery" | "dresser" | "box";
+export { artFor, type ArtKind } from "@/components/ProductArt";
 
 export interface Remedy {
   icon: IconName;
@@ -17,16 +17,6 @@ export interface Remedy {
 }
 
 export const HELP_HREF = "mailto:help@example.com"; // placeholder address
-
-// The line drawing shown for a product. Unknown products get a plain box.
-const ART_BY_SKU: Record<string, ArtKind> = {
-  "BH-HW-2P": "warmer",
-  "BH-RC-BP": "battery",
-  "BH-DR-8": "dresser",
-};
-export function artFor(sku: string): ArtKind {
-  return ART_BY_SKU[sku] ?? "box";
-}
 
 // Product names carry extras ("Hand Warmers, 2-pack", "Battery Pack for Reclining Chairs",
 // "The Blue Cactus ..."). Headlines use the core name: no leading "The", and nothing after the

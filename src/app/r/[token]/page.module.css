@@ -867,3 +867,75 @@
   color: var(--ink);
   font-weight: 600;
 }
+
+/* The settled chip pops in when the buyer lands on the receipt. Off for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .status {
+    animation: settle 0.6s ease-out both;
+  }
+}
+
+@keyframes settle {
+  0% {
+    transform: scale(0.85);
+    box-shadow: 0 0 0 0 var(--ok-bg);
+  }
+  60% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 10px transparent;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* The big check on the receipt draws itself: circle first, then the tick. Without motion it is
+   simply drawn. The dash pattern leaves a gap at the start so no stray dot shows before it draws. */
+@media (prefers-reduced-motion: no-preference) {
+  .draw circle,
+  .draw path {
+    stroke-dasharray: 1 2;
+    animation: draw 0.7s ease-out 0.25s both;
+  }
+
+  .draw path {
+    animation-duration: 0.4s;
+    animation-delay: 0.85s;
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Small hover and press touches. Transitions are switched off for reduced motion in globals.css. */
+.opt {
+  transition:
+    transform 0.15s,
+    border-color 0.15s;
+}
+
+.opt:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand);
+}
+
+.pager button:not(:disabled) {
+  transition:
+    transform 0.15s,
+    background 0.15s;
+}
+
+.pager button:not(:disabled):hover {
+  background: var(--lav);
+}
+
+.pager button:not(:disabled):active {
+  transform: translateY(2px);
+}

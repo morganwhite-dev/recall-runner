@@ -1,9 +1,14 @@
+import type { ArtKind } from "@/components/ProductArt";
 import type { TagKind } from "@/components/Tag";
+import { REFUND_WINDOW_DAYS } from "@/lib/policy";
 
-// TODO: load the campaign and its cases from the database instead of fixtures.
+// Shapes and plain helpers for the dashboard. Nothing here touches the database, so the grid
+// (a client component) can import it. The server builds these shapes in src/lib/dashboard.ts.
 
-export type RemedyPath = "Refund" | "PayPal Payout";
-export type CaseStatus = "Notified" | "Waiting" | "Settled";
+export type RemedyPath = "Refund" | "PayPal Payout" | "Replacement" | "Repair";
+// Notified: notice sent, not opened. Waiting: opened, or PayPal has the request and has not yet
+// confirmed. Settled: confirmed. Problem: the rules refused it or PayPal returned an error.
+export type CaseStatus = "Notified" | "Waiting" | "Settled" | "Problem";
 
 export interface BuyerCase {
   id: string;
@@ -13,9 +18,14 @@ export interface BuyerCase {
   path: RemedyPath;
   amountCents: number;
   status: CaseStatus;
-  email: string;
-  sent: string;
+  email: string; // masked
+  sent: string; // "2 min ago"
   opened: boolean;
+  subject: string;
+  body: string;
+  draftedBy: "MODEL" | "TEMPLATE" | null;
+  buyerPath: string; // /r/<token>
+  timeline: TimelineStep[];
 }
 
 export interface TimelineStep {
@@ -24,137 +34,150 @@ export interface TimelineStep {
   code?: string;
 }
 
-export interface MessagePreview {
-  to: string;
-  sent: string;
-  opened: string;
-  remedy: string;
-  subject: string;
-  greeting: string;
-  promise: string;
-  link: string;
+export interface CampaignHeader {
+  id: string;
+  recallNumber: string;
+  recallDate: string; // ISO date
+  title: string;
+  productNames: string[];
+  remedies: string[];
+  status: string; // DRAFT or APPROVED
+  art: ArtKind;
+  priceCents: number | null;
 }
 
-export const REFUND_WINDOW_DAYS = 180;
-export const PRODUCT = "HotHands Rechargeable Hand Warmers";
-export const HAZARD =
-  "The lithium-ion battery and electrical components in the recalled hand warmers can overheat and ignite, posing a risk of serious injury from fire and burn hazards.";
-
-const AMOUNT_CENTS = 3400;
-
-function buyer(
-  name: string,
-  daysAgo: number,
-  path: RemedyPath,
-  status: CaseStatus,
-  opened: boolean,
-): BuyerCase {
-  const [first, last] = name.split(" ");
-  return {
-    id: first.toLowerCase(),
-    name,
-    initials: `${first[0]}${last[0]}`,
-    daysAgo,
-    path,
-    amountCents: AMOUNT_CENTS,
-    status,
-    email: `${first[0].toLowerCase()}•••@example.com`,
-    sent: "2 min ago",
-    opened,
-  };
+export interface CampaignOption {
+  recallNumber: string;
+  label: string;
 }
 
-export const CASES: BuyerCase[] = [
-  buyer("Sam Novak", 12, "Refund", "Notified", false),
-  buyer("Alicia Rivera", 45, "Refund", "Settled", true),
-  buyer("James Okafor", 90, "Refund", "Settled", true),
-  buyer("Mei Chen", 60, "Refund", "Waiting", true),
-  buyer("Morgan Demo", 200, "PayPal Payout", "Settled", true),
-  buyer("Priya Nair", 250, "PayPal Payout", "Notified", false),
-];
-
-export const DEFAULT_CASE_ID = "morgan";
+export { REFUND_WINDOW_DAYS };
 
 export function formatMoney(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-export function buyerPagePath(c: BuyerCase): string {
-  return `/r/demo-${c.id}`;
+// Replacement and repair move no money, so the amount column says so instead of "$0.00".
+export function amountLabel(
+  c: Pick<BuyerCase, "path" | "amountCents">,
+): string {
+  return c.path === "Refund" || c.path === "PayPal Payout"
+    ? formatMoney(c.amountCents)
+    : "No money";
 }
 
-// Counts shown in the KPI strip and the money paths strip, from the fixtures.
-export function campaignStats(cases: BuyerCase[]) {
+export function formatDate(iso: string): string {
+  return new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+// Counts shown in the KPI strip and the money paths strip.
+export function campaignStats(cases: BuyerCase[], affectedOverride?: number) {
   const settled = cases.filter((c) => c.status === "Settled");
-  const settledRefunds = settled.filter((c) => c.path === "Refund").length;
-  const settledPayouts = settled.length - settledRefunds;
+  const money = (c: BuyerCase, path: RemedyPath) => c.path === path;
+  const affected = affectedOverride ?? cases.length;
   return {
-    affected: cases.length,
+    affected,
     notified: cases.length,
     settled: settled.length,
-    settledRefunds,
-    settledPayouts,
-    fixedPercent: Math.round((settled.length / cases.length) * 100),
-    refundCases: cases.filter((c) => c.path === "Refund").length,
-    payoutCases: cases.filter((c) => c.path === "PayPal Payout").length,
+    settledRefunds: settled.filter((c) => money(c, "Refund")).length,
+    settledPayouts: settled.filter((c) => money(c, "PayPal Payout")).length,
+    settledOther: settled.filter(
+      (c) => money(c, "Replacement") || money(c, "Repair"),
+    ).length,
+    fixedPercent: affected ? Math.round((settled.length / affected) * 100) : 0,
+    byPath: {
+      Refund: cases.filter((c) => money(c, "Refund")).length,
+      "PayPal Payout": cases.filter((c) => money(c, "PayPal Payout")).length,
+      Replacement: cases.filter((c) => money(c, "Replacement")).length,
+      Repair: cases.filter((c) => money(c, "Repair")).length,
+    } satisfies Record<RemedyPath, number>,
   };
 }
 
-// The steps that have happened for a case. Money decisions are always RULE.
-export function timelineFor(c: BuyerCase): TimelineStep[] {
-  const steps: TimelineStep[] = [
-    { tag: "model", text: `Matched the recall to ${PRODUCT}` },
-    { tag: "you", text: "You approved the campaign" },
-    { tag: "tool", text: "Notice delivered to the in-app outbox" },
-  ];
-  if (c.status !== "Settled") {
-    if (c.opened) steps.push({ tag: "tool", text: "Buyer opened the notice" });
-    steps.push({
-      tag: "tool",
-      text: "Waiting for the buyer to sign in with PayPal",
-    });
-    return steps;
+// Which remedy path a case is on. Once the policy engine has decided, its action wins; before
+// that, the recall's offered remedy and the order's age give the expected path.
+export function remedyPath(input: {
+  action: string | null;
+  offers: string[];
+  ageDays: number;
+}): RemedyPath {
+  switch (input.action) {
+    case "REFUND":
+      return "Refund";
+    case "PAYOUT":
+      return "PayPal Payout";
+    case "TRACKING":
+      return "Replacement";
+    case "REPAIR_NOTICE":
+      return "Repair";
   }
-  const money = formatMoney(c.amountCents);
-  const refund = c.path === "Refund";
-  steps.push(
-    {
-      tag: "tool",
-      text: "Buyer signed in with PayPal and the account matched the order",
-    },
-    refund
-      ? {
-          tag: "rule",
-          text: `Paid ${c.daysAgo} days ago, within PayPal’s ${REFUND_WINDOW_DAYS}-day refund window, so refund the order: ${money}`,
-          code: "WITHIN_REFUND_WINDOW",
-        }
-      : {
-          tag: "rule",
-          text: `Paid ${c.daysAgo} days ago, past PayPal’s ${REFUND_WINDOW_DAYS}-day refund window, so pay by PayPal Payouts instead: ${money}`,
-          code: "REFUND_WINDOW_EXCEEDED",
-        },
-    {
-      tag: "tool",
-      text: refund ? `PayPal refunded ${money}` : `PayPal Payouts sent ${money}`,
-    },
-    { tag: "tool", text: "Webhook confirmed: case settled" },
-  );
-  return steps;
+  if (input.offers.includes("Refund")) {
+    return input.ageDays <= REFUND_WINDOW_DAYS ? "Refund" : "PayPal Payout";
+  }
+  if (input.offers.includes("Replace")) return "Replacement";
+  return "Repair";
 }
 
-export function messageFor(c: BuyerCase): MessagePreview {
-  const money = formatMoney(c.amountCents);
-  const refund = c.path === "Refund";
-  return {
-    to: c.email,
-    sent: c.sent,
-    opened: c.opened ? "Yes" : "No",
-    remedy: refund ? `Full refund · ${money}` : `PayPal payout · ${money}`,
-    subject: "Safety recall: your HotHands hand warmers",
-    greeting: `Hi ${c.name.split(" ")[0]}, Kobayashi has recalled the ${PRODUCT}, 2-pack, that you bought from Brightnest Home. The CPSC says:`,
-    promise: refund
-      ? `Please stop using them. We will refund ${money} through PayPal. Start here: `
-      : `Please stop using them. We will send ${money} through PayPal Payouts. Start here: `,
-    link: `recall-runner.onrender.com${buyerPagePath(c)}`,
-  };
+export function caseStatus(k: {
+  status: string;
+  settledAt: Date | null;
+  openedAt: Date | null;
+}): CaseStatus {
+  switch (k.status) {
+    case "REFUNDED":
+    case "PAYOUT_SENT":
+      // PayPal accepted the request; settled only once its webhook says the money moved.
+      return k.settledAt ? "Settled" : "Waiting";
+    case "REPLACEMENT_SHIPPED":
+    case "REPAIR_KIT_REQUESTED":
+      return "Settled"; // no money moves and PayPal sends no webhook for these
+    case "REJECTED":
+    case "FAILED":
+      return "Problem";
+    default:
+      return k.openedAt ? "Waiting" : "Notified";
+  }
+}
+
+// "sam.novak@example.com" -> "s•••@example.com"
+export function maskEmail(email: string): string {
+  const [local, domain] = email.split("@");
+  return `${local[0] ?? ""}•••@${domain ?? ""}`;
+}
+
+export function initialsOf(name: string): string {
+  const parts = name.split(/\s+/).filter(Boolean);
+  return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase();
+}
+
+export function relativeTime(then: Date, now: Date = new Date()): string {
+  const s = Math.max(0, Math.round((now.getTime() - then.getTime()) / 1000));
+  if (s < 60) return "just now";
+  const m = Math.round(s / 60);
+  if (m < 60) return `${m} min ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h} h ago`;
+  const d = Math.round(h / 24);
+  return `${d} day${d === 1 ? "" : "s"} ago`;
+}
+
+// The line under "Remedy" in the message preview.
+export function remedyLabel(
+  c: Pick<BuyerCase, "path" | "amountCents">,
+): string {
+  switch (c.path) {
+    case "Refund":
+      return `Full refund · ${formatMoney(c.amountCents)}`;
+    case "PayPal Payout":
+      return `PayPal payout · ${formatMoney(c.amountCents)}`;
+    case "Replacement":
+      return "Free replacement";
+    case "Repair":
+      return "Free repair kit";
+  }
 }

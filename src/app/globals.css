@@ -154,6 +154,10 @@ a {
   transform: translateY(-2px);
 }
 
+.button:active {
+  transform: translateY(1px);
+}
+
 .button .icon {
   font-size: 21px;
   transition: transform 0.15s;
@@ -163,10 +167,38 @@ a {
   transform: translateX(4px);
 }
 
+/* Easter egg: the loop icon in the logo takes a playful half turn when you hover or focus it. */
+.logo-turn .icon {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.logo-turn:hover .icon,
+.logo-turn:focus-visible .icon {
+  transform: rotate(180deg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* A small spinner for buttons that are waiting on PayPal. Still (not spinning) for reduced motion. */
+.spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

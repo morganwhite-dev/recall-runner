@@ -13,16 +13,16 @@ export function Problem({ store, c }: { store: string; c: BuyerCase }) {
         <div>
           <span className={`${styles.status} ${styles.warn}`}>
             <Icon name="info" />
-            Could not complete
+            Couldn&apos;t complete
           </span>
           <h1 className={`${styles.h1} ${styles.h1Mismatch}`}>
             We couldn&apos;t settle your {c.productName} recall
           </h1>
           <p className={styles.lede}>
-            <b>Nothing was sent.</b>{" "}
+            <b>Nothing was sent, and we&apos;re sorry about the hassle.</b>{" "}
             {failed
-              ? "PayPal returned an error. Please contact the store; we have a record of your request."
-              : "The store's rules did not allow this choice."}
+              ? "PayPal returned an error. We have a record of your request, so please contact the store."
+              : "The store's rules didn't allow this choice."}
           </p>
         </div>
         <Blob>
@@ -38,7 +38,7 @@ export function Problem({ store, c }: { store: string; c: BuyerCase }) {
                 What happened
               </SectionTitle>
               <p className={styles.order}>
-                {c.rationale ?? "The request could not be completed."}
+                {c.rationale ?? "The request couldn't be completed."}
               </p>
             </section>
             <section aria-labelledby="s2">

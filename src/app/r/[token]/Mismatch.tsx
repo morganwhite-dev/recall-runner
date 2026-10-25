@@ -3,13 +3,7 @@ import { HELP_HREF } from "./data";
 import styles from "./page.module.css";
 import { Blob, SectionTitle, TopBand } from "./parts";
 
-export function Mismatch({
-  token,
-  store,
-}: {
-  token: string;
-  store: string;
-}) {
+export function Mismatch({ token, store }: { token: string; store: string }) {
   return (
     <>
       <TopBand store={store}>
@@ -19,10 +13,11 @@ export function Mismatch({
             Account doesn&apos;t match
           </span>
           <h1 className={`${styles.h1} ${styles.h1Mismatch}`}>
-            This PayPal account doesn&apos;t match the one used for this order
+            Hmm, that PayPal account isn&apos;t the one used for this order
           </h1>
           <p className={styles.lede}>
-            <b>Nothing was charged and nothing was sent.</b> Your recall is still waiting for you.
+            <b>No harm done: nothing was charged and nothing was sent.</b> Your
+            recall is still waiting for you.
           </p>
         </div>
         <Blob>
@@ -38,8 +33,9 @@ export function Mismatch({
                 Why this happened
               </SectionTitle>
               <p className={styles.order}>
-                We check the PayPal account so only the person who bought the item can claim. The
-                account you signed in with is not the one on the order.
+                We check the PayPal account so only the person who bought the
+                item can claim. The account you signed in with isn&apos;t the
+                one on the order.
               </p>
             </section>
             <section aria-labelledby="s2">
@@ -47,13 +43,17 @@ export function Mismatch({
                 What you can do
               </SectionTitle>
               <p className={styles.order}>
-                Sign in again with the PayPal account you used when you bought from {store}. If you
-                are not sure which one that is, we can help.
+                Sign in again with the PayPal account you used when you bought
+                from {store}. If you&apos;re not sure which one that is,
+                we&apos;re happy to help.
               </p>
             </section>
           </main>
 
-          <aside className={`${styles.sum} ${styles.fixable} ${styles.stack}`} aria-label="Next step">
+          <aside
+            className={`${styles.sum} ${styles.fixable} ${styles.stack}`}
+            aria-label="Next step"
+          >
             <div className={styles.sumMeta}>
               <span className={styles.lab}>Next step</span>
               <p className={styles.nm}>Try again with the right account</p>
@@ -65,7 +65,7 @@ export function Mismatch({
               <p className={styles.helpRow}>
                 <a className={styles.link} href={HELP_HREF}>
                   <Icon name="help" />
-                  Need help?
+                  Not sure which one? Get help
                 </a>
               </p>
             </div>

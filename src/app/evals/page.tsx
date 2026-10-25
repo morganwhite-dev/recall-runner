@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
+import { loadAiResults, loadUnitResults } from "@/lib/evals";
 import { CopyButton } from "./CopyButton";
 import {
   AI_COUNT,
@@ -9,7 +11,7 @@ import {
   MONEY_COUNT,
   MONEY_GROUPS,
   pad,
-  RING,
+  ringFor,
   RUN,
   TOTAL_COUNT,
   WINDOW_STOPS,
@@ -24,26 +26,48 @@ export const metadata: Metadata = {
 
 const GITHUB_URL = "https://github.com/morganwhite-dev/recall-runner";
 
-function Groups({ groups, planned }: { groups: TestGroup[]; planned?: boolean }) {
+type Status = "pass" | "fail" | "none";
+
+const STATUS_ICON = { pass: "check", fail: "alert", none: "clockdash" } as const;
+const STATUS_WORD = { pass: "Passed.", fail: "Failed.", none: "Not run yet." } as const;
+
+function Groups({
+  groups,
+  area,
+  statusOf,
+  noteOf,
+}: {
+  groups: TestGroup[];
+  area: string;
+  statusOf: (t: { n: number; text: string }) => Status;
+  noteOf?: (t: { n: number; text: string }) => string | null;
+}) {
   return (
     <div className={styles.groups}>
       {groups.map((g) => (
-        <div key={g.id} className={styles.grp} role="group" aria-labelledby={`g-${planned ? "ai" : "money"}-${g.id}`}>
-          <p className={styles.glabel} id={`g-${planned ? "ai" : "money"}-${g.id}`}>
+        <div key={g.id} className={styles.grp} role="group" aria-labelledby={`g-${area}-${g.id}`}>
+          <p className={styles.glabel} id={`g-${area}-${g.id}`}>
             <Icon name={g.icon} />
             {g.label}
           </p>
           <ol className={styles.rows}>
-            {g.tests.map((t) => (
-              <li key={t.n}>
-                <span className={styles.st}>
-                  <Icon name={planned ? "clockdash" : "check"} />
-                  <span className="sr-only">{planned ? "Planned, not run yet." : "Passed."}</span>
-                </span>
-                <span className={styles.n}>{pad(t.n)}</span>
-                <span className={styles.t}>{t.text}</span>
-              </li>
-            ))}
+            {g.tests.map((t) => {
+              const st = statusOf(t);
+              const note = noteOf?.(t);
+              return (
+                <li key={t.n}>
+                  <span className={styles.st}>
+                    <Icon name={STATUS_ICON[st]} />
+                    <span className="sr-only">{STATUS_WORD[st]}</span>
+                  </span>
+                  <span className={styles.n}>{pad(t.n)}</span>
+                  <span className={styles.t}>
+                    {t.text}
+                    {note && <> ({note})</>}
+                  </span>
+                </li>
+              );
+            })}
           </ol>
         </div>
       ))}
@@ -51,7 +75,36 @@ function Groups({ groups, planned }: { groups: TestGroup[]; planned?: boolean })
   );
 }
 
-export default function EvalsPage() {
+async function Results() {
+  const unit = loadUnitResults();
+  const ai = await loadAiResults();
+
+  // A test is passed only if a recorded run says so.
+  const unitStatus = (t: { text: string }): Status => {
+    const hit = unit?.tests.find((x) => x.name === t.text);
+    return hit ? (hit.passed ? "pass" : "fail") : "none";
+  };
+  const aiStatus = (t: { n: number }): Status => {
+    const c = ai?.cases[t.n];
+    return c ? (c.passed === c.attempts ? "pass" : "fail") : "none";
+  };
+  const aiNote = (t: { n: number }) => {
+    const c = ai?.cases[t.n];
+    return c ? `${c.passed} of ${c.attempts} runs` : null;
+  };
+
+  const moneyStatuses = MONEY_GROUPS.flatMap((g) => g.tests.map(unitStatus));
+  const aiStatuses = AI_GROUPS.flatMap((g) => g.tests.map(aiStatus));
+  const all = [...moneyStatuses, ...aiStatuses];
+  const passedCount = all.filter((x) => x === "pass").length;
+  const failedCount = all.filter((x) => x === "fail").length;
+  const moneyPassed = moneyStatuses.filter((x) => x === "pass").length;
+  const aiPassed = aiStatuses.filter((x) => x === "pass").length;
+  const ring = ringFor(all.map((x) => x === "pass"));
+  const fmtDate = (d: Date) =>
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const windowStatus = (n: number) => unitStatus({ text: MONEY_GROUPS.flatMap((g) => g.tests).find((t) => t.n === n)?.text ?? "" });
+
   return (
     <>
       <header className={`${styles.field} ${styles.top} on-plum`}>
@@ -89,18 +142,17 @@ export default function EvalsPage() {
           <div
             className={styles.ring}
             role="img"
-            aria-label={`${TOTAL_COUNT} tests in total. ${MONEY_COUNT} money-rule tests passed. ${AI_COUNT} AI tests planned, not run yet.`}
+            aria-label={`${TOTAL_COUNT} tests in total. ${passedCount} passed, ${failedCount} failed, ${TOTAL_COUNT - passedCount - failedCount} not run.`}
           >
             <svg viewBox="0 0 200 200" aria-hidden="true">
               <g transform="rotate(-90 100 100)" fill="none">
-                <circle cx="100" cy="100" r={RING.radius} stroke="#E6D3EA" strokeWidth="18" strokeDasharray={RING.plannedFill} />
-                <circle cx="100" cy="100" r={RING.radius} stroke="#5B2A66" strokeWidth="2" strokeDasharray={RING.plannedLine} />
-                <circle cx="100" cy="100" r={RING.radius} stroke="#3B1F3F" strokeWidth="18" strokeDasharray={RING.passed} />
+                <circle cx="100" cy="100" r={ring.radius} stroke="#E6D3EA" strokeWidth="18" strokeDasharray={ring.all} />
+                <circle cx="100" cy="100" r={ring.radius} stroke="#3B1F3F" strokeWidth="18" strokeDasharray={ring.passed} />
               </g>
             </svg>
             <div className={styles.mid}>
               <b>
-                {MONEY_COUNT}/{MONEY_COUNT}
+                {passedCount}/{TOTAL_COUNT}
               </b>
               <span>passing</span>
             </div>
@@ -119,15 +171,15 @@ export default function EvalsPage() {
             <dl className={styles.figs} aria-label="Summary of the last run">
               <div>
                 <dt>Failing</dt>
-                <dd>{RUN.failing}</dd>
+                <dd>{failedCount}</dd>
               </div>
               <div>
                 <dt>Run time</dt>
-                <dd>{RUN.runTime}</dd>
+                <dd>{unit ? `${unit.durationMs} ms` : "n/a"}</dd>
               </div>
               <div>
                 <dt>Last run</dt>
-                <dd>{RUN.lastRun}</dd>
+                <dd>{unit ? fmtDate(new Date(unit.ranAt)) : "never"}</dd>
               </div>
             </dl>
           </div>
@@ -144,7 +196,10 @@ export default function EvalsPage() {
               </code>
               <CopyButton text={RUN.command} />
             </div>
-            <p className={styles.cap}>Runs the {MONEY_COUNT} money-rule tests on your machine.</p>
+            <p className={styles.cap}>
+              Runs the {MONEY_COUNT} money-rule and identity tests on your machine. The {AI_COUNT} AI tests use the Anthropic API:{" "}
+              <code>npm run eval</code>.
+            </p>
           </aside>
         </section>
 
@@ -164,8 +219,8 @@ export default function EvalsPage() {
                   <p className={styles.proof}>
                     Test {pad(s.test)}{" "}
                     <span className={styles.ok}>
-                      <Icon name="check" />
-                      Passed
+                      <Icon name={STATUS_ICON[windowStatus(s.test)]} />
+                      {windowStatus(s.test) === "pass" ? "Passed" : windowStatus(s.test) === "fail" ? "Failed" : "Not run"}
                     </span>
                   </p>
                 </li>
@@ -188,25 +243,33 @@ export default function EvalsPage() {
             <Tag kind="rule" />
             <h2 id="money">Money rules</h2>
             <span className={`${styles.pill} ${styles.pass}`}>
-              <Icon name="check" />
-              {MONEY_COUNT} of {MONEY_COUNT} passed
+              <Icon name={moneyPassed === MONEY_COUNT ? "check" : "alert"} />
+              {moneyPassed} of {MONEY_COUNT} passed
             </span>
           </div>
-          <p className={styles.sdesc}>The fixed code that decides refunds, payouts, replacements and repairs.</p>
-          <Groups groups={MONEY_GROUPS} />
+          <p className={styles.sdesc}>The fixed code that decides refunds, payouts, replacements and repairs, and checks who is asking.</p>
+          <Groups groups={MONEY_GROUPS} area="money" statusOf={unitStatus} />
         </section>
 
         <section className={`${styles.sec} ${styles.ai}`} aria-labelledby="ai">
           <div className={styles.shead}>
             <Tag kind="model" />
             <h2 id="ai">AI matching and safety</h2>
-            <span className={`${styles.pill} ${styles.plan}`}>
-              <Icon name="clockdash" />
-              {AI_COUNT} planned, not run yet
+            <span className={`${styles.pill} ${aiPassed === AI_COUNT ? styles.pass : styles.plan}`}>
+              <Icon name={aiPassed === AI_COUNT ? "check" : ai ? "alert" : "clockdash"} />
+              {ai ? `${aiPassed} of ${AI_COUNT} passed` : "not run yet"}
             </span>
           </div>
-          <p className={styles.sdesc}>How the AI matches recalls, refuses near misses and ignores injected text. Building in Phase 3.</p>
-          <Groups groups={AI_GROUPS} planned />
+          <p className={styles.sdesc}>
+            How the AI matches recalls, refuses near misses and ignores injected text.
+            {ai && (
+              <>
+                {" "}
+                Each test ran {ai.attempts} times on {ai.model} on {fmtDate(ai.ranAt)}, without saved answers.
+              </>
+            )}
+          </p>
+          <Groups groups={AI_GROUPS} area="ai" statusOf={aiStatus} noteOf={aiNote} />
         </section>
       </main>
 
@@ -216,5 +279,13 @@ export default function EvalsPage() {
         </p>
       </footer>
     </>
+  );
+}
+
+export default function EvalsPage() {
+  return (
+    <Suspense fallback={null}>
+      <Results />
+    </Suspense>
   );
 }

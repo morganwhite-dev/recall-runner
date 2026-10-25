@@ -1,0 +1,143 @@
+{
+  "ranAt": "2026-10-25T22:56:44.029Z",
+  "durationMs": 131,
+  "total": 27,
+  "failing": 0,
+  "tests": [
+    {
+      "name": "a verified PayPal email is accepted, ignoring case",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an email PayPal has not verified is never accepted",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a different PayPal account does not match the order",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an emails list counts only if the primary one is confirmed",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a refund event points at the refund id",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "payout item and batch events point at the payout batch id",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "other events, or events with no id, settle nothing",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a refund or payout is Settled only after PayPal's webhook, not when the request is accepted",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "replacements and repair kits are Settled at once, because PayPal sends no webhook for them",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an open case is Notified until the buyer opens the notice, then Waiting",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a refused or failed case shows as Problem, never as waiting or settled",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "before a decision, the path comes from the recall's remedy and the order's age",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "once the policy engine has decided, its action wins over the preview",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "emails are masked to the first letter and the domain",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "time ago reads in minutes, hours and days",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the numbers count settled cases per path, and 'products fixed' is settled over affected",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an order paid 179 days ago is refunded",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an order paid exactly 180 days ago is still refunded (the window includes day 180)",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "one millisecond past 180 days switches to PayPal Payouts",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an order paid 400 days ago is paid by Payouts, and the reason says so",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a replacement adds tracking and moves no money",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a repair records the kit request and moves no money",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a buyer cannot pick a remedy the recall does not offer",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "no PayPal payment on record means no money, even inside the window",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "never pays more than the order total",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "rejects zero, negative or fractional amounts",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "refunds only the recalled item, not the whole order",
+      "file": "policy.test.ts",
+      "passed": true
+    }
+  ]
+}

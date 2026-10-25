@@ -1,0 +1,64 @@
+/* Small touches for the dashboard. Every animation is wrapped for reduced motion, and
+   transitions are switched off for reduced motion in globals.css. */
+
+/* A case that shows as Settled gives a quick pop and a soft ring, then the tick settles.
+   The pill still reads "check icon + Settled" with or without the motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .settled {
+    animation: settledPop 0.7s ease-out both;
+  }
+
+  .settled :global(.icon) {
+    animation: tickIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+  }
+}
+
+@keyframes settledPop {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 var(--ok-bg);
+  }
+  55% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 8px transparent;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes tickIn {
+  from {
+    transform: scale(0) rotate(-40deg);
+  }
+}
+
+/* Tabs and the open-buyer-page button respond to hover and press. */
+button.tab {
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+
+button.tab:hover {
+  background: var(--surface-sunk);
+}
+
+button.tab:active {
+  transform: translateY(1px);
+}
+
+.lift {
+  transition:
+    transform 0.15s,
+    background 0.15s;
+}
+
+.lift:hover {
+  transform: translateY(-2px);
+}
+
+.lift:active {
+  transform: translateY(0);
+}

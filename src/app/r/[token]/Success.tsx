@@ -18,7 +18,8 @@ function outcome(c: BuyerCase) {
         title: "Your payment is on its way",
         lede: "This order is too old for a PayPal refund, so the store paid you directly.",
         next: `sent ${money} to the PayPal account you signed in with, using PayPal Payouts.`,
-        timing: "Payouts usually arrive within minutes. Look for it in your PayPal activity.",
+        timing:
+          "Payouts usually arrive within minutes. Look for it in your PayPal activity.",
         kind: "refund" as const,
       };
     case "REPLACEMENT_SHIPPED":
@@ -83,7 +84,15 @@ export function Success({
           </p>
         </div>
         <Blob>
-          <Icon name="check" />
+          {/* Same circle and tick as the check icon, drawn inline so the stroke can draw itself. */}
+          <svg
+            className={`icon ${styles.draw}`}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" pathLength="1" />
+            <path d="M8 12.5l3 3 5-6" pathLength="1" />
+          </svg>
         </Blob>
       </TopBand>
 
@@ -130,7 +139,10 @@ export function Success({
             )}
           </main>
 
-          <aside className={`${styles.sum} ${styles.plain}`} aria-labelledby="rh">
+          <aside
+            className={`${styles.sum} ${styles.plain}`}
+            aria-labelledby="rh"
+          >
             <h2 className={styles.receiptTitle} id="rh">
               Your receipt
             </h2>

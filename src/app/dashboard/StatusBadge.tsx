@@ -1,11 +1,13 @@
 import { Icon, type IconName } from "@/components/Icon";
 import type { CaseStatus } from "./data";
+import delight from "./delight.module.css";
 import styles from "./page.module.css";
 
 const STATUS: Record<CaseStatus, { icon: IconName; className: string }> = {
-  Settled: { icon: "check", className: "pill" },
+  Settled: { icon: "check", className: `pill ${delight.settled}` },
   Notified: { icon: "bell", className: styles.notified },
   Waiting: { icon: "clock", className: styles.waiting },
+  Problem: { icon: "alert", className: styles.problem },
 };
 
 // Status is always an icon plus a word: solid for settled, outline for notified, dashed for waiting.
