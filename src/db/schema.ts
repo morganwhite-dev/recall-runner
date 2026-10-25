@@ -161,6 +161,10 @@ export const cases = pgTable(
     amountCents: integer("amount_cents"),
     // The PayPal id for what happened: refund id, payout batch id or tracking number.
     paypalRef: text("paypal_ref"),
+    // The email PayPal verified when the buyer signed in. Payouts go here, never to a stored email.
+    verifiedEmail: text("verified_email"),
+    // Set when a verified PayPal webhook confirms the money moved (the "settled" flip).
+    settledAt: timestamp("settled_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -237,6 +241,33 @@ export const notices = pgTable("notices", {
   fallbackReason: text("fallback_reason"), // why the template was used, if it was
   sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
   openedAt: timestamp("opened_at", { withTimezone: true }),
+});
+
+// The private link in each buyer's notice: /r/<token>. The token is random and unguessable, and
+// it only says which buyer's recalls to show. Claiming still needs Log In with PayPal.
+export const buyerLinks = pgTable("buyer_links", {
+  token: text("token").primaryKey(),
+  buyerId: uuid("buyer_id")
+    .notNull()
+    .unique()
+    .references(() => buyers.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+// One "Confirm with PayPal" click: which case, which remedy. The random state value also sits in
+// the buyer's cookie, so a login can only finish in the browser that started it, and only once.
+export const loginAttempts = pgTable("login_attempts", {
+  state: text("state").primaryKey(),
+  caseId: uuid("case_id")
+    .notNull()
+    .references(() => cases.id, { onDelete: "cascade" }),
+  choice: text("choice").notNull(), // refund, replacement or repair
+  usedAt: timestamp("used_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 // Saved AI answers, keyed by a fingerprint of the task, its inputs and the prompt version,

@@ -857,3 +857,13 @@
     justify-content: center;
   }
 }
+
+/* A short message above the recall when a sign-in ran out or PayPal had a problem. */
+.alert {
+  margin: 20px 0 0;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+}

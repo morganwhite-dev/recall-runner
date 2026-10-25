@@ -1,13 +1,14 @@
 import { NextRequest } from "next/server";
 import { ensureWebhookTable, pool } from "@/lib/db";
 import { verifyWebhookSignature } from "@/lib/paypal";
+import { settleFromEvent, type PayPalEvent } from "@/lib/settle";
 
 // PayPal posts events here (refunds, payouts, disputes). We verify the signature with PayPal
 // before trusting anything in the body, then record the event once (idempotent on event id).
 export async function POST(request: NextRequest) {
   const raw = await request.text();
 
-  let event: { id?: string; event_type?: string };
+  let event: PayPalEvent;
   try {
     event = JSON.parse(raw);
   } catch {
@@ -42,10 +43,20 @@ export async function POST(request: NextRequest) {
   );
 
   console.log(`webhook ${event.event_type} verified=${verified}`);
-  // Unverified messages are recorded for the spike but rejected so PayPal knows they failed.
-  return verified
-    ? Response.json({ ok: true })
-    : Response.json({ error: "signature not verified" }, { status: 400 });
+  // Unverified messages are recorded but rejected so PayPal knows they failed.
+  if (!verified) {
+    return Response.json({ error: "signature not verified" }, { status: 400 });
+  }
+
+  // Only a verified event can settle a case. Settling is idempotent, so PayPal's retries are safe;
+  // if it throws we answer 500 and PayPal sends the event again.
+  try {
+    const settledCase = await settleFromEvent(event);
+    return Response.json({ ok: true, settled: Boolean(settledCase) });
+  } catch (err) {
+    console.error("webhook settle error:", err instanceof Error ? err.message : err);
+    return Response.json({ error: "could not record event" }, { status: 500 });
+  }
 }
 
 // Phase 0 spike only: lets us confirm events landed. Event ids are not exposed.

@@ -7,7 +7,6 @@
 // retried PayPal call reuses the same request id, which PayPal treats as the same request.
 import { and, eq } from "drizzle-orm";
 import {
-  buyers,
   campaigns,
   cases,
   db,
@@ -45,18 +44,16 @@ export async function executeCase(caseId: string): Promise<ExecutionResult> {
     .select({
       kase: cases,
       order: orders,
-      buyer: buyers,
       campaign: campaigns,
       recall: recalls,
     })
     .from(cases)
     .innerJoin(orders, eq(cases.orderId, orders.id))
-    .innerJoin(buyers, eq(orders.buyerId, buyers.id))
     .innerJoin(campaigns, eq(cases.campaignId, campaigns.id))
     .innerJoin(recalls, eq(campaigns.recallId, recalls.id))
     .where(eq(cases.id, caseId));
   if (!row) throw new Error(`Case ${caseId} not found`);
-  const { kase, order, buyer, campaign, recall } = row;
+  const { kase, order, campaign, recall } = row;
 
   // Already done: return what happened before, touch nothing.
   if (FINISHED.includes(kase.status)) {
@@ -165,9 +162,16 @@ export async function executeCase(caseId: string): Promise<ExecutionResult> {
       paypalRef = r.refundId;
       response = { id: r.refundId, status: r.status };
     } else if (decision.action === "PAYOUT") {
-      // Phase 4 replaces this with the email PayPal verified when the buyer signed in.
+      // Money only goes to the email PayPal verified when the buyer signed in, never to the
+      // email stored on the order.
+      if (!kase.verifiedEmail) {
+        throw new PayPalError(
+          "No PayPal-verified email on this case, so no payout was sent",
+          0,
+        );
+      }
       const r = await sendPayout(
-        buyer.email,
+        kase.verifiedEmail,
         decision.amountCents,
         requestId,
         decision.rationale,

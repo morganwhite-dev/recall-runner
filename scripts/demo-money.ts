@@ -103,6 +103,8 @@ async function main() {
         orderId: rows[0].order_id,
         productId: rows[0].product_id,
         choice,
+        // Stand-in for the email PayPal verifies when a real buyer signs in (Phase 4).
+        verifiedEmail: email,
       })
       .returning();
     caseIds.push(k.id);

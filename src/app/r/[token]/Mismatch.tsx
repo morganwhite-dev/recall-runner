@@ -1,12 +1,18 @@
 import { Icon } from "@/components/Icon";
-import { HELP_HREF, PAYPAL_LOGIN_HREF, STORE } from "./data";
+import { HELP_HREF } from "./data";
 import styles from "./page.module.css";
 import { Blob, SectionTitle, TopBand } from "./parts";
 
-export function Mismatch() {
+export function Mismatch({
+  token,
+  store,
+}: {
+  token: string;
+  store: string;
+}) {
   return (
     <>
-      <TopBand>
+      <TopBand store={store}>
         <div>
           <span className={`${styles.status} ${styles.warn}`}>
             <Icon name="info" />
@@ -41,7 +47,7 @@ export function Mismatch() {
                 What you can do
               </SectionTitle>
               <p className={styles.order}>
-                Sign in again with the PayPal account you used when you bought from {STORE}. If you
+                Sign in again with the PayPal account you used when you bought from {store}. If you
                 are not sure which one that is, we can help.
               </p>
             </section>
@@ -53,7 +59,7 @@ export function Mismatch() {
               <p className={styles.nm}>Try again with the right account</p>
             </div>
             <div className={styles.sumAct}>
-              <a className={styles.btn} href={PAYPAL_LOGIN_HREF}>
+              <a className={styles.btn} href={`/r/${token}`}>
                 Try a different PayPal account
               </a>
               <p className={styles.helpRow}>

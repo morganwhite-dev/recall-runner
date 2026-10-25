@@ -21,6 +21,7 @@ import {
   products,
   recalls,
 } from "@/db";
+import { buyerUrl, ensureBuyerLink } from "../buyer";
 import { investigateCampaign } from "./investigate";
 import { AGENT_MODEL, CallBudget } from "./llm";
 import {
@@ -296,6 +297,7 @@ export async function approveCampaign(
       orderId: orders.id,
       productId: products.id,
       productName: products.name,
+      buyerId: buyers.id,
       buyerName: buyers.name,
       lineCents: orderItems.unitPriceCents,
       quantity: orderItems.quantity,
@@ -363,13 +365,17 @@ export async function approveCampaign(
       (l) => l.orderId === k.orderId && l.productId === k.productId,
     );
     if (!line) continue;
-    const { subject, body } = assembleNotice({
+    // Each buyer has one private link; every notice for that buyer carries the same one.
+    const link = buyerUrl(await ensureBuyerLink(line.buyerId));
+    const assembled = assembleNotice({
       slots: draft.slots,
       recall: noticeRecall,
       buyerName: line.buyerName,
       storeName: merchant.name,
       amountCents: line.lineCents * line.quantity,
     });
+    const subject = assembled.subject;
+    const body = assembled.body.replace("{{BUYER_LINK}}", link);
     const inserted = await db
       .insert(notices)
       .values({

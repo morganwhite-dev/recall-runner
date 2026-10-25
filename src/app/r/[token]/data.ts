@@ -1,27 +1,12 @@
 import type { IconName } from "@/components/Icon";
+import type { BuyerCase, RemedyKind } from "@/lib/buyer";
+import { formatUsd } from "@/lib/policy";
 
-// TODO: load the buyer's recalls by token from the database instead of fixtures.
+// Wording and small helpers for the buyer page. The facts themselves (recall, order, amounts)
+// come from the database through loadBuyerPage in src/lib/buyer.ts.
 
-export type RemedyKind = "refund" | "replace" | "repair";
-export type ArtKind = "warmer" | "battery" | "dresser";
-
-export interface Recall {
-  art: ArtKind;
-  artAlt: string;
-  cpsc: string;
-  date: string;
-  name: string;
-  headline: string;
-  item: string;
-  daysAgo: number;
-  price: string;
-  pronoun: "it" | "them";
-  // The remedy the notice shows when the recall has one.
-  remedy: RemedyKind;
-  // Remedies the buyer can choose between; more than one shows the picker.
-  offers: RemedyKind[];
-  hazard: string;
-}
+export type { RemedyKind };
+export type ArtKind = "warmer" | "battery" | "dresser" | "box";
 
 export interface Remedy {
   icon: IconName;
@@ -31,101 +16,92 @@ export interface Remedy {
   rule: string;
 }
 
-export const STORE = "Brightnest Home";
+export const HELP_HREF = "mailto:help@example.com"; // placeholder address
 
-// Demo: the approved design shows the three-option picker on every recall.
-// Real data lists only what each recall actually offers.
-const ALL_REMEDIES: RemedyKind[] = ["refund", "replace", "repair"];
-
-export const RECALLS: Recall[] = [
-  {
-    art: "warmer",
-    artAlt: "Line drawing of a rechargeable hand warmer",
-    cpsc: "CPSC #27011",
-    date: "Oct 1, 2026",
-    name: "HotHands Rechargeable Hand Warmers",
-    headline: "Your HotHands hand warmers have been recalled",
-    item: "HotHands Rechargeable Hand Warmers, 2-pack",
-    daysAgo: 45,
-    price: "$34.00",
-    pronoun: "them",
-    remedy: "refund",
-    offers: ALL_REMEDIES,
-    hazard:
-      "The lithium-ion battery and electrical components in the recalled hand warmers can overheat and ignite, posing a risk of serious injury from fire and burn hazards.",
-  },
-  // placeholder, replace with real CPSC data
-  {
-    art: "battery",
-    artAlt: "Line drawing of a recliner battery pack",
-    cpsc: "CPSC #26301",
-    date: "Sep 11, 2026",
-    name: "Recliner battery pack",
-    headline: "Your recliner battery pack has been recalled",
-    item: "Recliner battery pack",
-    daysAgo: 60,
-    price: "$59.00",
-    pronoun: "it",
-    remedy: "replace",
-    offers: ALL_REMEDIES,
-    hazard: "The recalled battery packs can overheat, posing a fire hazard.",
-  },
-  // placeholder, replace with real CPSC data
-  {
-    art: "dresser",
-    artAlt: "Line drawing of an 8-drawer dresser",
-    cpsc: "CPSC #26794",
-    date: "Aug 7, 2026",
-    name: "Aitjunz 8-Drawer Dresser",
-    headline: "Your 8-drawer dresser has been recalled",
-    item: "Aitjunz 8-Drawer Dresser",
-    daysAgo: 70,
-    price: "$249.00",
-    pronoun: "it",
-    remedy: "repair",
-    offers: ALL_REMEDIES,
-    hazard:
-      "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards to children.",
-  },
-];
-
-export const REMEDIES: Record<RemedyKind, Remedy> = {
-  refund: {
-    icon: "refund",
-    name: "Full refund",
-    short: "Full refund",
-    detail: "Paid back to your PayPal account.",
-    rule: "Refund: paid within 180 days",
-  },
-  replace: {
-    icon: "box",
-    name: "Free replacement battery pack",
-    short: "Replacement pack",
-    detail: "No money. Tracking is added to your order.",
-    rule: "Replacement: the recall offers a new pack",
-  },
-  repair: {
-    icon: "wrench",
-    name: "Free repair kit",
-    short: "Repair kit",
-    detail: "No money. The kit is mailed to you.",
-    rule: "Repair: the recall offers a repair kit",
-  },
+// The line drawing shown for a product. Unknown products get a plain box.
+const ART_BY_SKU: Record<string, ArtKind> = {
+  "BH-HW-2P": "warmer",
+  "BH-RC-BP": "battery",
+  "BH-DR-8": "dresser",
 };
-
-// What the buyer sees as the money line: the price for a refund, else "Free".
-export function remedyAmount(recall: Recall, kind: RemedyKind): string {
-  return kind === "refund" ? recall.price : "Free";
+export function artFor(sku: string): ArtKind {
+  return ART_BY_SKU[sku] ?? "box";
 }
 
-// The success and mismatch screens settle the first recall (the refund).
-export const SETTLED = RECALLS[0];
+// Product names carry extras ("Hand Warmers, 2-pack", "Dresser (white)"). Headlines use the part
+// before the first comma or bracket.
+export function shortName(productName: string): string {
+  return productName.split(/[,(]/)[0].trim();
+}
 
-export const RECEIPT = {
-  order: "BH-48213",
-  reference: "8EG04191BL774610V",
-};
+// "Hand Warmers" -> them, "Dresser" -> it. A plain plural check, good enough for product names.
+export function pronounFor(productName: string): "it" | "them" {
+  const last = shortName(productName).split(/\s+/).pop()?.toLowerCase() ?? "";
+  return last.endsWith("s") && !last.endsWith("ss") ? "them" : "it";
+}
 
-// TODO: this will carry the case token once the login route accepts one.
-export const PAYPAL_LOGIN_HREF = "/api/auth/paypal/login";
-export const HELP_HREF = "mailto:help@example.com"; // placeholder address
+export function remedyCopy(kind: RemedyKind, productName: string): Remedy {
+  switch (kind) {
+    case "refund":
+      return {
+        icon: "refund",
+        name: "Full refund",
+        short: "Full refund",
+        detail: "Paid back to your PayPal account.",
+        rule: "Refund: the recall offers your money back",
+      };
+    case "replace":
+      return {
+        icon: "box",
+        name: `Free replacement ${productName}`,
+        short: "Free replacement",
+        detail: "No money. Tracking is added to your order.",
+        rule: "Replacement: the recall offers a new one",
+      };
+    case "repair":
+      return {
+        icon: "wrench",
+        name: "Free repair kit",
+        short: "Repair kit",
+        detail: "No money. The kit is mailed to you.",
+        rule: "Repair: the recall offers a repair kit",
+      };
+  }
+}
+
+// What the buyer sees as the money line: the price for a refund, else "Free".
+export function remedyAmount(c: BuyerCase, kind: RemedyKind): string {
+  return kind === "refund" ? formatUsd(c.priceCents) : "Free";
+}
+
+export function formatDate(iso: string): string {
+  return new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+export const cpscLabel = (c: BuyerCase) => `CPSC #${c.recallNumber}`;
+export const headline = (c: BuyerCase) =>
+  `Your ${shortName(c.productName)} ${pronounFor(c.productName) === "them" ? "have" : "has"} been recalled`;
+
+// Where "Confirm with PayPal" goes: the login route checks the case belongs to this link.
+export function loginHref(
+  token: string,
+  caseId: string,
+  remedy: RemedyKind,
+): string {
+  const q = new URLSearchParams({ token, case: caseId, remedy });
+  return `/api/auth/paypal/login?${q}`;
+}
+
+// A case is finished once PayPal accepted the money step (or the repair request was recorded).
+const DONE = [
+  "REFUNDED",
+  "PAYOUT_SENT",
+  "REPLACEMENT_SHIPPED",
+  "REPAIR_KIT_REQUESTED",
+];
+export const isDone = (c: BuyerCase) => DONE.includes(c.status);

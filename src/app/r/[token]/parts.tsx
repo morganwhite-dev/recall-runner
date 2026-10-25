@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
 import type { ArtKind } from "./data";
-import { STORE } from "./data";
 import styles from "./page.module.css";
 
 const ART: Record<ArtKind, ReactNode> = {
@@ -19,6 +18,12 @@ const ART: Record<ArtKind, ReactNode> = {
       <path d="M72 45h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-6" />
       <path d="M46 42l-7 10h9l-7 10" strokeWidth="2" />
       <path d="M30 70v8q0 6 8 6h14" strokeWidth="1.5" />
+    </>
+  ),
+  box: (
+    <>
+      <path d="M16 34l32-16 32 16v34L48 84 16 68z" />
+      <path d="M16 34l32 16 32-16M48 50v34" strokeWidth="1.5" />
     </>
   ),
   dresser: (
@@ -40,7 +45,7 @@ export function Art({ kind, alt }: { kind: ArtKind; alt: string }) {
 }
 
 // Lavender top field: store bar plus the hero grid (copy left, blob right).
-export function TopBand({ children }: { children: ReactNode }) {
+export function TopBand({ store, children }: { store: string; children: ReactNode }) {
   return (
     <div className={styles.top}>
       <nav aria-label="Store">
@@ -49,7 +54,7 @@ export function TopBand({ children }: { children: ReactNode }) {
             <span className={styles.mark}>
               <Icon name="store" />
             </span>
-            {STORE}
+            {store}
           </div>
           <p>
             <Icon name="info" />
