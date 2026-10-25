@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recall Runner - Test results (2, Area bento)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#FBF9F7; --surface:#FFFFFF; --surface-sunk:#F2EDEF;
+  --ink:#1F1A21; --ink-muted:#5A525C; --line:#E0D9DD; --ctl:#8A808C;
+  --brand:#3B1F3F; --on-brand:#FFFFFF;
+  --accent:#FF9E7A; --on-accent:#2A1530;
+  --on-ground:#FFFFFF; --on-ground-muted:#DCCBDD;
+  --recall:#9A4A12; --recall-bg:#FBE9DA;
+  --rule-bg:#1F1A21; --rule-ink:#FFFFFF;
+  --model-bg:#F1E7F2; --model-ink:#5B2A66;
+  --ok-bg:#DDF1E5; --ok-ink:#14633A;
+  --lav:#F1E7F2; --lav-2:#E6D3EA;
+}
+/* Contrast (computed): ink-muted on ground 7.2, on white 7.6, on lav 6.2; ok-ink on ok-bg 6.4, on white 7.4;
+   model-ink on model-bg 8.9, on white 10.1; on-ground on brand 14; on-ground-muted on brand 9.2; on-accent on coral 8.4;
+   on-ground-muted on #2A1530 (code well) 11. Coral is only a fill (copy button, bars, underline), never text on light. */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font:400 16px/1.55 'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+ul,ol{list-style:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+.field :focus-visible,.runcard :focus-visible{outline-color:var(--accent)}
+.wrap{max-width:1160px;margin:0 auto;padding:0 32px}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.field{background:var(--brand);color:var(--on-ground)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:4px 24px;min-height:72px;flex-wrap:wrap;padding-top:6px;padding-bottom:6px}
+.logo{display:flex;align-items:center;gap:10px;min-height:44px;font:800 19px 'Bricolage Grotesque',sans-serif;text-decoration:none;color:inherit}
+.logo .mark{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:18px}
+.top ul{display:flex;gap:4px;flex-wrap:wrap}
+.top li a{position:relative;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;font-size:15px;font-weight:500;text-decoration:none;color:var(--on-ground-muted)}
+.top li a:hover{color:var(--on-ground)}
+.top li a[aria-current]{color:var(--on-ground);font-weight:700}
+.top li a[aria-current]:after{content:"";position:absolute;left:12px;right:12px;bottom:4px;height:4px;border-radius:2px;background:var(--accent)}
+.top li a .i{font-size:15px}
+
+.tag{display:inline-flex;align-items:center;gap:5px;font:700 11px/1 'DM Sans',sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:999px;white-space:nowrap}
+.tag .i{font-size:13px}
+.tag.rule{background:var(--rule-bg);color:var(--rule-ink)}
+.tag.model{background:var(--surface);color:var(--model-ink);border:1.5px dashed var(--model-ink);padding:3.5px 8px}
+.ok{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:13px;line-height:20px;color:var(--ok-ink);white-space:nowrap}
+.ok .i{font-size:16px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;line-height:20px;padding:4px 12px 4px 9px;border-radius:999px;white-space:nowrap}
+.pill .i{font-size:17px}
+.pill.pass{background:var(--ok-bg);color:var(--ok-ink)}
+.pill.plan{background:var(--surface);border:1.5px dashed var(--ink-muted);color:var(--ink-muted);padding:2.5px 11px 2.5px 8px}
+.st-plan{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:13px;line-height:20px;color:var(--ink-muted);border:1px dashed var(--ink-muted);border-radius:999px;padding:0 9px 0 6px;white-space:nowrap}
+.st-plan .i{font-size:15px}
+.chip{display:inline-block;font:500 12px/20px 'DM Mono',monospace;color:var(--ink-muted);border:1px solid var(--ctl);border-radius:999px;padding:0 9px;white-space:nowrap}
+.n{font:500 13px 'DM Mono',monospace;color:var(--ink-muted)}
+
+/* title row */
+.title{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 64px;align-items:end;padding:44px 0 28px}
+.qbar{display:block;width:56px;height:8px;border-radius:4px;background:var(--accent);margin-bottom:18px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:500 13px 'DM Mono',monospace;color:var(--ink-muted);margin-bottom:10px}
+h1{font:800 clamp(40px,5.4vw,64px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.035em}
+.lede{font-size:19px;line-height:1.5;color:var(--ink-muted);max-width:28em;padding-bottom:6px}
+.lede b{color:var(--ink);font-weight:600}
+
+/* hero strip: result + run it yourself */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px 40px;align-items:stretch;padding:28px 0 36px;border-top:1px solid var(--line)}
+.result{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;align-items:center}
+.ring{position:relative;width:200px;height:200px}
+.ring svg{width:100%;height:100%;display:block}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring .mid b{font:800 38px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.04em;color:var(--brand)}
+.ring .mid span{font-size:13px;font-weight:600;color:var(--ink-muted);margin-top:4px}
+.rtext h2{font:800 clamp(30px,3.4vw,42px)/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em}
+.rtext .pill{margin-top:10px}
+.figs{display:grid;grid-template-columns:auto auto minmax(0,1fr);margin-top:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.figs>div{padding:10px 14px;border-left:1px solid var(--line)}
+.figs>div:first-child{padding-left:0;border-left:0}
+.figs dt{font-size:12px;font-weight:600;color:var(--ink-muted)}
+.figs dd{font:800 20px/1.25 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:var(--brand)}
+.legend{display:grid;gap:6px;margin-top:14px;font-size:14px;color:var(--ink-muted)}
+.legend li{display:flex;align-items:center;gap:10px}
+.sw{width:22px;height:10px;border-radius:5px;flex:none}
+.sw.s{background:var(--brand)}
+.sw.d{background:var(--lav-2);outline:1.5px dashed var(--model-ink);outline-offset:-1.5px}
+
+.runcard{background:var(--brand);color:var(--on-ground);border-radius:16px;padding:28px;display:flex;flex-direction:column;justify-content:center}
+.runcard h2{display:flex;align-items:center;gap:10px;font:800 24px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.runcard h2 .i{font-size:24px;color:var(--accent)}
+.runcard .sub{color:var(--on-ground-muted);font-size:15px;margin:8px 0 18px}
+.cmd{display:flex;align-items:center;gap:8px;background:#2A1530;border-radius:12px;padding:6px 6px 6px 16px}
+.cmd code{flex:1;min-width:0;font:500 22px/1.2 'DM Mono',monospace;user-select:all}
+.cmd code i{font-style:normal;color:var(--on-ground-muted);margin-right:10px}
+.copy{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 16px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:15px;transition:background .15s}
+.copy:hover{background:#FFB394}
+.copy .i{font-size:18px}
+.copy span{display:inline-flex;align-items:center;gap:6px}
+.copy .done{display:none}
+.copy[data-copied] .idle{display:none}
+.copy[data-copied] .done{display:inline-flex}
+.copy[data-copied]{background:var(--ok-bg);color:var(--ok-ink)}
+
+/* section heads */
+.shead{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap}
+.shead h2{font:800 28px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em}
+.shead .pill{margin-left:auto}
+.sdesc{color:var(--ink-muted);font-size:15px;margin:6px 0 16px}
+
+/* bento: ONE surface, tiles divided by 1px hairlines */
+.bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"refund payout guard" "repl repair guard";gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tile{background:var(--surface);padding:22px 24px 0;display:flex;flex-direction:column;min-width:0}
+.tile.refund{grid-area:refund}.tile.payout{grid-area:payout}.tile.repl{grid-area:repl}.tile.repair{grid-area:repair}.tile.guard{grid-area:guard}
+.thead{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.thead .ic{width:40px;height:40px;border-radius:50%;background:var(--lav);color:var(--brand);display:grid;place-items:center;font-size:21px;flex:none}
+.thead h3{font:800 20px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.thead small{display:block;font:500 13px 'DM Sans',sans-serif;color:var(--ink-muted);letter-spacing:0}
+.tests{flex:1;display:flex;flex-direction:column}
+.tests li{flex:1 1 auto;display:grid;grid-template-columns:28px minmax(0,1fr);gap:0 10px;align-items:center;padding:10px 0;min-height:48px;border-top:1px solid var(--line);font-size:15px;line-height:1.4}
+.tests li span.tx{overflow-wrap:anywhere}
+.tfoot{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:52px;border-top:1px solid var(--ink-muted)}
+.tfoot small{font-size:13px;color:var(--ink-muted)}
+
+/* AI band */
+.band{margin-top:32px;border:1.5px dashed var(--model-ink);border-radius:14px;background:var(--model-bg);padding:24px 28px 26px}
+.band .sdesc{margin-bottom:8px}
+.aigrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 28px}
+.aigrid li{display:flex;flex-direction:column;gap:8px;padding:14px 0 16px;border-top:1px dashed var(--model-ink);font-size:15px;line-height:1.4}
+.aigrid .top2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.aigrid .n{color:var(--model-ink)}
+.aigrid .chip{background:var(--surface);border-color:var(--model-ink);color:var(--model-ink)}
+.aigrid .st-plan{align-self:flex-start;background:var(--surface);margin-top:auto}
+.aigrid .tx{overflow-wrap:anywhere}
+.bnote{display:flex;align-items:center;gap:10px;margin-top:6px;padding-top:16px;border-top:1px solid var(--lav-2);font-size:14px;color:var(--ink-muted)}
+.bnote .i{font-size:20px;flex:none}
+.bnote b{color:var(--ink);font-weight:600}
+
+footer .wrap{border-top:1px solid var(--line);margin-top:56px;padding-top:18px;padding-bottom:40px;font-size:14px;color:var(--ink-muted)}
+.mt{margin-top:0}
+
+@media (max-width:1000px){
+  .title{grid-template-columns:1fr;align-items:start}
+  .hero{grid-template-columns:1fr}
+  .runcard{flex-direction:row;flex-wrap:wrap;align-items:center;gap:16px 32px}
+  .runcard .rc{flex:1 1 260px}
+  .runcard .sub{margin-bottom:0}
+  .runcard .cmd{flex:1 1 340px}
+  .bento{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"refund payout" "repl repair" "guard guard"}
+  .aigrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .wrap{padding:0 20px}
+  .title{padding:32px 0 20px}
+  .lede{font-size:17px}
+  .result{grid-template-columns:1fr;justify-items:start;gap:18px}
+  .ring{width:176px;height:176px}
+  .figs{grid-template-columns:1fr 1fr}
+  .figs>div:nth-child(3){grid-column:1/-1;padding-left:0;border-left:0;border-top:1px solid var(--line)}
+  .runcard{padding:22px 20px}
+  .runcard .cmd{flex:1 1 100%}
+  .cmd code{font-size:19px}
+  .shead h2{font-size:24px}
+  .shead .pill{margin-left:0}
+  .bento{grid-template-columns:1fr;grid-template-areas:"refund" "payout" "repl" "repair" "guard"}
+  .tile{padding:20px 20px 0}
+  .band{padding:20px 18px 22px}
+  .aigrid{grid-template-columns:1fr}
+  .top .wrap{padding-bottom:0}
+  .top nav{width:100%}
+  .top ul{gap:0;margin:0 -12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7zM19 7l-3 7a3.5 3.5 0 0 0 6 0l-3-7z"/></symbol>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></symbol>
+  <symbol id="code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></symbol>
+  <symbol id="loop" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4"/></symbol>
+  <symbol id="refund" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+  <symbol id="payout" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></symbol>
+  <symbol id="truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+  <symbol id="wrench" viewBox="0 0 24 24"><path d="M14.5 6a4.5 4.5 0 0 0 5.5 5.5L11 20.5a2.1 2.1 0 0 1-3-3l9-9"/><path d="M14.5 6L17 3.5"/></symbol>
+  <symbol id="shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5"/></symbol>
+  <symbol id="copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol>
+</svg>
+
+<header class="field top">
+  <div class="wrap">
+    <a class="logo" href="/"><span class="mark"><svg class="i" aria-hidden="true"><use href="#loop"/></svg></span>Recall Runner</a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/evals" aria-current="page">Test results</a></li>
+        <li><a href="https://github.com" target="_blank" rel="noopener">GitHub<svg class="i" aria-hidden="true"><use href="#ext"/></svg><span class="sr">(opens in a new tab)</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="title" aria-labelledby="title">
+    <div>
+      <span class="qbar" aria-hidden="true"></span>
+      <p class="eyebrow"><svg class="i" aria-hidden="true"><use href="#code"/></svg>tests/policy.test.ts</p>
+      <h1 id="title">Test results</h1>
+    </div>
+    <p class="lede"><b>Fixed rules move the money; the AI only reads and explains.</b> Both are tested separately.</p>
+  </section>
+
+  <section class="hero" aria-label="Result and how to reproduce it">
+    <div class="result">
+      <div class="ring" role="img" aria-label="11 of 11 money-rule tests passing. 8 AI tests planned, not run yet.">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <g transform="rotate(-90 100 100)" fill="none">
+            <!-- 19 segments (11 passing + 8 planned). r=80, C=502.65, period 26.4555 = 22.4555 dash + 4 gap. Track: all 19 -->
+            <circle cx="100" cy="100" r="80" stroke="#E6D3EA" stroke-width="18" stroke-dasharray="22.4555 4"/>
+            <!-- first 11 segments, solid plum -->
+            <circle cx="100" cy="100" r="80" stroke="#3B1F3F" stroke-width="18" stroke-dasharray="22.4555 4 22.4555 4 22.4555 4 22.4555 4 22.4555 4 22.4555 4 22.4555 4 22.4555 4 22.4555 4 22.4555 4 22.4555 4 0 600"/>
+            <!-- dashed inner arc over the 8 planned segments (r=60, C=376.99, start 218.2, length about 159) -->
+            <circle cx="100" cy="100" r="60" stroke="#5B2A66" stroke-width="2" stroke-dasharray="0 218.2 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 3 5 0 800"/>
+          </g>
+        </svg>
+        <div class="mid"><b>11/11</b><span>passing</span></div>
+      </div>
+      <div class="rtext">
+        <h2>11 of 11 passing</h2>
+        <span class="pill pass"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Passed</span>
+        <dl class="figs" aria-label="Summary of the last run">
+          <div><dt>Failing</dt><dd>0</dd></div>
+          <div><dt>Run time</dt><dd>71 ms</dd></div>
+          <div><dt>Last run</dt><dd>Oct 24, 2026</dd></div>
+        </dl>
+        <ul class="legend">
+          <li><span class="sw s" aria-hidden="true"></span>Solid: 11 money-rule tests, passed</li>
+          <li><span class="sw d" aria-hidden="true"></span>Dashed: 8 AI tests, not run yet</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="runcard">
+      <div class="rc">
+        <h2><svg class="i" aria-hidden="true"><use href="#code"/></svg>Run it yourself</h2>
+        <p class="sub">Runs the 11 money-rule tests on your machine.</p>
+      </div>
+      <div class="cmd">
+        <code><i aria-hidden="true">$</i>npm test</code>
+        <button class="copy" type="button" data-copy="npm test" aria-label="Copy command npm test">
+          <span class="idle"><svg class="i" aria-hidden="true"><use href="#copy"/></svg>Copy</span>
+          <span class="done"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Copied</span>
+        </button>
+      </div>
+      <span class="sr" role="status" aria-live="polite" id="copyStatus"></span>
+    </div>
+  </section>
+
+  <section aria-labelledby="money">
+    <div class="shead"><span class="tag rule"><svg class="i" aria-hidden="true"><use href="#scale"/></svg>Rule</span><h2 id="money">Money rules</h2><span class="pill pass"><svg class="i" aria-hidden="true"><use href="#check"/></svg>11 of 11 passing</span></div>
+    <p class="sdesc">The fixed code that decides refunds, payouts, replacements and repairs.</p>
+    <div class="bento">
+      <article class="tile refund">
+        <div class="thead"><span class="ic"><svg class="i" aria-hidden="true"><use href="#refund"/></svg></span><h3>Refund<small>2 checks</small></h3></div>
+        <ol class="tests">
+          <li><span class="n">01</span><span class="tx">an order paid 179 days ago is refunded</span></li>
+          <li><span class="n">02</span><span class="tx">an order paid exactly 180 days ago is still refunded (the window includes day 180)</span></li>
+        </ol>
+        <p class="tfoot"><span class="ok"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Passed</span><small>2 of 2</small></p>
+      </article>
+      <article class="tile payout">
+        <div class="thead"><span class="ic"><svg class="i" aria-hidden="true"><use href="#payout"/></svg></span><h3>PayPal Payout<small>2 checks</small></h3></div>
+        <ol class="tests">
+          <li><span class="n">03</span><span class="tx">one millisecond past 180 days switches to PayPal Payouts</span></li>
+          <li><span class="n">04</span><span class="tx">an order paid 400 days ago is paid by Payouts, and the reason says so</span></li>
+        </ol>
+        <p class="tfoot"><span class="ok"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Passed</span><small>2 of 2</small></p>
+      </article>
+      <article class="tile repl">
+        <div class="thead"><span class="ic"><svg class="i" aria-hidden="true"><use href="#truck"/></svg></span><h3>Replacement<small>1 check</small></h3></div>
+        <ol class="tests">
+          <li><span class="n">05</span><span class="tx">a replacement adds tracking and moves no money</span></li>
+        </ol>
+        <p class="tfoot"><span class="ok"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Passed</span><small>1 of 1</small></p>
+      </article>
+      <article class="tile repair">
+        <div class="thead"><span class="ic"><svg class="i" aria-hidden="true"><use href="#wrench"/></svg></span><h3>Repair<small>1 check</small></h3></div>
+        <ol class="tests">
+          <li><span class="n">06</span><span class="tx">a repair records the kit request and moves no money</span></li>
+        </ol>
+        <p class="tfoot"><span class="ok"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Passed</span><small>1 of 1</small></p>
+      </article>
+      <article class="tile guard">
+        <div class="thead"><span class="ic"><svg class="i" aria-hidden="true"><use href="#shield"/></svg></span><h3>Guard<small>5 checks</small></h3></div>
+        <ol class="tests">
+          <li><span class="n">07</span><span class="tx">a buyer cannot pick a remedy the recall does not offer</span></li>
+          <li><span class="n">08</span><span class="tx">no PayPal payment on record means no money, even inside the window</span></li>
+          <li><span class="n">09</span><span class="tx">never pays more than the order total</span></li>
+          <li><span class="n">10</span><span class="tx">rejects zero, negative or fractional amounts</span></li>
+          <li><span class="n">11</span><span class="tx">refunds only the recalled item, not the whole order</span></li>
+        </ol>
+        <p class="tfoot"><span class="ok"><svg class="i" aria-hidden="true"><use href="#check"/></svg>Passed</span><small>5 of 5</small></p>
+      </article>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="ai">
+    <div class="shead"><span class="tag model"><svg class="i" aria-hidden="true"><use href="#spark"/></svg>Model</span><h2 id="ai">AI matching and safety</h2><span class="pill plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>8 planned, not run yet</span></div>
+    <p class="sdesc">How the AI matches recalls, refuses near misses and ignores injected text.</p>
+    <ol class="aigrid">
+      <li><div class="top2"><span class="n">01</span><span class="chip">Matching</span></div><span class="tx">correct match from a reworded title</span><span class="st-plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Not run yet</span></li>
+      <li><div class="top2"><span class="n">02</span><span class="chip">Matching</span></div><span class="tx">match by brand plus product type</span><span class="st-plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Not run yet</span></li>
+      <li><div class="top2"><span class="n">03</span><span class="chip">Refusal</span></div><span class="tx">near-miss product correctly refused</span><span class="st-plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Not run yet</span></li>
+      <li><div class="top2"><span class="n">04</span><span class="chip">Refusal</span></div><span class="tx">different brand correctly refused (the Emberly decoy)</span><span class="st-plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Not run yet</span></li>
+      <li><div class="top2"><span class="n">05</span><span class="chip">Prompt injection</span></div><span class="tx">a product description that tries to instruct the AI (prompt injection) has no effect</span><span class="st-plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Not run yet</span></li>
+      <li><div class="top2"><span class="n">06</span><span class="chip">Prompt injection</span></div><span class="tx">a recall text with an injected link adds no link to the buyer notice</span><span class="st-plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Not run yet</span></li>
+      <li><div class="top2"><span class="n">07</span><span class="chip">Quoting</span></div><span class="tx">the buyer notice quotes the recall word for word</span><span class="st-plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Not run yet</span></li>
+      <li><div class="top2"><span class="n">08</span><span class="chip">Fallback</span></div><span class="tx">a missing AI key falls back to templates</span><span class="st-plan"><svg class="i" aria-hidden="true"><use href="#clock"/></svg>Not run yet</span></li>
+    </ol>
+    <p class="bnote"><svg class="i" aria-hidden="true"><use href="#clock"/></svg><span><b>Building in Phase 3.</b> The AI tests will appear here after they are built.</span></p>
+  </section>
+</main>
+
+<footer><div class="wrap">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</div></footer>
+
+<script>
+document.querySelectorAll('.copy').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.getAttribute('data-copy');
+    var done=function(){
+      b.setAttribute('data-copied','');
+      var s=document.getElementById('copyStatus');if(s)s.textContent='Copied '+t;
+      setTimeout(function(){b.removeAttribute('data-copied');if(s)s.textContent=''},2000);
+    };
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){})}
+  });
+});
+</script>
+</body>
+</html>

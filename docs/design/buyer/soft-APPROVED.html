@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recall Runner - Buyer page (3a Soft)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#FBF9F7; --surface:#FFFFFF; --surface-sunk:#F2EDEF;
+  --ink:#1F1A21; --ink-muted:#5A525C; --line:#E0D9DD; --ctl:#8A808C;
+  --brand:#3B1F3F; --on-brand:#FFFFFF;
+  --accent:#FF9E7A; --on-accent:#2A1530;
+  --on-ground:#FFFFFF; --on-ground-muted:#DCCBDD;
+  --recall:#9A4A12; --recall-bg:#FBE9DA;
+  --rule-bg:#1F1A21; --rule-ink:#FFFFFF;
+  --model-bg:#F1E7F2; --model-ink:#5B2A66;
+  --ok-bg:#DDF1E5; --ok-ink:#14633A;
+  /* derived tints (plum / coral / cream only) */
+  --lav:#F1E7F2; --lav-2:#E6D3EA; --cream:#FFF8F0; --coral-tint:#FFE9DF;
+}
+/* Contrast (computed): ink on lav 14.6, ink-muted on lav 6.2, ink-muted on cream 7.1, ink-muted on white 7.6,
+   brand on lav-2 10.5, on-accent on coral 8.4, recall on recall-bg 5.3, ok-ink on ok-bg 6.4 */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font:400 17px/1.6 'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 32px}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.art{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+button{font:inherit;color:inherit}
+
+/* demo toolbar (not part of the product) */
+.demo{background:var(--surface-sunk);border-bottom:2px dashed var(--ctl);padding:10px 0;font:500 12px/1.3 'DM Mono',monospace}
+.demo .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
+.demo .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.demo .grp span{color:var(--ink-muted)}
+.demo button{min-height:44px;padding:0 12px;border:1.5px solid var(--ctl);background:#fff;border-radius:6px;font:500 12px 'DM Mono',monospace;cursor:pointer}
+.demo button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.tag{display:inline-flex;align-items:center;gap:5px;font:700 11px/1 'DM Sans',sans-serif;letter-spacing:.09em;text-transform:uppercase;padding:5px 9px;border-radius:999px;white-space:nowrap}
+.tag .i{font-size:13px}
+.tag.rule{background:var(--rule-bg);color:var(--rule-ink)}
+.tag.model{background:var(--model-bg);color:var(--model-ink);border:1.5px dashed var(--model-ink);padding:3.5px 8px}
+.status{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--ok-ink);background:var(--ok-bg);padding:8px 16px 8px 12px;border-radius:999px}
+.status .i{font-size:20px}
+.status.warn{background:var(--surface);color:var(--ink)}
+.badge{display:inline-block;font-weight:700;font-size:13px;letter-spacing:.04em;color:var(--recall);background:var(--recall-bg);padding:5px 12px;border-radius:999px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;background:var(--accent);color:var(--on-accent);font:700 18px/1 'DM Sans',sans-serif;padding:0 28px;border:0;border-radius:999px;cursor:pointer;box-shadow:0 3px 0 var(--brand);transition:transform .15s,box-shadow .15s,background .15s}
+.btn:hover{background:#FFB394}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--brand)}
+.btn[disabled]{background:var(--surface-sunk);color:var(--ink-muted);box-shadow:inset 0 0 0 2px var(--ctl);cursor:not-allowed;transform:none}
+.link{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:600;color:var(--brand);text-underline-offset:4px}
+
+/* top: lavender field with soft bottom curve (flat tint, not the plum hero) */
+.top{background:var(--lav);border-radius:0 0 56px 56px}
+.top nav .wrap{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px}
+.store{display:flex;align-items:center;gap:12px;font:800 21px/1.1 'Bricolage Grotesque',sans-serif;color:var(--brand)}
+.store .mark{width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:20px}
+.top nav p{font-size:15px;color:var(--ink-muted);display:flex;align-items:center;gap:8px;background:var(--surface);padding:6px 14px 6px 10px;border-radius:999px}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;padding:20px 32px 88px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--brand);margin-bottom:16px}
+.eyebrow .i{font-size:20px}
+.hero .meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;font-size:15px;color:var(--ink-muted)}
+h1{font:800 clamp(40px,5.8vw,72px)/1.02 'Bricolage Grotesque',sans-serif;letter-spacing:-.035em;color:var(--ink);overflow-wrap:anywhere}
+.hero .lede{font-size:21px;line-height:1.5;color:var(--ink-muted);margin-top:20px;max-width:28em}
+.hero .lede b{color:var(--ink)}
+.blob{position:relative;justify-self:center;width:min(100%,440px);aspect-ratio:1/.94;background:var(--lav-2);border-radius:58% 42% 52% 48% / 50% 58% 42% 50%;display:grid;place-items:center;color:var(--brand)}
+.blob:before,.blob:after{content:"";position:absolute;border-radius:50%;background:var(--accent)}
+.blob:before{width:34px;height:34px;top:6%;right:12%}
+.blob:after{width:16px;height:16px;bottom:10%;left:8%}
+.blob svg.art{width:72%;height:72%}
+.blob svg.i{width:46%;height:46%;stroke-width:1.4}
+.big{font:800 clamp(60px,9vw,104px)/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.04em;margin:16px 0 4px}
+
+/* body: two rounded surfaces */
+.body{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start;padding:0 0 56px;margin-top:-40px}
+.card{background:var(--surface);border-radius:24px;padding:44px 48px;box-shadow:0 2px 0 var(--lav-2),0 28px 48px -36px rgba(59,31,63,.5);display:grid;gap:40px}
+.card section h2.t{display:flex;align-items:center;gap:12px;font:800 28px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em;margin-bottom:16px}
+.card section h2.t .ico{width:44px;height:44px;font-size:22px}
+blockquote{font:500 22px/1.55 'DM Sans',sans-serif;max-width:30em}
+.qbar{display:block;width:56px;height:8px;border-radius:4px;background:var(--accent);margin-bottom:16px}
+.cap{font-size:15px;color:var(--ink-muted);margin-top:10px}
+.aiNote{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;font-size:15px;color:var(--ink-muted)}
+.stop{display:flex;gap:16px;align-items:center}
+.stop b{display:block;font:700 21px/1.3 'Bricolage Grotesque',sans-serif}
+.stop span{color:var(--ink-muted)}
+.order{color:var(--ink-muted);font-size:18px}.order b{color:var(--ink)}
+.ico{width:56px;height:56px;border-radius:50%;background:var(--lav);color:var(--brand);display:grid;place-items:center;font-size:28px;flex:none}
+.fact{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
+.fact b{font:700 20px/1.25 'Bricolage Grotesque',sans-serif;display:block}
+.d{font-size:15px;line-height:1.4;color:var(--ink-muted);display:block;margin-top:2px}
+.amt{font:800 32px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.ruleline{display:flex;gap:12px;align-items:flex-start;margin-top:18px;font-size:15px;color:var(--ink-muted)}
+.ruleline b{display:block;color:var(--ink)}
+.opts{border:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.opt{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;min-height:200px;padding:20px 10px 16px;border:2px solid var(--lav-2);border-radius:20px;background:var(--surface);cursor:pointer}
+.opt input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.opt:focus-within{outline:3px solid var(--brand);outline-offset:3px}
+.opt:has(input:checked){border-color:var(--brand);background:var(--lav)}
+.opt .chk{position:absolute;top:10px;right:10px;display:none;color:var(--brand);font-size:22px}
+.opt:has(input:checked) .chk{display:block}
+.opt b{font:700 17px/1.2 'Bricolage Grotesque',sans-serif}
+.opt .amt{font-size:26px}
+.opt .d{font-size:14px}
+.next{display:grid;gap:18px}
+.next li{list-style:none;display:flex;gap:14px;align-items:center}
+.next .ico{width:44px;height:44px;font-size:22px}
+.reassure{display:flex;gap:8px;align-items:flex-start;margin-top:14px;font-size:15px;line-height:1.45;color:var(--ink-muted)}
+.reassure .i{font-size:18px;margin-top:1px;color:var(--brand)}
+.reassure.m{display:none}
+
+.sum{position:sticky;top:24px;background:var(--surface);border-radius:24px;padding:32px;box-shadow:0 2px 0 var(--lav-2),0 28px 48px -36px rgba(59,31,63,.5)}
+.sum .lab{font:700 14px/1 'DM Sans',sans-serif;color:var(--ink-muted);display:block;margin-bottom:10px}
+.sum .amt{font-size:60px;letter-spacing:-.035em;display:block}
+.sum .nm{font:700 20px/1.3 'Bricolage Grotesque',sans-serif;margin-top:8px}
+.sum .od{font-size:15px;color:var(--ink-muted);margin-top:4px}
+.sum-act{margin-top:24px}
+.helprow{text-align:center;margin-top:6px}
+.rcpt{display:grid;gap:16px}
+.rcpt dt{color:var(--ink-muted);font-size:14px}
+.rcpt dd{font-weight:600;overflow-wrap:anywhere}
+.rcpt .mono{font:500 14px 'DM Mono',monospace}
+
+.pager{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap;padding:8px 0 28px;margin-top:-4px}
+.pager .pos{font:700 20px 'Bricolage Grotesque',sans-serif}
+.segs{display:flex;gap:6px;list-style:none;flex:1;min-width:100px;max-width:240px}
+.segs li{flex:1;height:8px;border-radius:4px;background:var(--lav-2)}
+.segs li.on{background:var(--brand)}
+.pager .pg{display:flex;gap:8px;margin-left:auto}
+.pager button{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 20px;border-radius:999px;border:2px solid var(--brand);background:var(--surface);font-weight:600;cursor:pointer}
+.pager button[disabled]{color:var(--ink-muted);border-color:var(--lav-2);background:var(--lav);cursor:not-allowed}
+.top+.wrap .pager{padding-top:36px}
+
+footer .wrap{padding-top:8px;padding-bottom:40px;font-size:14px;color:var(--ink-muted)}
+
+@media (max-width:860px){
+  body{font-size:16px}
+  .wrap{padding:0 16px}
+  .top{border-radius:0 0 36px 36px}
+  .top nav .wrap{height:64px}.top nav p span{display:none}.top nav p{padding:8px}
+  .hero{grid-template-columns:1fr;gap:20px;padding:4px 16px 64px}
+  .blob{order:-1;width:min(78%,260px)}
+  .hero .lede{font-size:18px}
+  .body{grid-template-columns:1fr;gap:0;padding:0 0 150px;margin-top:-32px}
+  .card{padding:28px 20px;gap:32px}
+  .card section h2.t{font-size:24px}
+  blockquote{font-size:19px}
+  .reassure.m{display:flex}
+  .fact{grid-template-columns:auto 1fr}.fact .amt{grid-column:2}
+  .opts{gap:8px}.opt{padding:16px 6px 12px;border-radius:16px}
+  .opt .amt{font-size:22px}
+  .sum.fixable{position:fixed;left:0;right:0;bottom:0;z-index:5;top:auto;border-radius:24px 24px 0 0;box-shadow:0 -10px 28px -12px rgba(59,31,63,.35);padding:14px 16px calc(14px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:14px}
+  .sum.fixable .lab,.sum.fixable .od,.sum.fixable .reassure{display:none}
+  .sum.fixable .sum-meta{min-width:0}
+  .sum.fixable .amt{font-size:28px}
+  .sum.fixable .nm{font-size:13px;margin-top:2px}
+  .sum.fixable .sum-act{margin:0;flex:1}
+  .sum.fixable .btn{min-height:52px;font-size:17px;padding:0 16px}
+  .sum.stack{display:block}.sum.stack .sum-meta{display:none}
+  .sum.plain{position:static;background:transparent;box-shadow:none;padding:24px 4px 0;border-radius:0}
+  footer .wrap{padding-bottom:150px}
+  .pager .pg{margin-left:0;width:100%}.pager .pg button{flex:1;justify-content:center}
+  .top+.wrap .pager{padding-top:28px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7zM19 7l-3 7a3.5 3.5 0 0 0 6 0l-3-7z"/></symbol>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></symbol>
+  <symbol id="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="refund" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+  <symbol id="box" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/></symbol>
+  <symbol id="wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 1-5-5L13 2l-2 2M3 21l6-6"/></symbol>
+  <symbol id="info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="pause" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></symbol>
+  <symbol id="left" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="right" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></symbol>
+  <symbol id="store" viewBox="0 0 24 24"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9M10 20v-5h4v5"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="art-warmer" viewBox="0 0 96 96"><rect x="22" y="40" width="52" height="40" rx="12"/><rect x="30" y="48" width="36" height="24" rx="7" stroke-width="1.5" stroke-dasharray="3 4"/><path d="M36 30c-3-4 3-6 0-11M48 30c-3-4 3-6 0-11M60 30c-3-4 3-6 0-11"/></symbol>
+  <symbol id="art-battery" viewBox="0 0 96 96"><rect x="14" y="34" width="58" height="36" rx="9"/><path d="M72 45h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-6"/><path d="M46 42l-7 10h9l-7 10" stroke-width="2"/><path d="M30 70v8q0 6 8 6h14" stroke-width="1.5"/></symbol>
+  <symbol id="art-dresser" viewBox="0 0 96 96"><rect x="20" y="14" width="56" height="64" rx="4"/><path d="M20 32h56M20 47h56M20 62h56M48 14v64" stroke-width="1.5"/><path d="M30 23h8M58 23h8M30 40h8M58 40h8M30 55h8M58 55h8M30 70h8M58 70h8"/><path d="M26 78v8M70 78v8"/></symbol>
+</svg>
+
+<div class="demo" role="region" aria-label="Design preview controls"><div class="wrap">
+  <span>Design preview: state</span>
+  <div class="grp">
+    <button data-act="view" data-v="notice">Notice</button>
+    <button data-act="view" data-v="several">Several recalls</button>
+    <button data-act="view" data-v="success">Refund sent</button>
+    <button data-act="view" data-v="mismatch">Account mismatch</button>
+  </div>
+  <div class="grp"><span>Remedy options:</span>
+    <button data-act="multi" data-v="0">One</button>
+    <button data-act="multi" data-v="1">Three</button>
+  </div>
+</div></div>
+
+<div id="app" aria-live="polite"></div>
+<footer><div class="wrap">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</div></footer>
+
+<script>
+const S={view:'notice',i:0,multi:false,picked:null};
+const ic=(n,c)=>`<svg class="i${c?' '+c:''}" aria-hidden="true"><use href="#${n}"/></svg>`;
+const art=r=>`<svg class="art" viewBox="0 0 96 96" role="img" aria-label="${r.alt}"><use href="#${r.art}"/></svg>`;
+const R=[
+ {art:'art-warmer',alt:'Line drawing of a rechargeable hand warmer',cpsc:'CPSC #27011',date:'Oct 1, 2026',name:'HotHands Rechargeable Hand Warmers',head:'Your HotHands hand warmers have been recalled',item:'HotHands Rechargeable Hand Warmers, 2-pack',days:45,price:'$34.00',them:'them',rem:'refund',hazard:'The lithium-ion battery and electrical components in the recalled hand warmers can overheat and ignite, posing a risk of serious injury from fire and burn hazards.'},
+ {art:'art-battery',alt:'Line drawing of a recliner battery pack',cpsc:'CPSC #26301',date:'Sep 11, 2026',name:'Recliner battery pack',head:'Your recliner battery pack has been recalled',item:'Recliner battery pack',days:60,price:'$59.00',them:'it',rem:'replace',hazard:'The recalled battery packs can overheat, posing a fire hazard.'},
+ {art:'art-dresser',alt:'Line drawing of an 8-drawer dresser',cpsc:'CPSC #26794',date:'Aug 7, 2026',name:'Aitjunz 8-Drawer Dresser',head:'Your 8-drawer dresser has been recalled',item:'Aitjunz 8-Drawer Dresser',days:70,price:'$249.00',them:'it',rem:'repair',hazard:'The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards to children.'}
+];
+const REM={
+ refund:{ic:'refund',name:'Full refund',short:'Full refund',amt:'$34.00',d:'Paid back to your PayPal account.',rule:'Refund: paid within 180 days'},
+ replace:{ic:'box',name:'Free replacement battery pack',short:'Replacement pack',amt:'Free',d:'No money. Tracking is added to your order.',rule:'Replacement: the recall offers a new pack'},
+ repair:{ic:'wrench',name:'Free repair kit',short:'Repair kit',amt:'Free',d:'No money. The kit is mailed to you.',rule:'Repair: the recall offers a repair kit'}
+};
+const T={rule:`<span class="tag rule">${ic('scale')}Rule</span>`,model:`<span class="tag model">${ic('spark')}Model</span>`};
+const orderLine=r=>`<b>${r.item}</b> · bought from Brightnest Home ${r.days} days ago · ${r.price}`;
+const ruleLine=(r,txt)=>`<p class="ruleline">${T.rule}<span><b>Chosen by fixed rules, not AI</b>${txt||(S.multi?'These options are offered by the recall':REM[r.rem].rule)}</span></p>`;
+function remedy(r){
+  if(!S.multi){const m=REM[r.rem];
+    return `<div class="fact"><span class="ico">${ic(m.ic)}</span><div><b>${m.name}</b><span class="d">${m.d}</span></div><span class="amt">${m.amt}</span></div>`;}
+  return `<fieldset class="opts"><legend class="sr">Choose a remedy</legend>`+['refund','replace','repair'].map(k=>{const m=REM[k];
+    return `<label class="opt"><input type="radio" name="rem" value="${k}"${S.picked===k?' checked':''}><span class="chk">${ic('check')}</span><span class="ico">${ic(m.ic)}</span><b>${m.short}</b><span class="amt">${m.amt}</span><span class="d">${m.d}</span></label>`}).join('')+`</fieldset>`;
+}
+const REASSURE=`<p class="reassure">${ic('lock')}<span>You sign in with PayPal so only you can claim this. We never see your password.</span></p>`;
+const pager=()=>`<nav class="pager" aria-label="Your recalls"><p class="pos">Recall ${S.i+1} of 3</p><ol class="segs" aria-hidden="true">${R.map((_,k)=>`<li class="${k<=S.i?'on':''}"></li>`).join('')}</ol><div class="pg"><button data-act="prev"${S.i===0?' disabled':''}>${ic('left')}Back</button><button data-act="next"${S.i===2?' disabled':''}>Next${ic('right')}</button></div></nav>`;
+const picked=()=>S.multi?REM[S.picked]:REM[R[S.i].rem];
+
+/* ---- 3a Soft ---- */
+const nav=`<nav aria-label="Store"><div class="wrap"><div class="store"><span class="mark">${ic('store')}</span>Brightnest Home</div><p>${ic('info')}<span>Safety recall notice</span></p></div></nav>`;
+const topBand=inner=>`<div class="top">${nav}<header class="wrap hero">${inner}</header></div>`;
+const h2=(id,icon,t)=>`<h2 class="t" id="${id}"><span class="ico">${ic(icon)}</span>${t}</h2>`;
+function notice(){const r=R[S.i];
+  return topBand(`<div><p class="eyebrow">${ic('info')}Safety recall notice</p>
+      <p class="meta"><span class="badge">${r.cpsc}</span><span>Recalled ${r.date}</span></p>
+      <h1>${r.head}</h1>
+      <p class="lede"><b>Please stop using ${r.them}.</b> You bought ${r.them} from Brightnest Home ${r.days} days ago. Here is what the recall says and how to settle it in one tap.</p></div>
+    <div class="blob">${art(r)}</div>`)+`
+  <div class="wrap">
+  ${S.view==='several'?pager():''}
+  <div class="body">
+   <main class="card">
+    <section aria-labelledby="s1">${h2('s1','info','What the recall says')}
+      <span class="qbar" aria-hidden="true"></span><blockquote>&ldquo;${r.hazard}&rdquo;</blockquote>
+      <p class="cap">From the CPSC recall notice, ${r.cpsc}</p>
+      <p class="aiNote">${T.model}<span>Notice drafted by AI from the CPSC record</span></p></section>
+    <section aria-labelledby="s2">${h2('s2','pause','What to do now')}
+      <div class="stop"><div><b>Please stop using ${r.them}</b><span>Keep ${r.them} away from where you sit or sleep until this is settled.</span></div></div></section>
+    <section aria-labelledby="s3">${h2('s3','box','Your order')}<p class="order">${orderLine(r)}</p></section>
+    <section aria-labelledby="s4">${h2('s4','refund',S.multi?'Choose how to settle this':'How this is settled')}
+      ${remedy(r)}${ruleLine(r)}<div class="reassure m">${ic('lock')}<span>You sign in with PayPal so only you can claim this. We never see your password.</span></div></section>
+   </main>
+   <aside class="sum fixable" aria-label="Summary">
+     <div class="sum-meta"><span class="lab">Your remedy</span><span class="amt" id="sumAmt"></span><p class="nm" id="sumNm"></p><p class="od">${r.item}</p></div>
+     <div class="sum-act"><button class="btn" id="cta" data-label="Confirm with PayPal" data-gate="1">Confirm with PayPal</button>${REASSURE}</div>
+   </aside>
+  </div></div>`}
+function success(){const r=R[0];
+  return topBand(`<div><span class="status">${ic('check')}Refund sent</span>
+      <p class="big">$34.00</p>
+      <h1 style="font-size:clamp(32px,4.4vw,54px)">Your refund is on its way</h1>
+      <p class="lede"><b>PayPal refunds usually show in 3 to 5 business days.</b> You don't need to do anything else.</p></div>
+    <div class="blob">${ic('check')}</div>`)+`
+  <div class="wrap"><div class="body"><main class="card">
+    <section aria-labelledby="s1">${h2('s1','clock','What happens next')}
+      <ul class="next"><li><span class="ico">${ic('check')}</span><span>Brightnest Home sent $34.00 to the PayPal account you signed in with.</span></li><li><span class="ico">${ic('clock')}</span><span>PayPal refunds usually show in 3 to 5 business days.</span></li><li><span class="ico">${ic('pause')}</span><span>Please stop using the hand warmers.</span></li></ul>
+      ${ruleLine(r,REM.refund.rule)}</section>
+    <section><a class="link" href="#" data-act="view" data-v="several">${ic('left')}Back to your recalls</a></section>
+   </main>
+   <aside class="sum plain" aria-labelledby="rh"><h2 class="t" id="rh" style="font:800 24px/1.1 'Bricolage Grotesque',sans-serif;margin-bottom:20px">Your receipt</h2>
+     <dl class="rcpt"><div><dt>Order</dt><dd>BH-48213</dd></div><div><dt>Item</dt><dd>${r.item}</dd></div><div><dt>Amount</dt><dd>$34.00</dd></div><div><dt>Reference</dt><dd class="mono">8EG04191BL774610V</dd></div></dl>
+   </aside></div></div>`}
+function mismatch(){
+  return topBand(`<div><span class="status warn">${ic('info')}Account doesn't match</span>
+      <h1 style="font-size:clamp(32px,4.6vw,56px);margin-top:18px">This PayPal account doesn't match the one used for this order</h1>
+      <p class="lede"><b>Nothing was charged and nothing was sent.</b> Your recall is still waiting for you.</p></div>
+    <div class="blob">${ic('info')}</div>`)+`
+  <div class="wrap"><div class="body"><main class="card">
+    <section aria-labelledby="s1">${h2('s1','info','Why this happened')}<p class="order">We check the PayPal account so only the person who bought the item can claim. The account you signed in with is not the one on the order.</p></section>
+    <section aria-labelledby="s2">${h2('s2','help','What you can do')}<p class="order">Sign in again with the PayPal account you used when you bought from Brightnest Home. If you are not sure which one that is, we can help.</p></section>
+   </main>
+   <aside class="sum fixable stack" aria-label="Next step">
+     <div class="sum-meta"><span class="lab">Next step</span><p class="nm">Try again with the right account</p></div>
+     <div class="sum-act"><button class="btn" id="cta" data-label="Try a different PayPal account" data-gate="0">Try a different PayPal account</button>
+       <p class="helprow"><a class="link" href="#">${ic('help')}Need help?</a></p></div>
+   </aside></div></div>`}
+function sync(){const b=document.getElementById('cta');if(!b)return;const lock=b.dataset.gate==='1'&&S.multi&&!S.picked;b.disabled=lock;b.textContent=lock?'Choose a remedy':b.dataset.label;
+  const a=document.getElementById('sumAmt'),n=document.getElementById('sumNm');
+  if(a){const m=picked();a.textContent=m?m.amt:'Choose one';n.textContent=m?m.name:'Pick a remedy to continue'}}
+function render(){
+  const v=S.view;
+  document.getElementById('app').innerHTML=v==='success'?success():v==='mismatch'?mismatch():notice();
+  document.querySelectorAll('.demo [data-act=view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
+  document.querySelectorAll('.demo [data-act=multi]').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.v==='1')===S.multi)));
+  sync();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');
+  if(b&&!b.disabled){const a=b.dataset.act;
+    if(a==='view'){e.preventDefault();S.view=b.dataset.v;S.picked=null;S.i=0}
+    else if(a==='multi'){S.multi=b.dataset.v==='1';S.picked=null}
+    else if(a==='prev'){S.i=Math.max(0,S.i-1);S.picked=null}
+    else if(a==='next'){S.i=Math.min(2,S.i+1);S.picked=null}
+    render();window.scrollTo(0,0);return}
+  const c=e.target.closest('#cta');
+  if(c&&!c.disabled){S.view=S.view==='mismatch'?'notice':'success';S.i=0;render();window.scrollTo(0,0)}
+});
+document.addEventListener('change',e=>{if(e.target.name==='rem'){S.picked=e.target.value;sync()}});
+render();
+</script>
+</body>
+</html>

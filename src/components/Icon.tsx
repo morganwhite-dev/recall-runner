@@ -16,7 +16,22 @@ export type IconName =
   | "clock"
   | "minus"
   | "chev"
-  | "ext";
+  | "ext"
+  | "lock"
+  | "box"
+  | "info"
+  | "pause"
+  | "left"
+  | "right"
+  | "help"
+  | "store"
+  | "clockdash"
+  | "shield"
+  | "match"
+  | "ban"
+  | "alert"
+  | "quote"
+  | "copy";
 
 // Inline SVG symbol set. Render <IconSprite /> once per page, then use <Icon />.
 export function IconSprite() {
@@ -83,6 +98,61 @@ export function IconSprite() {
       </symbol>
       <symbol id="ext" viewBox="0 0 24 24">
         <path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5" />
+      </symbol>
+      <symbol id="lock" viewBox="0 0 24 24">
+        <rect x="5" y="11" width="14" height="10" rx="2" />
+        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+      </symbol>
+      <symbol id="box" viewBox="0 0 24 24">
+        <path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8" />
+      </symbol>
+      <symbol id="info" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 11v5M12 8h.01" />
+      </symbol>
+      <symbol id="pause" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M10 9v6M14 9v6" />
+      </symbol>
+      <symbol id="left" viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6" />
+      </symbol>
+      <symbol id="right" viewBox="0 0 24 24">
+        <path d="M9 18l6-6-6-6" />
+      </symbol>
+      <symbol id="help" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" />
+      </symbol>
+      <symbol id="store" viewBox="0 0 24 24">
+        <path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9M10 20v-5h4v5" />
+      </symbol>
+      <symbol id="clockdash" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" strokeDasharray="3.2 3" />
+        <path d="M12 7v5l3 2" />
+      </symbol>
+      <symbol id="shield" viewBox="0 0 24 24">
+        <path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z" />
+        <path d="M8.5 12l2.5 2.5 4.5-5" />
+      </symbol>
+      <symbol id="match" viewBox="0 0 24 24">
+        <circle cx="9" cy="12" r="5.5" />
+        <circle cx="15" cy="12" r="5.5" />
+      </symbol>
+      <symbol id="ban" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M5.6 5.6l12.8 12.8" />
+      </symbol>
+      <symbol id="alert" viewBox="0 0 24 24">
+        <path d="M12 4l9 16H3z" />
+        <path d="M12 10v4M12 17v.5" />
+      </symbol>
+      <symbol id="quote" viewBox="0 0 24 24">
+        <path d="M6 8h4v4c0 3-1.5 4.5-4 5M14 8h4v4c0 3-1.5 4.5-4 5" />
+      </symbol>
+      <symbol id="copy" viewBox="0 0 24 24">
+        <rect x="9" y="9" width="11" height="11" rx="2" />
+        <path d="M5 15V6a2 2 0 0 1 2-2h8" />
       </symbol>
     </svg>
   );
