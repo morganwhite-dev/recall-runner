@@ -78,6 +78,7 @@ npm run cpsc:ingest   # load the snapshot into the recalls table
 npm run db:seed       # rebuild the fictional demo store (safe to re-run)
 npm run paypal:attach # give every seeded order a real sandbox payment
 npm run demo:sandbox-orders # give the sandbox buyer one order of each recalled product
+npm run demo:failure-drill  # dry run: shows the one real PayPal failure it would trigger (add -- --go to run it)
 npm test              # policy, buyer-identity and dashboard tests
 npm run test:record   # run them and save the results the Test results page shows
 npm run demo:money    # run every money path against the sandbox
