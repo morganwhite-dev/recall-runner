@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
-import { JudgeLogin } from "@/components/JudgeLogin";
 import { AutoRefresh } from "./AutoRefresh";
 import type { DemoGuideState } from "./data";
 import styles from "./page.module.css";
@@ -20,7 +19,9 @@ export function DemoGuide({
 }) {
   const f = guide.featured;
   const onFeatured = f.recallNumber === current;
-  const refresh = <AutoRefresh active={waiting || (guide.paid && !guide.settled)} />;
+  const refresh = (
+    <AutoRefresh active={waiting || (guide.paid && !guide.settled)} />
+  );
 
   if (!onFeatured) {
     return (
@@ -32,7 +33,10 @@ export function DemoGuide({
             ? "This recall was approved in advance for the demo. The walkthrough runs on the hand-warmers recall."
             : "Start the walkthrough on the hand-warmers recall."}
         </p>
-        <Link className={styles.guideLink} href={`/dashboard?campaign=${f.recallNumber}`}>
+        <Link
+          className={styles.guideLink}
+          href={`/dashboard?campaign=${f.recallNumber}`}
+        >
           Go to the {f.label}
         </Link>
       </section>
@@ -49,21 +53,28 @@ export function DemoGuide({
         guide.preApprovedCount > 0
           ? `You are the store. Approving opens its cases and notifies the buyers. The other ${guide.preApprovedCount} recalls (a replacement and a repair kit) were approved in advance.`
           : "You are the store. Approving opens its cases and notifies the buyers.",
-      action: !f.approved && <span className={styles.guideHint}>Press Approve campaign above.</span>,
+      action: !f.approved && (
+        <span className={styles.guideHint}>Press Approve campaign above.</span>
+      ),
     },
     {
       title: "Open the buyer page",
-      text: "Now you are the customer: the sandbox buyer (marked \"Sign in here\" in the table), whose orders cover every remedy. The other buyers are fictional.",
+      text: 'Now you are the customer: the sandbox buyer (marked "Sign in here" in the table), whose orders cover every remedy. The other buyers are fictional.',
       action: guide.buyerPath && (
-        <a className={styles.guideLink} href={guide.buyerPath} target="_blank" rel="noopener noreferrer">
+        <a
+          className={styles.guideLink}
+          href={guide.buyerPath}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Open buyer page <Icon name="ext" />
         </a>
       ),
     },
     {
       title: "Confirm with PayPal",
-      text: "Sign in with the sandbox buyer login below. PayPal sends the money.",
-      action: <JudgeLogin />,
+      text: "The sandbox buyer login is shown at the top of the buyer page. Sign in with it and PayPal sends the money.",
+      action: null,
     },
     {
       title: "Watch it settle",
@@ -82,7 +93,13 @@ export function DemoGuide({
         {steps.map((s, i) => (
           <li
             key={s.title}
-            className={done[i] ? styles.guideDone : i === active ? styles.guideNow : undefined}
+            className={
+              done[i]
+                ? styles.guideDone
+                : i === active
+                  ? styles.guideNow
+                  : undefined
+            }
             aria-current={i === active ? "step" : undefined}
           >
             <span className={styles.guideNum}>

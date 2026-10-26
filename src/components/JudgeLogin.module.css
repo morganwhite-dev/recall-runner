@@ -58,3 +58,49 @@
   font-size: 12px;
   color: var(--ink-muted);
 }
+
+/* Compact version, shown under the Confirm with PayPal button. Declared last so it wins. */
+.compact {
+  gap: 6px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-width: 1px;
+  border-radius: 12px;
+}
+
+.compact .title {
+  font-size: 13px;
+}
+
+.compact .title span {
+  font-size: 11px;
+}
+
+.compact .field {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.compact .label {
+  /* Hidden but still read aloud: the values are obviously an email and a password. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.compact .value {
+  font-size: 11.5px;
+  padding: 5px 8px;
+}
+
+.compact .copy {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.compact .note {
+  font-size: 11px;
+}

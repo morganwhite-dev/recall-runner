@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { JudgeLogin } from "@/components/JudgeLogin";
 import { loadBuyerPage, markOpened } from "@/lib/buyer";
 import { groupByRecall, isClaimable, isDone } from "./data";
 import { Mismatch } from "./Mismatch";
@@ -19,7 +20,8 @@ export const metadata: Metadata = {
 };
 
 const ALERTS: Record<string, string> = {
-  expired: "That sign-in took too long or was already used. Please choose again.",
+  expired:
+    "That sign-in took too long or was already used. Please choose again.",
   error: "PayPal had a problem, and nothing was sent. Please try again.",
   partial:
     "One of your recalls couldn't be completed, and nothing was sent for it. The others are settled. Open the one marked Couldn't complete to see why.",
@@ -28,10 +30,7 @@ const ALERTS: Record<string, string> = {
 // What the page shows is decided by the database, not by the URL:
 //   one open recall -> the single notice; several, or several remedies -> the card view;
 //   ?case=<id> or a finished case -> the receipt; ?result=mismatch -> account doesn't match.
-async function BuyerView({
-  params,
-  searchParams,
-}: PageProps<"/r/[token]">) {
+async function BuyerView({ params, searchParams }: PageProps<"/r/[token]">) {
   const { token } = await params;
   const { case: caseParam, result, done: doneParam } = await searchParams;
   const page = await loadBuyerPage(token);
@@ -42,18 +41,27 @@ async function BuyerView({
   const only = cases.length === 1 ? cases[0] : null;
   const groups = groupByRecall(cases);
   const picked =
-    typeof caseParam === "string" ? cases.find((c) => c.caseId === caseParam) : undefined;
+    typeof caseParam === "string"
+      ? cases.find((c) => c.caseId === caseParam)
+      : undefined;
   const target = picked ?? only;
   // ?done=<ids> comes from the PayPal sign-in that just settled these cases.
   const justDone =
     typeof doneParam === "string"
-      ? cases.filter((c) => doneParam.split(",").includes(c.caseId) && isDone(c))
+      ? cases.filter(
+          (c) => doneParam.split(",").includes(c.caseId) && isDone(c),
+        )
       : [];
   // A case PayPal could not complete is offered again, with a plain note on top.
   const retryNote = cases.some((c) => c.status === "FAILED")
     ? "PayPal couldn't complete your last try for one of your recalls. You can try again below."
     : undefined;
-  const alert = (typeof result === "string" ? ALERTS[result] : undefined) ?? retryNote;
+  const alert =
+    (typeof result === "string" ? ALERTS[result] : undefined) ?? retryNote;
+
+  // The sandbox login sits under the Confirm with PayPal button, so only the two flows that have
+  // that button get it, and only for the buyer who can really sign in.
+  const judgeLogin = page.fictional ? null : <JudgeLogin compact />;
 
   let view;
   if (result === "mismatch") {
@@ -68,9 +76,23 @@ async function BuyerView({
       />
     );
   } else if (justDone.length === 1) {
-    view = <Success token={token} store={store} c={justDone[0]} others={cases.length > 1} />;
+    view = (
+      <Success
+        token={token}
+        store={store}
+        c={justDone[0]}
+        others={cases.length > 1}
+      />
+    );
   } else if (target && isDone(target)) {
-    view = <Success token={token} store={store} c={target} others={cases.length > 1} />;
+    view = (
+      <Success
+        token={token}
+        store={store}
+        c={target}
+        others={cases.length > 1}
+      />
+    );
   } else if (picked && !isDone(picked) && !isClaimable(picked)) {
     view = <Problem store={store} c={picked} />;
   } else if (
@@ -80,10 +102,24 @@ async function BuyerView({
   ) {
     // One recall with a single remedy: nothing to choose, just confirm. Several orders still count as one.
     if (!caseParam) await markOpened(groups[0].cases.map((c) => c.caseId));
-    view = <RecallFlow token={token} store={store} recalls={groups[0].cases} />;
+    view = (
+      <RecallFlow
+        token={token}
+        store={store}
+        recalls={groups[0].cases}
+        judgeLogin={judgeLogin}
+      />
+    );
   } else {
     if (!caseParam) await markOpened(cases.map((c) => c.caseId));
-    view = <SeveralFlow token={token} store={store} groups={groups} />;
+    view = (
+      <SeveralFlow
+        token={token}
+        store={store}
+        groups={groups}
+        judgeLogin={judgeLogin}
+      />
+    );
   }
 
   return (
@@ -91,7 +127,8 @@ async function BuyerView({
       {page.fictional && (
         <div className={styles.wrap}>
           <p className={styles.alert} role="note">
-            This is a demo buyer, so nobody can sign in as them and no payment can finish here.{" "}
+            This is a demo buyer, so nobody can sign in as them and no payment
+            can finish here.{" "}
             {sandboxPath && (
               <Link className={styles.link} href={sandboxPath}>
                 Open the sandbox buyer&apos;s page instead
@@ -121,8 +158,8 @@ export default function BuyerPage(props: PageProps<"/r/[token]">) {
       </Suspense>
       <footer>
         <div className={styles.wrap}>
-          Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not
-          affiliated with CPSC or PayPal.
+          Demo store. The merchant and order dates are made up; the recalls are
+          real CPSC data. Not affiliated with CPSC or PayPal.
         </div>
       </footer>
     </div>

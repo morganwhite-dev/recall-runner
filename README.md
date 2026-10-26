@@ -4,7 +4,7 @@ An AI agent that watches the US product-recall feed (CPSC), finds the buyers of 
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
 
-**Status:** Phases 0–4 are complete; Phase 5 (dashboard on real data, approve campaign, demo reset) is built and waiting for a live check on Render. The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs.
+**Status:** Phases 0–5 are complete; Phase 5 (dashboard on real data, approve campaign, demo reset) is done: the live check on Render passed on Oct 26 (refund, replacement and repair all settle). The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs.
 
 ## Why
 
@@ -20,7 +20,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 | D   | UI design pass (plum, Claude Design tab) | Wed Oct 28                   | Done Oct 24 |
 | 3   | AI agent                                 | Sat Oct 31                   | Done Oct 25 |
 | 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                    | Done Oct 25 |
-| 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)   | Built Oct 25, live check pending |
+| 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)   | Done Oct 26 |
 | 7   | Harden and package                       | Fri Nov 6                    | Not started |
 | 8   | Video and Devpost write-up               | Mon Nov 9, submit Tue Nov 10 | Not started |
 

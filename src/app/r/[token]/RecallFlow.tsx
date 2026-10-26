@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ConfirmLink } from "@/components/ConfirmLink";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
@@ -26,10 +27,12 @@ export function RecallFlow({
   token,
   store,
   recalls,
+  judgeLogin,
 }: {
   token: string;
   store: string;
   recalls: BuyerCase[]; // every order for this recall, all still open
+  judgeLogin?: ReactNode; // the sandbox login, shown under the button for the sandbox buyer
 }) {
   const recall = recalls[0];
   const kind = recall.offers[0];
@@ -52,13 +55,20 @@ export function RecallFlow({
           </p>
           <h1 className={styles.h1}>{headline(recall)}</h1>
           <p className={styles.lede}>
-            <b>Please stop using {pronoun}.</b> You bought {pronoun} from {store}{" "}
-            {several ? `in ${recalls.length} orders` : `${recall.daysAgo} days ago`}. Here is what the
-            recall says and how to settle {several ? "them" : "it"} in one tap.
+            <b>Please stop using {pronoun}.</b> You bought {pronoun} from{" "}
+            {store}{" "}
+            {several
+              ? `in ${recalls.length} orders`
+              : `${recall.daysAgo} days ago`}
+            . Here is what the recall says and how to settle{" "}
+            {several ? "them" : "it"} in one tap.
           </p>
         </div>
         <Blob>
-          <Art kind={artFor(recall.sku)} alt={`Line drawing of ${recall.productName}`} />
+          <Art
+            kind={artFor(recall.sku)}
+            alt={`Line drawing of ${recall.productName}`}
+          />
         </Blob>
       </TopBand>
 
@@ -71,7 +81,9 @@ export function RecallFlow({
               </SectionTitle>
               <span className={styles.qbar} aria-hidden="true" />
               <blockquote>&ldquo;{recall.hazard}&rdquo;</blockquote>
-              <p className={styles.cap}>From the CPSC recall notice, {cpscLabel(recall)}</p>
+              <p className={styles.cap}>
+                From the CPSC recall notice, {cpscLabel(recall)}
+              </p>
               <p className={styles.aiNote}>
                 <Tag kind={recall.draftedBy === "MODEL" ? "model" : "rule"} />
                 <span>
@@ -89,7 +101,8 @@ export function RecallFlow({
               <p className={styles.stop}>
                 <b>Please stop using {pronoun}</b>
                 <span>
-                  Keep {pronoun} away from where you sit or sleep until this is settled.
+                  Keep {pronoun} away from where you sit or sleep until this is
+                  settled.
                 </span>
               </p>
             </section>
@@ -102,9 +115,12 @@ export function RecallFlow({
                 {recalls.map((c) => (
                   <li key={c.caseId}>
                     <span>
-                      <b>{c.productName}</b> · bought {c.daysAgo} days ago · {formatUsd(c.priceCents)}
+                      <b>{c.productName}</b> · bought {c.daysAgo} days ago ·{" "}
+                      {formatUsd(c.priceCents)}
                     </span>
-                    {howPaid(c, kind) && <span className={styles.how}>{howPaid(c, kind)}</span>}
+                    {howPaid(c, kind) && (
+                      <span className={styles.how}>{howPaid(c, kind)}</span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -130,27 +146,38 @@ export function RecallFlow({
               <Reassure className={styles.reassureMobile} />
             </section>
 
-          <aside className={`${styles.sum} ${styles.fixable} ${styles.inCard}`} aria-label="Summary">
-            <div className={styles.sumMeta}>
-              <span className={styles.lab}>Your remedy</span>
-              <span className={styles.amt}>{kind === "refund" ? amount : "No cost"}</span>
-              <p className={styles.nm}>{remedy.name}</p>
-              <p className={styles.od}>
-                {recall.productName} ·{" "}
-                {several ? `${recalls.length} orders from ${store}` : `bought from ${store} ${recall.daysAgo} days ago`}
-              </p>
-            </div>
-            <div className={styles.sumAct}>
-              {/* Plain anchor: the login route redirects off-site, so no client navigation or prefetch. */}
-              <ConfirmLink className={styles.btn} href={loginHref(
-                  token,
-                  recalls.map((c) => ({ caseId: c.caseId, remedy: kind })),
-                )}>
-                Confirm with PayPal
-              </ConfirmLink>
-              <Reassure className={styles.reassureDesktop} />
-            </div>
-          </aside>
+            <aside
+              className={`${styles.sum} ${styles.fixable} ${styles.inCard}`}
+              aria-label="Summary"
+            >
+              <div className={styles.sumMeta}>
+                <span className={styles.lab}>Your remedy</span>
+                <span className={styles.amt}>
+                  {kind === "refund" ? amount : "No cost"}
+                </span>
+                <p className={styles.nm}>{remedy.name}</p>
+                <p className={styles.od}>
+                  {recall.productName} ·{" "}
+                  {several
+                    ? `${recalls.length} orders from ${store}`
+                    : `bought from ${store} ${recall.daysAgo} days ago`}
+                </p>
+              </div>
+              <div className={styles.sumAct}>
+                {/* Plain anchor: the login route redirects off-site, so no client navigation or prefetch. */}
+                <ConfirmLink
+                  className={styles.btn}
+                  href={loginHref(
+                    token,
+                    recalls.map((c) => ({ caseId: c.caseId, remedy: kind })),
+                  )}
+                >
+                  Confirm with PayPal
+                </ConfirmLink>
+                <Reassure className={styles.reassureDesktop} />
+                {judgeLogin}
+              </div>
+            </aside>
           </div>
         </div>
       </div>

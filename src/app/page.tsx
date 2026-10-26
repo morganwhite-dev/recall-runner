@@ -5,7 +5,6 @@ import { StartFreshDemo } from "@/components/StartFreshDemo";
 import { Icon, type IconName } from "@/components/Icon";
 import { StatusPill } from "@/components/StatusPill";
 import { Tag, type TagKind } from "@/components/Tag";
-import { JudgeLogin } from "@/components/JudgeLogin";
 import { DEMO_STEPS } from "@/lib/demo-config";
 import { loadImpact, type Impact } from "@/lib/impact";
 import styles from "./page.module.css";
@@ -60,7 +59,10 @@ const PAYPAL: { icon: IconName; title: string; text: string }[] = [
 const impactFigures = (i: Impact) => [
   { n: i.soldOnline, label: `of ${i.total} recalls involved online sales` },
   { n: i.amazon, label: `of ${i.total} were sold on Amazon` },
-  { n: i.barcodeListed, label: `of ${i.total} listed a barcode number, so text matching is needed` },
+  {
+    n: i.barcodeListed,
+    label: `of ${i.total} listed a barcode number, so text matching is needed`,
+  },
 ];
 
 const sinceLabel = (iso: string) =>
@@ -187,7 +189,9 @@ export default async function Home() {
                   window, so the buyer is paid by PayPal Payouts instead:
                   $34.00.
                 </p>
-                <p className={styles.codeNote}>Rule that applied: paid past the 180-day refund window</p>
+                <p className={styles.codeNote}>
+                  Rule that applied: paid past the 180-day refund window
+                </p>
               </div>
             </div>
           </aside>
@@ -279,7 +283,8 @@ export default async function Home() {
                 AI suggests, you approve, fixed rules move the money.
               </p>
               <p className={styles.legend}>
-                Model = the AI · Rule = fixed code · Tool = a lookup or PayPal call · You = a person
+                Model = the AI · Rule = fixed code · Tool = a lookup or PayPal
+                call · You = a person
               </p>
             </div>
             <ol className={styles.timeline}>
@@ -317,21 +322,6 @@ export default async function Home() {
               ))}
             </ul>
           </div>
-        </section>
-
-        <section
-          className={`${styles.section} ${styles.judges}`}
-          aria-labelledby="s4"
-        >
-          <div className={styles.judgesHead}>
-            <h2 id="s4">Sandbox login for judges</h2>
-            <span className={styles.when}>PayPal test account, fake money</span>
-          </div>
-          <JudgeLogin />
-          <p className={styles.readme}>
-            The steps are at the top of this page. Only this sandbox buyer can sign in; the other
-            buyers on the dashboard are fictional.
-          </p>
         </section>
       </main>
 
