@@ -222,7 +222,10 @@ export async function loadDashboard(
           : a.status === "FAILED"
             ? `PayPal returned an error for the ${a.op.toLowerCase()}; nothing was sent`
             : `${a.op} sent to PayPal, waiting for its answer`;
-      timeline.push({ tag: "tool", text });
+      timeline.push({
+        tag: "tool",
+        text: a.status === "SUCCEEDED" && a.paypalRef ? `${text} (PayPal id ${a.paypalRef})` : text,
+      });
     }
     for (const d of mine.filter((d) => d.step === "SETTLE")) {
       timeline.push({ tag: tagOf(d.actor), text: clip(d.summary) });

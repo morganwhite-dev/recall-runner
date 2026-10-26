@@ -16,6 +16,7 @@ import {
   recalls,
 } from "@/db";
 import { decideRemedy, type BuyerChoice, type Decision } from "./policy";
+import { requestIdFor } from "./retry";
 import {
   addTracking,
   PayPalError,
@@ -125,8 +126,14 @@ export async function executeCase(caseId: string): Promise<ExecutionResult> {
   if (decision.action === "REJECT") return save("REJECTED");
   if (decision.action === "REPAIR_NOTICE") return save("REPAIR_KIT_REQUESTED");
 
-  // From here on, PayPal is called. One fixed request id per case and action.
-  const requestId = `case-${caseId}-${decision.action.toLowerCase()}`;
+  // From here on, PayPal is called. The request id is the same for every try of this case and
+  // action, except after a failure PayPal clearly gave us, when a retry gets a fresh one
+  // (see src/lib/retry.ts).
+  const earlier = await db
+    .select()
+    .from(paypalActions)
+    .where(and(eq(paypalActions.caseId, caseId), eq(paypalActions.op, decision.action)));
+  const requestId = requestIdFor(caseId, decision.action, earlier);
   const [previous] = await db
     .select()
     .from(paypalActions)

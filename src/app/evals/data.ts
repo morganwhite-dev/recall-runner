@@ -4,12 +4,12 @@ export type TestGroup = {
   id: string;
   label: string;
   icon: IconName;
-  // Width on the 12-column grid, so every row of cards fills evenly: 3 (four across) or 4 (three across).
-  span: 3 | 4;
+  // Width on the 12-column grid, so every row of cards fills evenly: 3 (four across), 4 (three across) or 6 (two across).
+  span: 3 | 4 | 6;
   tests: { n: number; text: string }[];
 };
 
-// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18 tests/buyer.test.ts, 19 to 31 tests/dashboard.test.ts.
+// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18 and 32 to 37 tests/buyer.test.ts, 38 to 43 tests/impact.test.ts, 19 to 31 tests/dashboard.test.ts.
 export const MONEY_GROUPS: TestGroup[] = [
   {
     id: "refund",
@@ -92,6 +92,34 @@ export const MONEY_GROUPS: TestGroup[] = [
       { n: 29, text: "several orders of the same recall become one group, in order of first appearance" },
       { n: 30, text: "a refund past 180 days is described as a PayPal Payout, inside it as a refund; other remedies say nothing" },
       { n: 31, text: "the amount for several orders adds the prices; remedies with no money say Free" },
+    ],
+  },
+  {
+    id: "failures",
+    label: "Failures and retries",
+    icon: "alert",
+    span: 6,
+    tests: [
+      { n: 32, text: "a failed, blocked or returned payout names the batch we stored, so the case can be reopened" },
+      { n: 33, text: "a failed refund names the refund id, and PayPal's own error text is used when it sends one" },
+      { n: 34, text: "unclaimed or held payouts are only noted, never treated as failures that allow a second payment" },
+      { n: 35, text: "failure events with no id, and success events, are not failures" },
+      { n: 36, text: "the first try and any try with an unknown outcome reuse the same PayPal request id" },
+      { n: 37, text: "after a definite failure the retry gets a fresh request id, one more for each failure" },
+    ],
+  },
+  {
+    id: "impact",
+    label: "Home page numbers",
+    icon: "info",
+    span: 6,
+    tests: [
+      { n: 38, text: "no recalls gives all zeros, not an error" },
+      { n: 39, text: "online recalls are counted from the sold-online flag" },
+      { n: 40, text: "Amazon is any recall whose retailers text mentions Amazon, in any letter case" },
+      { n: 41, text: "a barcode counts as listed only when a UPC number is written out" },
+      { n: 42, text: "a barcode that is only mentioned, with no number, does not count" },
+      { n: 43, text: "a barcode number in the product list also counts" },
     ],
   },
 ];

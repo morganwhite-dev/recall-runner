@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { ART_PATHS } from "@/components/ProductArt";
+import { Count } from "@/components/Count";
 import { StartFreshDemo } from "@/components/StartFreshDemo";
 import { Icon, type IconName } from "@/components/Icon";
 import { StatusPill } from "@/components/StatusPill";
 import { Tag, type TagKind } from "@/components/Tag";
+import { loadImpact, type Impact } from "@/lib/impact";
 import styles from "./page.module.css";
 
 const GITHUB_URL = "https://github.com/morganwhite-dev/recall-runner";
@@ -60,7 +62,25 @@ const JUDGE_STEPS = [
   "Watch the case settle",
 ];
 
-export default function Home() {
+// The three figures in the impact strip. Each reads one count from the recalls table.
+const impactFigures = (i: Impact) => [
+  { n: i.soldOnline, label: `of ${i.total} recalls involved online sales` },
+  { n: i.amazon, label: `of ${i.total} were sold on Amazon` },
+  { n: i.barcodeListed, label: `of ${i.total} listed a barcode number` },
+];
+
+const sinceLabel = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+export default async function Home() {
+  // null when the query fails or finds nothing; the strip is then left out.
+  const impact = await loadImpact();
+
   return (
     <>
       <header className={`${styles.field} on-plum`}>
@@ -185,8 +205,43 @@ export default function Home() {
       </header>
 
       <main className={styles.wrap}>
+        {impact && (
+          <section
+            className={`${styles.section} ${styles.first}`}
+            aria-labelledby="s0"
+          >
+            <div className={styles.row}>
+              <div>
+                <h2 className={styles.title} id="s0">
+                  Why order records
+                </h2>
+                <p className={styles.sub}>
+                  A store’s own orders reach buyers fastest. Matching product
+                  text covers what barcodes don’t.
+                </p>
+              </div>
+              <div>
+                <dl className={styles.impact}>
+                  {impactFigures(impact).map((f) => (
+                    <div className={styles.fig} key={f.label}>
+                      <dt>
+                        <Count className={styles.countUp} value={f.n} />
+                      </dt>
+                      <dd>{f.label}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className={styles.cite}>
+                  Source: CPSC recalls since {sinceLabel(impact.since)}, counted
+                  from the recalls in this app’s database.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
         <section
-          className={`${styles.section} ${styles.first}`}
+          className={`${styles.section} ${impact ? "" : styles.first}`}
           aria-labelledby="s1"
         >
           <div className={styles.row}>

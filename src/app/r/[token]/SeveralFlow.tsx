@@ -11,6 +11,7 @@ import {
   formatDate,
   groupAmount,
   howPaid,
+  isClaimable,
   isDone,
   loginHref,
   remedyCopy,
@@ -50,14 +51,14 @@ export function SeveralFlow({
   }
 
   // Recalls still waiting for a choice, and the picks that are ready (one per open order).
-  const openGroups = GROUPS.filter((g) => g.cases.some((c) => c.status === "OPEN"));
+  const openGroups = GROUPS.filter((g) => g.cases.some(isClaimable));
   const ready = GROUPS.flatMap((g, i) => {
     const remedy = picked[i];
     return remedy
-      ? g.cases.filter((c) => c.status === "OPEN").map((c) => ({ caseId: c.caseId, remedy }))
+      ? g.cases.filter(isClaimable).map((c) => ({ caseId: c.caseId, remedy }))
       : [];
   });
-  const readyGroups = GROUPS.filter((_, i) => picked[i] && GROUPS[i].cases.some((c) => c.status === "OPEN"));
+  const readyGroups = GROUPS.filter((_, i) => picked[i] && GROUPS[i].cases.some(isClaimable));
   const refundCents = ready
     .filter((p) => p.remedy === "refund")
     .reduce(
@@ -139,7 +140,7 @@ export function SeveralFlow({
             {GROUPS.map((g, k) => {
               const recall = g.cases[0];
               const choice = picked[k];
-              const open = g.cases.filter((c) => c.status === "OPEN");
+              const open = g.cases.filter(isClaimable);
               const doneCases = g.cases.filter(isDone);
               const claimable = open.length > 0;
               const allDone = doneCases.length === g.cases.length;
@@ -156,7 +157,15 @@ export function SeveralFlow({
                     </span>
                     <span className={styles.stat}>
                       <Icon name={claimable ? "info" : allDone ? "check" : "pause"} />
-                      {claimable ? (single ? "Ready to confirm" : "Needs your choice") : allDone ? "Done" : "Couldn't complete"}
+                      {claimable
+                        ? open.some((c) => c.status === "FAILED")
+                          ? "Try again"
+                          : single
+                            ? "Ready to confirm"
+                            : "Needs your choice"
+                        : allDone
+                          ? "Done"
+                          : "Couldn't complete"}
                     </span>
                   </div>
 
@@ -170,7 +179,7 @@ export function SeveralFlow({
                       {g.cases.map((c) => (
                         <li key={c.caseId}>
                           Bought {c.daysAgo} days ago &middot; {formatUsd(c.priceCents)}
-                          {claimable && choice && c.status === "OPEN" && howPaid(c, choice) && (
+                          {claimable && choice && isClaimable(c) && howPaid(c, choice) && (
                             <span> &middot; {howPaid(c, choice)}</span>
                           )}
                         </li>

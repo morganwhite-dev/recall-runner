@@ -1,7 +1,7 @@
 {
-  "ranAt": "2026-10-26T03:27:59.556Z",
-  "durationMs": 176,
-  "total": 31,
+  "ranAt": "2026-10-26T03:39:17.348Z",
+  "durationMs": 182,
+  "total": 43,
   "failing": 0,
   "tests": [
     {
@@ -36,6 +36,36 @@
     },
     {
       "name": "other events, or events with no id, settle nothing",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a failed, blocked or returned payout names the batch we stored, so the case can be reopened",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a failed refund names the refund id, and PayPal's own error text is used when it sends one",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "unclaimed or held payouts are only noted, never treated as failures that allow a second payment",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "failure events with no id, and success events, are not failures",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the first try and any try with an unknown outcome reuse the same PayPal request id",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "after a definite failure the retry gets a fresh request id, one more for each failure",
       "file": "buyer.test.ts",
       "passed": true
     },
@@ -102,6 +132,36 @@
     {
       "name": "the amount for several orders adds the prices; remedies with no money say Free",
       "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "no recalls gives all zeros, not an error",
+      "file": "impact.test.ts",
+      "passed": true
+    },
+    {
+      "name": "online recalls are counted from the sold-online flag",
+      "file": "impact.test.ts",
+      "passed": true
+    },
+    {
+      "name": "Amazon is any recall whose retailers text mentions Amazon, in any letter case",
+      "file": "impact.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a barcode counts as listed only when a UPC number is written out",
+      "file": "impact.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a barcode that is only mentioned, with no number, does not count",
+      "file": "impact.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a barcode number in the product list also counts",
+      "file": "impact.test.ts",
       "passed": true
     },
     {

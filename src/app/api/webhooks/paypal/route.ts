@@ -1,10 +1,11 @@
 import { NextRequest } from "next/server";
-import { ensureWebhookTable, pool } from "@/lib/db";
+import { db, webhookEvents } from "@/db";
 import { verifyWebhookSignature } from "@/lib/paypal";
-import { settleFromEvent, type PayPalEvent } from "@/lib/settle";
+import { handleVerifiedEvent, type PayPalEvent } from "@/lib/settle";
 
 // PayPal posts events here (refunds, payouts, disputes). We verify the signature with PayPal
-// before trusting anything in the body, then record the event once (idempotent on event id).
+// before trusting anything in the body, record the event once (idempotent on the event id), and
+// only then act on it: settle a case, or record that the money did not arrive.
 export async function POST(request: NextRequest) {
   const raw = await request.text();
 
@@ -35,12 +36,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  await ensureWebhookTable();
-  await pool.query(
-    `insert into webhook_events (paypal_event_id, event_type, verified)
-     values ($1, $2, $3) on conflict (paypal_event_id) do nothing`,
-    [event.id, event.event_type, verified],
-  );
+  await db
+    .insert(webhookEvents)
+    .values({
+      paypalEventId: event.id,
+      eventType: event.event_type,
+      verified,
+    })
+    .onConflictDoNothing({ target: webhookEvents.paypalEventId });
 
   console.log(`webhook ${event.event_type} verified=${verified}`);
   // Unverified messages are recorded but rejected so PayPal knows they failed.
@@ -48,23 +51,13 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "signature not verified" }, { status: 400 });
   }
 
-  // Only a verified event can settle a case. Settling is idempotent, so PayPal's retries are safe;
-  // if it throws we answer 500 and PayPal sends the event again.
+  // Only a verified event can change a case. Every step is idempotent, so PayPal's retries are
+  // safe; if it throws we answer 500 and PayPal sends the event again.
   try {
-    const settledCase = await settleFromEvent(event);
-    return Response.json({ ok: true, settled: Boolean(settledCase) });
+    const { outcome } = await handleVerifiedEvent(event);
+    return Response.json({ ok: true, outcome });
   } catch (err) {
-    console.error("webhook settle error:", err instanceof Error ? err.message : err);
+    console.error("webhook handling error:", err instanceof Error ? err.message : err);
     return Response.json({ error: "could not record event" }, { status: 500 });
   }
-}
-
-// Phase 0 spike only: lets us confirm events landed. Event ids are not exposed.
-export async function GET(request: NextRequest) {
-  request.headers.get("user-agent"); // reading request data keeps this route dynamic, not prerendered
-  await ensureWebhookTable();
-  const { rows } = await pool.query(
-    `select event_type, verified, received_at from webhook_events order by received_at desc limit 10`,
-  );
-  return Response.json({ count: rows.length, recent: rows });
 }

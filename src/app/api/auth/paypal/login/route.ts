@@ -62,7 +62,11 @@ export async function GET(request: NextRequest) {
   for (const p of picks) {
     const row = rows.find((r) => r.kase.id === p.caseId)!;
     const offered = row.recall.remedyOptions.map((o) => o.toLowerCase());
-    if (row.campaign.status !== "APPROVED" || row.kase.status !== "OPEN") return back();
+    // OPEN is a first try. FAILED is a case PayPal could not complete, so it may be tried again.
+    // REJECTED (the rules said no) and finished cases are final.
+    if (row.campaign.status !== "APPROVED" || !["OPEN", "FAILED"].includes(row.kase.status)) {
+      return back();
+    }
     if (!offered.includes(p.remedy)) return back();
   }
 

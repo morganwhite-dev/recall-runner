@@ -1,4 +1,5 @@
 import {
+  bigserial,
   boolean,
   date,
   integer,
@@ -262,10 +263,6 @@ export const buyerLinks = pgTable("buyer_links", {
 export const loginAttempts = pgTable("login_attempts", {
   state: text("state").primaryKey(),
   buyerId: uuid("buyer_id").references(() => buyers.id, { onDelete: "cascade" }),
-  // Old single-case columns from the first Phase 4 build; unused now, dropped in a later cleanup
-  // (kept so the previous deployment keeps working while the new one rolls out).
-  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
-  choice: text("choice"),
   usedAt: timestamp("used_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
@@ -310,4 +307,15 @@ export const evalRuns = pgTable("eval_runs", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
+});
+
+// Every PayPal webhook message that reached us, recorded once per PayPal event id (PayPal resends
+// events, and the unique id makes a resend harmless). `verified` says whether PayPal confirmed the
+// message really came from PayPal; only verified events are ever acted on.
+export const webhookEvents = pgTable("webhook_events", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  paypalEventId: text("paypal_event_id").notNull().unique(),
+  eventType: text("event_type").notNull(),
+  verified: boolean("verified").notNull(),
+  receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
 });

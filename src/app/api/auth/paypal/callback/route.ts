@@ -1,4 +1,4 @@
-import { and, eq, gt, isNull } from "drizzle-orm";
+import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import {
   agentDecisions,
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
     await db
       .update(cases)
       .set({ choice: item.choice, verifiedEmail: verified, updatedAt: new Date() })
-      .where(and(eq(cases.id, kase.id), eq(cases.status, "OPEN")));
+      .where(and(eq(cases.id, kase.id), inArray(cases.status, ["OPEN", "FAILED"])));
     await log(
       kase,
       campaign.merchantId,

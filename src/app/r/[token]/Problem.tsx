@@ -4,9 +4,9 @@ import { HELP_HREF } from "./data";
 import styles from "./page.module.css";
 import { Blob, SectionTitle, TopBand } from "./parts";
 
-// A case that ended without money or a kit moving (the rules said no, or PayPal returned an error).
+// A case the store's rules refused: nothing was sent and it is final. (A case PayPal could not
+// complete is offered again instead, see isClaimable.)
 export function Problem({ store, c }: { store: string; c: BuyerCase }) {
-  const failed = c.status === "FAILED";
   return (
     <>
       <TopBand store={store}>
@@ -19,10 +19,8 @@ export function Problem({ store, c }: { store: string; c: BuyerCase }) {
             We couldn&apos;t settle your {c.productName} recall
           </h1>
           <p className={styles.lede}>
-            <b>Nothing was sent, and we&apos;re sorry about the hassle.</b>{" "}
-            {failed
-              ? "PayPal returned an error. We have a record of your request, so please contact the store."
-              : "The store's rules didn't allow this choice."}
+            <b>Nothing was sent, and we&apos;re sorry about the hassle.</b> The store&apos;s rules
+            didn&apos;t allow this choice.
           </p>
         </div>
         <Blob>

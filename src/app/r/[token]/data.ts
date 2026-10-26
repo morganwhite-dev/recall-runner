@@ -92,6 +92,10 @@ export function loginHref(
   return `/api/auth/paypal/login?${q}`;
 }
 
+// A case the buyer can act on: waiting for a choice (OPEN), or one PayPal could not complete
+// (FAILED), which may be tried again. REJECTED (the rules said no) and finished cases are final.
+export const isClaimable = (c: BuyerCase) => c.status === "OPEN" || c.status === "FAILED";
+
 // A case is finished once PayPal accepted the money step (or the repair request was recorded).
 const DONE = [
   "REFUNDED",

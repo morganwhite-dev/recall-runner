@@ -55,3 +55,57 @@ test("other events, or events with no id, settle nothing", () => {
   assert.equal(settlementFor({ event_type: "PAYMENT.CAPTURE.REFUNDED", resource: {} }), null);
   assert.equal(settlementFor({ event_type: "PAYMENT.CAPTURE.REFUNDED" }), null);
 });
+
+// ---- failures and retries ----
+import { failureFor, limboFor } from "../src/lib/settle";
+import { isDefiniteFailure, requestIdFor } from "../src/lib/retry";
+
+test("a failed, blocked or returned payout names the batch we stored, so the case can be reopened", () => {
+  for (const type of ["FAILED", "BLOCKED", "RETURNED"]) {
+    const f = failureFor({
+      event_type: `PAYMENT.PAYOUTS-ITEM.${type}`,
+      resource: { payout_batch_id: "B9" },
+    });
+    assert.deepEqual([f?.kind, f?.ref], ["PAYOUT", "B9"]);
+  }
+});
+
+test("a failed refund names the refund id, and PayPal's own error text is used when it sends one", () => {
+  const f = failureFor({
+    event_type: "PAYMENT.REFUND.FAILED",
+    resource: { id: "R9", errors: { message: "Account closed" } },
+  });
+  assert.equal(f?.ref, "R9");
+  assert.match(f?.reason ?? "", /Account closed/);
+});
+
+test("unclaimed or held payouts are only noted, never treated as failures that allow a second payment", () => {
+  const unclaimed = { event_type: "PAYMENT.PAYOUTS-ITEM.UNCLAIMED", resource: { payout_batch_id: "B1" } };
+  assert.equal(failureFor(unclaimed), null);
+  assert.equal(limboFor(unclaimed)?.ref, "B1");
+  assert.equal(limboFor({ event_type: "PAYMENT.PAYOUTS-ITEM.HELD", resource: { payout_batch_id: "B2" } })?.ref, "B2");
+  assert.equal(limboFor({ event_type: "PAYMENT.PAYOUTS-ITEM.SUCCEEDED", resource: { payout_batch_id: "B3" } }), null);
+});
+
+test("failure events with no id, and success events, are not failures", () => {
+  assert.equal(failureFor({ event_type: "PAYMENT.PAYOUTS-ITEM.FAILED", resource: {} }), null);
+  assert.equal(failureFor({ event_type: "PAYMENT.CAPTURE.REFUNDED", resource: { id: "R1" } }), null);
+});
+
+test("the first try and any try with an unknown outcome reuse the same PayPal request id", () => {
+  assert.equal(requestIdFor("c1", "PAYOUT", []), "case-c1-payout");
+  const timeout = { status: "FAILED", httpStatus: 0, response: { issue: "timeout" } };
+  const server = { status: "FAILED", httpStatus: 503, response: null };
+  const pending = { status: "PENDING", httpStatus: null, response: null };
+  assert.equal(requestIdFor("c1", "PAYOUT", [timeout, server, pending]), "case-c1-payout");
+});
+
+test("after a definite failure the retry gets a fresh request id, one more for each failure", () => {
+  const rejected = { status: "FAILED", httpStatus: 422, response: { issue: "x" } };
+  const told = { status: "FAILED", httpStatus: null, response: { failure: { reason: "returned" } } };
+  assert.equal(isDefiniteFailure(rejected), true);
+  assert.equal(isDefiniteFailure(told), true);
+  assert.equal(isDefiniteFailure({ status: "SUCCEEDED", httpStatus: 201, response: null }), false);
+  assert.equal(requestIdFor("c1", "REFUND", [rejected]), "case-c1-refund-retry1");
+  assert.equal(requestIdFor("c1", "REFUND", [rejected, told]), "case-c1-refund-retry2");
+});

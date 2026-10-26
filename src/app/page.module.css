@@ -600,3 +600,77 @@
   color: var(--on-ground, inherit);
   font-weight: 700;
 }
+
+/* Impact strip: three counted figures in one row, divided by hairlines like the PayPal grid. */
+.impact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.fig {
+  padding: 0 24px;
+  border-left: 1px solid var(--line);
+}
+
+.fig:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.fig dt {
+  font: 800 60px/1.15 var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--brand);
+}
+
+.fig dd {
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+.impact + .cite {
+  margin-top: 20px;
+}
+
+/* The numbers count up. Off for reduced motion, which shows the final number. */
+@property --n {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+.countUp {
+  --n: var(--v);
+  counter-reset: n var(--n);
+}
+
+.countUp::after {
+  content: counter(n) var(--unit, "");
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .countUp {
+    animation: countup 0.9s ease-out both;
+  }
+}
+
+@keyframes countup {
+  from {
+    --n: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .fig {
+    padding: 0 12px;
+  }
+
+  .fig dt {
+    font-size: 40px;
+  }
+
+  .fig dd {
+    font-size: 14px;
+  }
+}

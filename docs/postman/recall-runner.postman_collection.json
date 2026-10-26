@@ -1,0 +1,253 @@
+{
+  "info": {
+    "name": "Recall Runner (PayPal sandbox)",
+    "description": "Five requests that let a judge check Recall Runner's PayPal sandbox activity. Fill in the collection variables first; see README.md next to this file. No real values are stored here.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "client_id",
+      "value": "",
+      "description": "PayPal sandbox app client id (leave empty in the file)"
+    },
+    {
+      "key": "client_secret",
+      "value": "",
+      "type": "secret",
+      "description": "PayPal sandbox app secret (leave empty in the file)"
+    },
+    {
+      "key": "base_url",
+      "value": "https://recall-runner.onrender.com"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "description": "PayPal order id, from the dashboard"
+    },
+    {
+      "key": "refund_id",
+      "value": "",
+      "description": "PayPal refund id, from the dashboard timeline"
+    },
+    {
+      "key": "payout_batch_id",
+      "value": "",
+      "description": "PayPal payout batch id, from the dashboard timeline"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "secret",
+      "description": "Filled in by request 1"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Get an access token",
+      "description": "Signs in to the PayPal sandbox API with the app's client id and secret (OAuth client credentials) and saves the token for requests 2 to 4.",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "{{client_id}}",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{client_secret}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "grant_type",
+              "value": "client_credentials",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://api-m.sandbox.paypal.com/v1/oauth2/token"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test(\"Response has an access token\", () => pm.expect(body.access_token).to.be.a(\"string\").and.not.empty);",
+              "pm.collectionVariables.set(\"access_token\", body.access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Get the order",
+      "description": "Shows the sandbox order a buyer paid for. Proves the purchase is a real PayPal order.",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{{order_id}}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Order id matches\", () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get(\"order_id\")));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Get the refund",
+      "description": "Shows a refund the app sent. Proves the money moved in PayPal, not just in our database.",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://api-m.sandbox.paypal.com/v2/payments/refunds/{{refund_id}}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Refund id matches\", () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get(\"refund_id\")));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Get the payout batch",
+      "description": "Shows a PayPal Payouts batch the app sent for orders past the 180-day refund window.",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://api-m.sandbox.paypal.com/v1/payments/payouts/{{payout_batch_id}}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Payout batch id matches\", () => pm.expect(pm.response.json().batch_header.payout_batch_id).to.eql(pm.collectionVariables.get(\"payout_batch_id\")));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Send an unsigned fake webhook",
+      "description": "Posts a made-up event with no PayPal signature headers. The app must refuse it with 400 and the message 'signature not verified'.",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"WH-FAKE-POSTMAN-TEST\",\n  \"event_type\": \"PAYMENT.CAPTURE.REFUNDED\",\n  \"resource\": {}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/webhooks/paypal"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"Body says the signature was not verified\", () => pm.expect(pm.response.json()).to.eql({ error: \"signature not verified\" }));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { loadBuyerPage, markOpened } from "@/lib/buyer";
-import { groupByRecall, isDone } from "./data";
+import { groupByRecall, isClaimable, isDone } from "./data";
 import { Mismatch } from "./Mismatch";
 import { MultiSuccess } from "./MultiSuccess";
 import styles from "./page.module.css";
@@ -47,7 +47,11 @@ async function BuyerView({
     typeof doneParam === "string"
       ? cases.filter((c) => doneParam.split(",").includes(c.caseId) && isDone(c))
       : [];
-  const alert = typeof result === "string" ? ALERTS[result] : undefined;
+  // A case PayPal could not complete is offered again, with a plain note on top.
+  const retryNote = cases.some((c) => c.status === "FAILED")
+    ? "PayPal couldn't complete your last try for one of your recalls. You can try again below."
+    : undefined;
+  const alert = (typeof result === "string" ? ALERTS[result] : undefined) ?? retryNote;
 
   let view;
   if (result === "mismatch") {
@@ -58,18 +62,18 @@ async function BuyerView({
         token={token}
         store={store}
         cases={justDone}
-        others={cases.some((c) => c.status === "OPEN")}
+        others={cases.some(isClaimable)}
       />
     );
   } else if (justDone.length === 1) {
     view = <Success token={token} store={store} c={justDone[0]} others={cases.length > 1} />;
   } else if (target && isDone(target)) {
     view = <Success token={token} store={store} c={target} others={cases.length > 1} />;
-  } else if (picked && !isDone(picked) && picked.status !== "OPEN") {
+  } else if (picked && !isDone(picked) && !isClaimable(picked)) {
     view = <Problem store={store} c={picked} />;
   } else if (
     groups.length === 1 &&
-    groups[0].cases.every((c) => c.status === "OPEN") &&
+    groups[0].cases.every(isClaimable) &&
     groups[0].cases[0].offers.length === 1
   ) {
     // One recall with a single remedy: nothing to choose, just confirm. Several orders still count as one.
