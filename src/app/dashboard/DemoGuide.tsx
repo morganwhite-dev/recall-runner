@@ -73,7 +73,7 @@ export function DemoGuide({
     },
     {
       title: "Confirm with PayPal",
-      text: "The sandbox buyer login is shown at the top of the buyer page. Sign in with it and PayPal sends the money.",
+      text: "The sandbox buyer login is shown under the Confirm with PayPal button on the buyer page. Sign in with it and PayPal sends the money.",
       action: null,
     },
     {
