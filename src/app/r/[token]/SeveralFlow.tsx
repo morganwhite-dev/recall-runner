@@ -10,11 +10,12 @@ import {
   cpscLabel,
   formatDate,
   groupAmount,
-  howPaid,
+  howPaidShort,
   isClaimable,
   isDone,
   loginHref,
   remedyCopy,
+  shortName,
   type RecallGroup,
   type RemedyKind,
 } from "./data";
@@ -174,13 +175,15 @@ export function SeveralFlow({
                       <span className={styles.badge}>{cpscLabel(recall)}</span>
                       <span>Recalled {formatDate(recall.recallDate)}</span>
                     </p>
-                    <h2 id={`recall-${k}`}>{recall.productName}</h2>
+                    <h2 id={`recall-${k}`} title={recall.productName}>
+                      {shortName(recall.productName)}
+                    </h2>
                     <ul className={styles.orders}>
                       {g.cases.map((c) => (
                         <li key={c.caseId}>
                           Bought {c.daysAgo} days ago &middot; {formatUsd(c.priceCents)}
-                          {claimable && choice && isClaimable(c) && howPaid(c, choice) && (
-                            <span> &middot; {howPaid(c, choice)}</span>
+                          {claimable && choice && isClaimable(c) && howPaidShort(c, choice) && (
+                            <span> &middot; {howPaidShort(c, choice)}</span>
                           )}
                         </li>
                       ))}

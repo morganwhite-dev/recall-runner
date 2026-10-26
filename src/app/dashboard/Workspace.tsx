@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, type KeyboardEvent } from "react";
+import type { GridApi } from "ag-grid-community";
 import { CaseGrid, type GridKind } from "./CaseGrid";
-import type { BuyerCase } from "./data";
+import type { BuyerCase, CaseStatus } from "./data";
 import { DetailPanel, MessagePreview } from "./DetailPanel";
 import delight from "./delight.module.css";
 import styles from "./page.module.css";
+
+const STATUSES: (CaseStatus | "All")[] = ["All", "Notified", "Waiting", "Settled", "Problem"];
 
 const TABS: { id: GridKind; label: string }[] = [
   { id: "cases", label: "Cases" },
@@ -21,6 +24,10 @@ export function Workspace({
 }) {
   const [tab, setTab] = useState<GridKind>("cases");
   const [selectedId, setSelectedId] = useState(CASES[0]?.id ?? "");
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<CaseStatus | "All">("All");
+  const [api, setApi] = useState<GridApi<BuyerCase> | null>(null);
+  const [shown, setShown] = useState(CASES.length);
   const selected = CASES.find((c) => c.id === selectedId) ?? CASES[0];
 
   if (!selected) {
@@ -80,18 +87,64 @@ export function Workspace({
           id={`panel-${tab}`}
           aria-labelledby={`tab-${tab}`}
         >
+          <div className={styles.toolbar}>
+            <label className={styles.search}>
+              <span className="sr-only">Search buyers</span>
+              <input
+                type="search"
+                value={search}
+                placeholder="Search buyers, path, status…"
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </label>
+            <div className={styles.chips} role="group" aria-label="Filter by status">
+              {STATUSES.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  aria-pressed={status === s}
+                  onClick={() => setStatus(s)}
+                >
+                  {s}
+                  <span>{s === "All" ? CASES.length : CASES.filter((c) => c.status === s).length}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className={styles.exportBtn}
+              disabled={!api}
+              onClick={() =>
+                api?.exportDataAsCsv({
+                  fileName: `recall-runner-${tab}.csv`,
+                  skipColumnHeaders: false,
+                })
+              }
+            >
+              Export CSV
+            </button>
+          </div>
+          {shown === 0 && (
+            <p className={styles.noMatch} role="status">
+              No cases match these filters. Clear the search or choose All.
+            </p>
+          )}
           <CaseGrid
             key={tab}
             kind={tab}
             rows={CASES}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            search={search}
+            status={status}
+            onApi={setApi}
+            onShown={setShown}
           />
           <div className={styles.gridFoot}>
             {tab === "cases" ? (
               <>
                 <span>
-                  1 to {CASES.length} of {CASES.length}
+                  Showing {shown} of {CASES.length}
                 </span>
                 <span>Select a row to see why it happened</span>
               </>

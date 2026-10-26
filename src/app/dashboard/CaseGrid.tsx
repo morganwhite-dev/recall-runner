@@ -1,26 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   CellStyleModule,
   ClientSideRowModelModule,
+  CsvExportModule,
+  ExternalFilterModule,
   ModuleRegistry,
+  QuickFilterModule,
   RowApiModule,
   RowSelectionModule,
   themeQuartz,
   type ColDef,
+  type GridApi,
   type ICellRendererParams,
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { Icon } from "@/components/Icon";
-import { amountLabel, type BuyerCase } from "./data";
+import { amountLabel, type BuyerCase, type CaseStatus } from "./data";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./page.module.css";
 
 ModuleRegistry.registerModules([
   CellStyleModule,
   ClientSideRowModelModule,
+  CsvExportModule,
+  ExternalFilterModule,
+  QuickFilterModule,
   RowApiModule,
   RowSelectionModule,
 ]);
@@ -190,14 +197,35 @@ interface CaseGridProps {
   rows: BuyerCase[];
   selectedId: string;
   onSelect: (id: string) => void;
+  // Narrowing the list: free-text search (AG Grid's quick filter) and an exact status.
+  search: string;
+  status: CaseStatus | "All";
+  // Hands the toolbar the grid's API (for CSV export) and how many rows are showing.
+  onApi: (api: GridApi<BuyerCase>) => void;
+  onShown: (shown: number) => void;
 }
 
 // Selection follows keyboard focus, so arrow keys move through the cases.
-export function CaseGrid({ kind, rows, selectedId, onSelect }: CaseGridProps) {
+export function CaseGrid({
+  kind,
+  rows,
+  selectedId,
+  onSelect,
+  search,
+  status,
+  onApi,
+  onShown,
+}: CaseGridProps) {
   const columnDefs = useMemo(
     () => (kind === "cases" ? CASE_COLUMNS : OUTBOX_COLUMNS),
     [kind],
   );
+  const apiRef = useRef<GridApi<BuyerCase> | null>(null);
+
+  // The status filter lives outside the grid, so tell the grid when it changes.
+  useEffect(() => {
+    apiRef.current?.onFilterChanged();
+  }, [status]);
   return (
     <div className={styles.agWrap}>
       <AgGridReact<BuyerCase>
@@ -215,9 +243,24 @@ export function CaseGrid({ kind, rows, selectedId, onSelect }: CaseGridProps) {
           checkboxes: false,
           enableClickSelection: true,
         }}
-        onFirstDataRendered={(e) =>
-          e.api.getRowNode(selectedId)?.setSelected(true)
-        }
+        quickFilterText={search}
+        isExternalFilterPresent={() => status !== "All"}
+        doesExternalFilterPass={(node) => node.data?.status === status}
+        onGridReady={(e) => {
+          apiRef.current = e.api;
+          onApi(e.api);
+        }}
+        onFilterChanged={(e) => {
+          onShown(e.api.getDisplayedRowCount());
+          // If the selected buyer was filtered out, the panel follows the first one still showing.
+          if (!e.api.getRowNode(selectedId)?.displayed) {
+            e.api.getDisplayedRowAtIndex(0)?.setSelected(true);
+          }
+        }}
+        onFirstDataRendered={(e) => {
+          e.api.getRowNode(selectedId)?.setSelected(true);
+          onShown(e.api.getDisplayedRowCount());
+        }}
         onRowSelected={(e) => {
           if (e.node.isSelected() && e.data) onSelect(e.data.id);
         }}

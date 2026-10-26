@@ -219,7 +219,7 @@
   grid-template-rows: subgrid;
   background: var(--surface);
   border-radius: 24px;
-  padding: 28px;
+  padding: 24px;
   box-shadow: var(--card-shadow);
 }
 
@@ -232,12 +232,12 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 16px;
+  padding-bottom: 12px;
 }
 
 .thumb {
-  width: 96px;
-  height: 96px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   background: var(--lav-2);
   color: var(--brand);
@@ -269,7 +269,7 @@
 }
 
 .r2 {
-  padding-bottom: 16px;
+  padding-bottom: 12px;
 }
 
 .meta {
@@ -306,7 +306,7 @@
 }
 
 .r3 {
-  padding-bottom: 20px;
+  padding-bottom: 14px;
 }
 
 .r3 blockquote {

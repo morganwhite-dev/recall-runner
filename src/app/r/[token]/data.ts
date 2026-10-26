@@ -129,6 +129,12 @@ export function howPaid(c: BuyerCase, kind: RemedyKind): string | null {
   return c.daysAgo > REFUND_WINDOW_DAYS ? "paid by PayPal Payouts" : "refunded to PayPal";
 }
 
+// The same, in one word, for the tight lines inside the several-recalls cards.
+export function howPaidShort(c: BuyerCase, kind: RemedyKind): string | null {
+  if (kind !== "refund") return null;
+  return c.daysAgo > REFUND_WINDOW_DAYS ? "Payout" : "Refund";
+}
+
 // What the buyer gets for a remedy across several orders: the prices added up, or "Free".
 export function groupAmount(cases: BuyerCase[], kind: RemedyKind): string {
   return kind === "refund"
