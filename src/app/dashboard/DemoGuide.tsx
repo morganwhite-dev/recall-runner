@@ -6,30 +6,31 @@ import styles from "./page.module.css";
 // "What do I do next?" for someone trying the demo. Four steps, the current one highlighted, each
 // ticked once it has really happened (read from the database, not remembered by the page).
 export function DemoGuide({ guide, current }: { guide: DemoGuideState; current: string }) {
-  const total = guide.campaigns.length;
-  const approvedCount = guide.campaigns.filter((c) => c.approved).length;
-  const next = guide.campaigns.find((c) => !c.approved);
-  const onNext = next?.recallNumber === current;
-  const done = [approvedCount === total, guide.paid, guide.paid, guide.settled];
+  const f = guide.featured;
+  const onFeatured = f.recallNumber === current;
+  const done = [f.approved, guide.paid, guide.paid, guide.settled];
   const active = done.findIndex((d) => !d);
 
   const steps = [
     {
-      title: `Approve the ${total} campaigns`,
-      text: `You are the store. ${approvedCount} of ${total} approved. Each one covers a different remedy: a refund, a replacement and a repair kit.`,
+      title: "Approve the hand-warmers recall",
+      text:
+        guide.preApprovedCount > 0
+          ? `You are the store. Approving opens its cases and notifies the buyers. The other ${guide.preApprovedCount} recalls (a replacement and a repair kit) were approved in advance.`
+          : "You are the store. Approving opens its cases and notifies the buyers.",
       action:
-        next &&
-        (onNext ? (
+        !f.approved &&
+        (onFeatured ? (
           <span className={styles.guideHint}>Press Approve campaign above.</span>
         ) : (
-          <Link className={styles.guideLink} href={`/dashboard?campaign=${next.recallNumber}`}>
-            Next: {next.label}
+          <Link className={styles.guideLink} href={`/dashboard?campaign=${f.recallNumber}`}>
+            Go to the {f.label}
           </Link>
         )),
     },
     {
       title: "Open the buyer page",
-      text: "Now you are the customer: Morgan Demo, the one buyer who can sign in. The other buyers are fictional.",
+      text: "Now you are the customer: Morgan Demo, the one buyer who can sign in (orders set up to cover every remedy). The other buyers are fictional.",
       action: guide.buyerPath && (
         <a className={styles.guideLink} href={guide.buyerPath} target="_blank" rel="noopener noreferrer">
           Open buyer page <Icon name="ext" />

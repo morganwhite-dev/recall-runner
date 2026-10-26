@@ -96,10 +96,10 @@ test("several orders of the same recall become one group, in order of first appe
   assert.deepEqual(groups.map((g) => [g.recallNumber, g.cases.length]), [["A", 2], ["B", 1]]);
 });
 
-test("a refund past 180 days is described as a PayPal Payout, inside it as a refund", () => {
+test("a refund past 180 days is described as a PayPal Payout, inside it as a refund; other remedies say nothing", () => {
   assert.equal(howPaid(order("A", 200, "1"), "refund"), "paid by PayPal Payouts");
   assert.equal(howPaid(order("A", 180, "1"), "refund"), "refunded to PayPal");
-  assert.equal(howPaid(order("A", 5, "1"), "repair"), "free repair kit");
+  assert.equal(howPaid(order("A", 5, "1"), "repair"), null);
 });
 
 test("the amount for several orders adds the prices; remedies with no money say Free", () => {

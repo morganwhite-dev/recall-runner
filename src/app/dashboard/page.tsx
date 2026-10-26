@@ -92,7 +92,10 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
           />
           {approved ? (
             <p className={styles.approval}>
-              You approved this campaign <StatusPill>Approved</StatusPill>
+              {header.preApproved
+                ? "Approved in advance for the demo"
+                : "You approved this campaign"}{" "}
+              <StatusPill>Approved</StatusPill>
             </p>
           ) : (
             <div className={styles.approval}>

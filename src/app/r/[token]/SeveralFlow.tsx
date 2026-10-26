@@ -65,7 +65,7 @@ export function SeveralFlow({
         sum + (GROUPS.flatMap((g) => g.cases).find((c) => c.caseId === p.caseId)?.priceCents ?? 0),
       0,
     );
-  const totalLabel = refundCents > 0 ? `${formatUsd(refundCents)} back` : "Free";
+  const totalLabel = refundCents > 0 ? `${formatUsd(refundCents)} back` : "No cost to you";
 
   return (
     <div className={styles.root}>
@@ -170,7 +170,7 @@ export function SeveralFlow({
                       {g.cases.map((c) => (
                         <li key={c.caseId}>
                           Bought {c.daysAgo} days ago &middot; {formatUsd(c.priceCents)}
-                          {claimable && choice && c.status === "OPEN" && (
+                          {claimable && choice && c.status === "OPEN" && howPaid(c, choice) && (
                             <span> &middot; {howPaid(c, choice)}</span>
                           )}
                         </li>
@@ -242,12 +242,17 @@ export function SeveralFlow({
                   <div className={styles.mine}>
                     <span className={styles.mineLab}>Your remedy</span>
                     <span className={styles.mineAmt}>
+                      {/* Money remedies show the amount; the others name the remedy, since "Free" is already on the option above. */}
                       {!claimable
                         ? recall.choice
-                          ? groupAmount(doneCases, recall.choice)
+                          ? recall.choice === "refund"
+                            ? groupAmount(doneCases, recall.choice)
+                            : remedyCopy(recall.choice).short
                           : "None"
                         : choice
-                          ? groupAmount(open, choice)
+                          ? choice === "refund"
+                            ? groupAmount(open, choice)
+                            : remedyCopy(choice).short
                           : "Choose one"}
                     </span>
                     {doneCases.length > 0 && (

@@ -18,6 +18,7 @@ import {
   recalls,
 } from "@/db";
 import type { TagKind } from "@/components/Tag";
+import { FEATURED_RECALL, PRE_APPROVED_BY } from "@/lib/demo-config";
 import { artFor } from "@/components/ProductArt";
 import {
   caseStatus,
@@ -93,6 +94,7 @@ export async function loadDashboard(
     productNames: matched.map((p) => p.name),
     remedies: recall.remedyOptions,
     status: campaign.status,
+    preApproved: false, // filled in below
     art: artFor(matched[0]?.sku ?? ""),
     priceCents: matched[0]?.priceCents ?? null,
   };
@@ -154,6 +156,10 @@ export async function loadDashboard(
         )
         .orderBy(asc(agentDecisions.createdAt)),
     ]);
+
+  const approval = campaignDecisions.find((d) => d.step === "APPROVE");
+  header.preApproved =
+    (approval?.detail as { approvedBy?: string } | null)?.approvedBy === PRE_APPROVED_BY;
 
   const now = new Date();
   const out: BuyerCase[] = rows.map(({ kase, order, buyer, notice, token }) => {
@@ -291,14 +297,18 @@ async function loadGuide(
         eq(orders.buyerId, sandbox.id),
       ),
     );
-  const anyApproved = targets.some((t) => t.campaign.status === "APPROVED");
+  const featured = targets.find((t) => t.recall.recallNumber === FEATURED_RECALL) ?? targets[0];
+  const featuredApproved = featured.campaign.status === "APPROVED";
   return {
-    campaigns: targets.map((t) => ({
-      recallNumber: t.recall.recallNumber,
-      label: `${nameOf(t.campaign.matchedSkus[0] ?? "")} recall`,
-      approved: t.campaign.status === "APPROVED",
-    })),
-    buyerPath: anyApproved && link ? `/r/${link.token}` : null,
+    featured: {
+      recallNumber: featured.recall.recallNumber,
+      label: `${nameOf(featured.campaign.matchedSkus[0] ?? "")} recall`,
+      approved: featuredApproved,
+    },
+    preApprovedCount: targets.filter(
+      (t) => t !== featured && t.campaign.status === "APPROVED",
+    ).length,
+    buyerPath: featuredApproved && link ? `/r/${link.token}` : null,
     paid: theirCases.some((c) => PAID.includes(c.status)),
     settled: theirCases.some((c) => c.settledAt !== null),
   };

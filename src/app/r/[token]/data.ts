@@ -47,15 +47,15 @@ export function remedyCopy(kind: RemedyKind): Remedy {
     case "replace":
       return {
         icon: "box",
-        name: "Free replacement",
-        short: "Free replacement",
+        name: "Replacement",
+        short: "Replacement",
         detail: "No money. A new one ships, and tracking is added to your order.",
         rule: "Replacement: the recall offers a new one",
       };
     case "repair":
       return {
         icon: "wrench",
-        name: "Free repair kit",
+        name: "Repair kit",
         short: "Repair kit",
         detail: "No money. The kit is mailed to you.",
         rule: "Repair: the recall offers a repair kit",
@@ -119,9 +119,9 @@ export function groupByRecall(cases: BuyerCase[]): RecallGroup[] {
 }
 
 // How one order will be paid for a remedy: refunds past PayPal's 180 days go by PayPal Payouts.
-export function howPaid(c: BuyerCase, kind: RemedyKind): string {
-  if (kind === "replace") return "free replacement";
-  if (kind === "repair") return "free repair kit";
+// Only money remedies have anything to say; the others are already named "Free" once on the card.
+export function howPaid(c: BuyerCase, kind: RemedyKind): string | null {
+  if (kind !== "refund") return null;
   return c.daysAgo > REFUND_WINDOW_DAYS ? "paid by PayPal Payouts" : "refunded to PayPal";
 }
 

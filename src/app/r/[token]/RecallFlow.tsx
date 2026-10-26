@@ -104,7 +104,7 @@ export function RecallFlow({
                     <span>
                       <b>{c.productName}</b> · bought {c.daysAgo} days ago · {formatUsd(c.priceCents)}
                     </span>
-                    <span className={styles.how}>{howPaid(c, kind)}</span>
+                    {howPaid(c, kind) && <span className={styles.how}>{howPaid(c, kind)}</span>}
                   </li>
                 ))}
               </ul>

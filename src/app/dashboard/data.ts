@@ -50,15 +50,17 @@ export interface CampaignHeader {
   productNames: string[];
   remedies: string[];
   status: string; // DRAFT or APPROVED
+  preApproved: boolean; // approved by the demo setup, not by the visitor
   art: ArtKind;
   priceCents: number | null;
 }
 
 // Where the visitor is in the demo, so the dashboard can say what to do next.
 export interface DemoGuideState {
-  // The campaigns that affect the sandbox buyer (the one account that can really sign in).
-  campaigns: { recallNumber: string; label: string; approved: boolean }[];
-  buyerPath: string | null; // the sandbox buyer's page, once any of them is approved
+  // The recall the visitor approves themselves, and how many others were approved in advance.
+  featured: { recallNumber: string; label: string; approved: boolean };
+  preApprovedCount: number;
+  buyerPath: string | null; // the sandbox buyer's page, once the featured recall is approved
   paid: boolean; // PayPal has accepted a refund or payout
   settled: boolean; // a verified webhook confirmed it
 }

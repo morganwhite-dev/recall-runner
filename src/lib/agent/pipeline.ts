@@ -261,6 +261,7 @@ export async function runScan(
 export async function approveCampaign(
   campaignId: string,
   approvedBy = "merchant",
+  note = "",
 ) {
   const [campaign] = await db
     .select()
@@ -286,7 +287,7 @@ export async function approveCampaign(
       campaignId,
       step: "APPROVE",
       actor: "YOU",
-      summary: `Campaign approved by ${merchant.name}.`,
+      summary: `Campaign approved by ${merchant.name}${note ? ` (${note})` : ""}.`,
       detail: { approvedBy },
     });
   }

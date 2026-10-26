@@ -90,7 +90,7 @@ export const MONEY_GROUPS: TestGroup[] = [
       { n: 27, text: "the numbers count settled cases per path, and 'products fixed' is settled over affected" },
       { n: 28, text: "long timeline lines are cut to one line with an ellipsis, short ones are untouched" },
       { n: 29, text: "several orders of the same recall become one group, in order of first appearance" },
-      { n: 30, text: "a refund past 180 days is described as a PayPal Payout, inside it as a refund" },
+      { n: 30, text: "a refund past 180 days is described as a PayPal Payout, inside it as a refund; other remedies say nothing" },
       { n: 31, text: "the amount for several orders adds the prices; remedies with no money say Free" },
     ],
   },

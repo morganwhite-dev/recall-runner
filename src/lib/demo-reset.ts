@@ -1,5 +1,5 @@
-// "Start fresh demo": puts the demo store back to the moment before the merchant approves anything,
-// so the next visitor walks the whole flow from the start.
+// "Start fresh demo": puts the demo store back to the moment before the visitor approves the featured
+// recall, so the next visitor walks the whole flow from the start.
 //
 //   cases, notices, ledger rows, sign-in attempts and the approve/notify/claim/settle audit steps
 //   are deleted; campaigns go back to DRAFT (their AI matching and investigation are kept, so no AI
@@ -16,7 +16,10 @@ import {
   merchants,
   orders,
   paypalActions,
+  recalls,
 } from "@/db";
+import { approveCampaign } from "./agent/pipeline";
+import { FEATURED_RECALL, PRE_APPROVED_BY } from "./demo-config";
 import { createCardOrder } from "./paypal-client";
 
 const COOLDOWN_MS = 60_000; // one reset a minute, so a button-masher can't burn PayPal calls
@@ -100,11 +103,24 @@ export async function resetDemo(): Promise<ResetResult> {
     newPayments += 1;
   }
 
+  // Every recall except the featured one is approved in advance, as if the store had handled it
+  // earlier. The visitor approves the featured one themselves. Approving only opens cases and queues
+  // notices (the AI draft is cached); it moves no money.
+  const rows = await db
+    .select({ campaign: campaigns, recallNumber: recalls.recallNumber })
+    .from(campaigns)
+    .innerJoin(recalls, eq(campaigns.recallId, recalls.id))
+    .where(inArray(campaigns.id, campaignIds));
+  const preApproved = rows.filter((r) => r.recallNumber !== FEATURED_RECALL);
+  for (const r of preApproved) {
+    await approveCampaign(r.campaign.id, PRE_APPROVED_BY, "set up in advance for the demo");
+  }
+
   await db.insert(agentDecisions).values({
     merchantId: merchant.id,
     step: "RESET",
     actor: "TOOL",
-    summary: `Demo reset: ${campaignIds.length} campaigns back to waiting for approval, ${newPayments} new sandbox payment(s).`,
+    summary: `Demo reset: ${campaignIds.length} campaigns, ${preApproved.length} approved in advance, ${newPayments} new sandbox payment(s).`,
   });
   return { reset: true, campaigns: campaignIds.length, newPayments };
 }

@@ -1,6 +1,6 @@
 {
-  "ranAt": "2026-10-26T03:05:25.545Z",
-  "durationMs": 129,
+  "ranAt": "2026-10-26T03:27:59.556Z",
+  "durationMs": 176,
   "total": 31,
   "failing": 0,
   "tests": [
@@ -95,7 +95,7 @@
       "passed": true
     },
     {
-      "name": "a refund past 180 days is described as a PayPal Payout, inside it as a refund",
+      "name": "a refund past 180 days is described as a PayPal Payout, inside it as a refund; other remedies say nothing",
       "file": "dashboard.test.ts",
       "passed": true
     },
