@@ -77,14 +77,14 @@
 }
 
 .h1 {
-  font: 800 clamp(40px, 5.8vw, 72px) / 1.02 var(--font-display);
+  font: 800 clamp(30px, 3.6vw, 46px) / 1.08 var(--font-display);
   letter-spacing: -0.035em;
   color: var(--ink);
   overflow-wrap: anywhere;
 }
 
 .lede {
-  font-size: 21px;
+  font-size: 18px;
   line-height: 1.5;
   color: var(--ink-muted);
   margin-top: 20px;
@@ -741,4 +741,25 @@
   .btn {
     transition: none;
   }
+}
+
+/* Orders of the same recall, listed inside the one card. */
+.orders {
+  list-style: none;
+  display: grid;
+  gap: 2px;
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+/* A remedy that is already chosen because the recall offers only that one: a fixed, filled row. */
+.fixedOpt {
+  cursor: default;
+  border-color: var(--brand);
+}
+
+.fixedOpt .rad {
+  background: var(--brand);
+  color: var(--on-brand);
 }

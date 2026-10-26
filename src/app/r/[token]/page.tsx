@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { loadBuyerPage, markOpened } from "@/lib/buyer";
-import { isDone } from "./data";
+import { groupByRecall, isDone } from "./data";
 import { Mismatch } from "./Mismatch";
 import { MultiSuccess } from "./MultiSuccess";
 import styles from "./page.module.css";
@@ -38,6 +38,7 @@ async function BuyerView({
 
   const { cases, storeName: store } = page;
   const only = cases.length === 1 ? cases[0] : null;
+  const groups = groupByRecall(cases);
   const picked =
     typeof caseParam === "string" ? cases.find((c) => c.caseId === caseParam) : undefined;
   const target = picked ?? only;
@@ -66,12 +67,17 @@ async function BuyerView({
     view = <Success token={token} store={store} c={target} others={cases.length > 1} />;
   } else if (picked && !isDone(picked) && picked.status !== "OPEN") {
     view = <Problem store={store} c={picked} />;
-  } else if (only && only.status === "OPEN" && only.offers.length === 1) {
-    if (!caseParam) await markOpened([only.caseId]);
-    view = <RecallFlow token={token} store={store} recall={only} />;
+  } else if (
+    groups.length === 1 &&
+    groups[0].cases.every((c) => c.status === "OPEN") &&
+    groups[0].cases[0].offers.length === 1
+  ) {
+    // One recall with a single remedy: nothing to choose, just confirm. Several orders still count as one.
+    if (!caseParam) await markOpened(groups[0].cases.map((c) => c.caseId));
+    view = <RecallFlow token={token} store={store} recalls={groups[0].cases} />;
   } else {
     if (!caseParam) await markOpened(cases.map((c) => c.caseId));
-    view = <SeveralFlow token={token} store={store} recalls={cases} />;
+    view = <SeveralFlow token={token} store={store} groups={groups} />;
   }
 
   return (

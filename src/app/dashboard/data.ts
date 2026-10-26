@@ -54,6 +54,16 @@ export interface CampaignHeader {
   priceCents: number | null;
 }
 
+// Where the visitor is in the demo, so the dashboard can say what to do next.
+export interface DemoGuideState {
+  recallNumber: string; // the campaign that affects the sandbox buyer
+  label: string;
+  approved: boolean;
+  buyerPath: string | null; // the sandbox buyer's page, once the campaign is approved
+  paid: boolean; // PayPal has accepted a refund or payout
+  settled: boolean; // a verified webhook confirmed it
+}
+
 export interface CampaignOption {
   recallNumber: string;
   label: string;

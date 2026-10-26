@@ -5,15 +5,16 @@ import { ConfirmLink } from "@/components/ConfirmLink";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
 import Link from "next/link";
-import type { BuyerCase } from "@/lib/buyer";
 import {
   artFor,
   cpscLabel,
   formatDate,
+  groupAmount,
+  howPaid,
   isDone,
   loginHref,
-  remedyAmount,
   remedyCopy,
+  type RecallGroup,
   type RemedyKind,
 } from "./data";
 import { formatUsd } from "@/lib/policy";
@@ -21,19 +22,23 @@ import { Art } from "./parts";
 import styles from "./SeveralFlow.module.css";
 
 // Several recalls at once: three cards side by side on laptop, one at a time below 980px.
-// Each recall keeps its own remedy choice; nothing is pre-selected.
+// A recall the buyer has several orders of is ONE card with one choice. A recall that offers only
+// one remedy is already chosen: there is nothing to pick, only to confirm. One PayPal sign-in
+// settles every recall that is ready.
 export function SeveralFlow({
   token,
   store: STORE,
-  recalls: RECALLS,
+  groups: GROUPS,
 }: {
   token: string;
   store: string;
-  recalls: BuyerCase[];
+  groups: RecallGroup[];
 }) {
-  const TOTAL = RECALLS.length;
+  const TOTAL = GROUPS.length;
   const [index, setIndex] = useState(0);
-  const [picked, setPicked] = useState<(RemedyKind | null)[]>(() => RECALLS.map(() => null));
+  const [picked, setPicked] = useState<(RemedyKind | null)[]>(() =>
+    GROUPS.map((g) => (g.cases[0].offers.length === 1 ? g.cases[0].offers[0] : null)),
+  );
 
   function go(next: number) {
     setIndex(next);
@@ -44,16 +49,22 @@ export function SeveralFlow({
     setPicked((prev) => prev.map((p, i) => (i === k ? kind : p)));
   }
 
-  // The recalls still waiting for a choice, and the ones the buyer has picked a remedy for.
-  // One PayPal sign-in settles all the picked ones.
-  const open = RECALLS.filter((r) => r.status === "OPEN");
-  const ready = RECALLS.flatMap((r, i) => {
+  // Recalls still waiting for a choice, and the picks that are ready (one per open order).
+  const openGroups = GROUPS.filter((g) => g.cases.some((c) => c.status === "OPEN"));
+  const ready = GROUPS.flatMap((g, i) => {
     const remedy = picked[i];
-    return r.status === "OPEN" && remedy ? [{ caseId: r.caseId, remedy }] : [];
+    return remedy
+      ? g.cases.filter((c) => c.status === "OPEN").map((c) => ({ caseId: c.caseId, remedy }))
+      : [];
   });
+  const readyGroups = GROUPS.filter((_, i) => picked[i] && GROUPS[i].cases.some((c) => c.status === "OPEN"));
   const refundCents = ready
     .filter((p) => p.remedy === "refund")
-    .reduce((sum, p) => sum + (RECALLS.find((r) => r.caseId === p.caseId)?.priceCents ?? 0), 0);
+    .reduce(
+      (sum, p) =>
+        sum + (GROUPS.flatMap((g) => g.cases).find((c) => c.caseId === p.caseId)?.priceCents ?? 0),
+      0,
+    );
   const totalLabel = refundCents > 0 ? `${formatUsd(refundCents)} back` : "Free";
 
   return (
@@ -83,13 +94,19 @@ export function SeveralFlow({
               {TOTAL === 1 ? "You have a recall" : `You have ${TOTAL} recalls`}
             </h1>
             <p className={styles.lede}>
-              <b>Please stop using these items.</b> Each recall is settled on its own. Pick how you
-              want to settle each one, then confirm with PayPal.
+              <b>Please stop using these items.</b>{" "}
+              {TOTAL === 1
+                ? "Confirm below to settle it."
+                : "Where the recall offers a choice, pick one. Then confirm everything with one PayPal sign-in."}
             </p>
           </div>
           <div className={styles.blob} aria-hidden="true">
-            {RECALLS.map((r) => (
-              <Art key={r.caseId} kind={artFor(r.sku)} alt={`Line drawing of ${r.productName}`} />
+            {GROUPS.map((g) => (
+              <Art
+                key={g.recallNumber}
+                kind={artFor(g.cases[0].sku)}
+                alt={`Line drawing of ${g.cases[0].productName}`}
+              />
             ))}
           </div>
         </header>
@@ -101,8 +118,8 @@ export function SeveralFlow({
             Recall {index + 1} of {TOTAL}
           </p>
           <ol className={styles.segs} aria-hidden="true">
-            {RECALLS.map((r, k) => (
-              <li key={r.caseId} className={k <= index ? styles.on : undefined} />
+            {GROUPS.map((g, k) => (
+              <li key={g.recallNumber} className={k <= index ? styles.on : undefined} />
             ))}
           </ol>
           <div className={styles.pg}>
@@ -119,13 +136,17 @@ export function SeveralFlow({
 
         <div className={styles.stack}>
           <div className={styles.three}>
-            {RECALLS.map((recall, k) => {
+            {GROUPS.map((g, k) => {
+              const recall = g.cases[0];
               const choice = picked[k];
-              const done = isDone(recall);
-              const claimable = recall.status === "OPEN";
+              const open = g.cases.filter((c) => c.status === "OPEN");
+              const doneCases = g.cases.filter(isDone);
+              const claimable = open.length > 0;
+              const allDone = doneCases.length === g.cases.length;
+              const single = recall.offers.length === 1;
               return (
                 <article
-                  key={recall.caseId}
+                  key={g.recallNumber}
                   className={`${styles.rc} ${k === index ? styles.current : ""}`}
                   aria-labelledby={`recall-${k}`}
                 >
@@ -134,8 +155,8 @@ export function SeveralFlow({
                       <Art kind={artFor(recall.sku)} alt={`Line drawing of ${recall.productName}`} />
                     </span>
                     <span className={styles.stat}>
-                      <Icon name={claimable ? "info" : done ? "check" : "pause"} />
-                      {claimable ? "Needs your choice" : done ? "Done" : "Couldn't complete"}
+                      <Icon name={claimable ? "info" : allDone ? "check" : "pause"} />
+                      {claimable ? (single ? "Ready to confirm" : "Needs your choice") : allDone ? "Done" : "Couldn't complete"}
                     </span>
                   </div>
 
@@ -145,9 +166,16 @@ export function SeveralFlow({
                       <span>Recalled {formatDate(recall.recallDate)}</span>
                     </p>
                     <h2 id={`recall-${k}`}>{recall.productName}</h2>
-                    <p className={styles.sub}>
-                      Bought {recall.daysAgo} days ago &middot; {formatUsd(recall.priceCents)}
-                    </p>
+                    <ul className={styles.orders}>
+                      {g.cases.map((c) => (
+                        <li key={c.caseId}>
+                          Bought {c.daysAgo} days ago &middot; {formatUsd(c.priceCents)}
+                          {claimable && choice && c.status === "OPEN" && (
+                            <span> &middot; {howPaid(c, choice)}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
                   <div className={styles.r3}>
@@ -162,29 +190,43 @@ export function SeveralFlow({
                     </p>
                   </div>
 
-                  {claimable && (
-                  <fieldset className={styles.opts}>
-                    <legend className="sr-only">Choose a remedy for {recall.productName}</legend>
-                    {recall.offers.map((kind) => (
-                      <label key={kind} className={styles.copt}>
-                        <input
-                          type="radio"
-                          name={`remedy-${k}`}
-                          value={kind}
-                          checked={choice === kind}
-                          onChange={() => pick(k, kind)}
-                        />
+                  {claimable && single && (
+                    <div className={styles.opts}>
+                      <div className={`${styles.copt} ${styles.fixedOpt}`}>
                         <span className={styles.rad}>
                           <Icon name="check" />
                         </span>
                         <span>
-                          <b>{remedyCopy(kind).short}</b>
-                          <span className="sr-only">. {remedyCopy(kind).detail}</span>
+                          <b>{remedyCopy(recall.offers[0]).short}</b>
+                          <span className="sr-only">. {remedyCopy(recall.offers[0]).detail}</span>
                         </span>
-                        <span className={styles.a}>{remedyAmount(recall, kind)}</span>
-                      </label>
-                    ))}
-                  </fieldset>
+                        <span className={styles.a}>{groupAmount(open, recall.offers[0])}</span>
+                      </div>
+                    </div>
+                  )}
+                  {claimable && !single && (
+                    <fieldset className={styles.opts}>
+                      <legend className="sr-only">Choose a remedy for {recall.productName}</legend>
+                      {recall.offers.map((kind) => (
+                        <label key={kind} className={styles.copt}>
+                          <input
+                            type="radio"
+                            name={`remedy-${k}`}
+                            value={kind}
+                            checked={choice === kind}
+                            onChange={() => pick(k, kind)}
+                          />
+                          <span className={styles.rad}>
+                            <Icon name="check" />
+                          </span>
+                          <span>
+                            <b>{remedyCopy(kind).short}</b>
+                            <span className="sr-only">. {remedyCopy(kind).detail}</span>
+                          </span>
+                          <span className={styles.a}>{groupAmount(open, kind)}</span>
+                        </label>
+                      ))}
+                    </fieldset>
                   )}
 
                   <div className={styles.r5}>
@@ -192,7 +234,7 @@ export function SeveralFlow({
                       <Tag kind="rule" />
                       <span>
                         <b>Chosen by fixed rules, not AI</b>
-                        These options are offered by the recall
+                        {single ? "The recall offers only this remedy" : "These options are offered by the recall"}
                       </span>
                     </p>
                   </div>
@@ -202,15 +244,26 @@ export function SeveralFlow({
                     <span className={styles.mineAmt}>
                       {!claimable
                         ? recall.choice
-                          ? remedyAmount(recall, recall.choice)
+                          ? groupAmount(doneCases, recall.choice)
                           : "None"
                         : choice
-                          ? remedyAmount(recall, choice)
+                          ? groupAmount(open, choice)
                           : "Choose one"}
                     </span>
-                    {!claimable && (
-                      <Link className={styles.mineLink} href={`/r/${token}?case=${recall.caseId}`}>
-                        {done ? "View your receipt" : "See what happened"}
+                    {doneCases.length > 0 && (
+                      <Link
+                        className={styles.mineLink}
+                        href={`/r/${token}?done=${doneCases.map((c) => c.caseId).join(",")}`}
+                      >
+                        View your receipt
+                      </Link>
+                    )}
+                    {!claimable && !allDone && (
+                      <Link
+                        className={styles.mineLink}
+                        href={`/r/${token}?case=${g.cases.find((c) => !isDone(c))?.caseId}`}
+                      >
+                        See what happened
                       </Link>
                     )}
                   </div>
@@ -219,23 +272,25 @@ export function SeveralFlow({
             })}
           </div>
 
-          {ready.length > 0 || open.length > 0 ? (
+          {openGroups.length > 0 ? (
             <div className={`${styles.buy} ${styles.bar}`}>
               <div className={styles.buyMeta}>
                 <span className={styles.lab}>
-                  {ready.length === 0
+                  {readyGroups.length === 0
                     ? "Choose a remedy for each recall you want to settle"
-                    : ready.length === open.length
-                      ? `All ${open.length} recall${open.length === 1 ? "" : "s"} chosen`
-                      : `${ready.length} of ${open.length} chosen`}
+                    : readyGroups.length === openGroups.length
+                      ? openGroups.length === 1
+                        ? "Your recall is ready to confirm"
+                        : `All ${openGroups.length} recalls ready`
+                      : `${readyGroups.length} of ${openGroups.length} recalls ready`}
                 </span>
-                <span className={styles.amt}>{ready.length === 0 ? "Choose one" : totalLabel}</span>
+                <span className={styles.amt}>{readyGroups.length === 0 ? "Choose one" : totalLabel}</span>
               </div>
               <div className={styles.act}>
                 {ready.length > 0 ? (
                   // Plain anchor: the login route redirects off-site, so no client navigation or prefetch.
                   <ConfirmLink className={styles.btn} href={loginHref(token, ready)}>
-                    {ready.length > 1 ? `Confirm all ${ready.length} with PayPal` : "Confirm with PayPal"}
+                    {readyGroups.length > 1 ? `Confirm all ${readyGroups.length} with PayPal` : "Confirm with PayPal"}
                   </ConfirmLink>
                 ) : (
                   <button type="button" className={styles.btn} disabled>

@@ -9,7 +9,7 @@ export type TestGroup = {
   tests: { n: number; text: string }[];
 };
 
-// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18 tests/buyer.test.ts, 19 to 28 tests/dashboard.test.ts.
+// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18 tests/buyer.test.ts, 19 to 31 tests/dashboard.test.ts.
 export const MONEY_GROUPS: TestGroup[] = [
   {
     id: "refund",
@@ -75,7 +75,7 @@ export const MONEY_GROUPS: TestGroup[] = [
   },
   {
     id: "dashboard",
-    label: "Dashboard rules",
+    label: "Dashboard and buyer page",
     icon: "info",
     span: 4,
     tests: [
@@ -89,6 +89,9 @@ export const MONEY_GROUPS: TestGroup[] = [
       { n: 26, text: "time ago reads in minutes, hours and days" },
       { n: 27, text: "the numbers count settled cases per path, and 'products fixed' is settled over affected" },
       { n: 28, text: "long timeline lines are cut to one line with an ellipsis, short ones are untouched" },
+      { n: 29, text: "several orders of the same recall become one group, in order of first appearance" },
+      { n: 30, text: "a refund past 180 days is described as a PayPal Payout, inside it as a refund" },
+      { n: 31, text: "the amount for several orders adds the prices; remedies with no money say Free" },
     ],
   },
 ];

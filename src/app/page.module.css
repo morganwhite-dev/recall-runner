@@ -564,3 +564,39 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* The four steps a visitor takes, under the Start button. */
+.tryIt {
+  list-style: none;
+  counter-reset: t;
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 15px;
+  color: var(--on-ground-muted, inherit);
+}
+
+.tryIt li {
+  counter-increment: t;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tryIt li::before {
+  content: counter(t);
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--ink);
+  font: 700 12px/1 var(--font-body);
+}
+
+.tryIt b {
+  color: var(--on-ground, inherit);
+  font-weight: 700;
+}

@@ -129,6 +129,12 @@ export function Success({
               </ul>
               <RuleLine>{c.rationale ?? remedy.rule}</RuleLine>
             </section>
+            <section>
+              <Link className={styles.link} href="/dashboard">
+                <Icon name="ext" />
+                See this on the store&apos;s dashboard
+              </Link>
+            </section>
             {others && (
               <section>
                 <Link className={styles.link} href={`/r/${token}`}>

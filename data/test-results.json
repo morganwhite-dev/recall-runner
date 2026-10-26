@@ -1,7 +1,7 @@
 {
-  "ranAt": "2026-10-25T23:17:51.968Z",
-  "durationMs": 192,
-  "total": 28,
+  "ranAt": "2026-10-26T03:05:25.545Z",
+  "durationMs": 129,
+  "total": 31,
   "failing": 0,
   "tests": [
     {
@@ -86,6 +86,21 @@
     },
     {
       "name": "long timeline lines are cut to one line with an ellipsis, short ones are untouched",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "several orders of the same recall become one group, in order of first appearance",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a refund past 180 days is described as a PayPal Payout, inside it as a refund",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the amount for several orders adds the prices; remedies with no money say Free",
       "file": "dashboard.test.ts",
       "passed": true
     },

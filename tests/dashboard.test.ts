@@ -11,6 +11,8 @@ import {
   remedyPath,
   type BuyerCase,
 } from "../src/app/dashboard/data";
+import type { BuyerCase as BuyerRow } from "../src/lib/buyer";
+import { groupAmount, groupByRecall, howPaid } from "../src/app/r/[token]/data";
 
 const T = new Date("2026-10-25T12:00:00Z");
 
@@ -83,4 +85,25 @@ test("long timeline lines are cut to one line with an ellipsis, short ones are u
   const long = "x".repeat(300);
   assert.equal(clip(long, 50).length, 50);
   assert.ok(clip(long, 50).endsWith("…"));
+});
+
+// The buyer page's recall grouping.
+const order = (recallNumber: string, daysAgo: number, caseId: string) =>
+  ({ recallNumber, daysAgo, caseId, priceCents: 3400 }) as unknown as BuyerRow;
+
+test("several orders of the same recall become one group, in order of first appearance", () => {
+  const groups = groupByRecall([order("A", 200, "1"), order("B", 5, "2"), order("A", 45, "3")]);
+  assert.deepEqual(groups.map((g) => [g.recallNumber, g.cases.length]), [["A", 2], ["B", 1]]);
+});
+
+test("a refund past 180 days is described as a PayPal Payout, inside it as a refund", () => {
+  assert.equal(howPaid(order("A", 200, "1"), "refund"), "paid by PayPal Payouts");
+  assert.equal(howPaid(order("A", 180, "1"), "refund"), "refunded to PayPal");
+  assert.equal(howPaid(order("A", 5, "1"), "repair"), "free repair kit");
+});
+
+test("the amount for several orders adds the prices; remedies with no money say Free", () => {
+  const two = [order("A", 200, "1"), order("A", 45, "2")];
+  assert.equal(groupAmount(two, "refund"), "$68.00");
+  assert.equal(groupAmount(two, "replace"), "Free");
 });

@@ -9,6 +9,7 @@ import { loadDashboard } from "@/lib/dashboard";
 import { Count } from "@/components/Count";
 import { ApproveButton } from "./ApproveButton";
 import { CampaignSwitch } from "./CampaignSwitch";
+import { DemoGuide } from "./DemoGuide";
 import { campaignStats, formatDate, formatMoney } from "./data";
 import styles from "./page.module.css";
 import { Workspace } from "./Workspace";
@@ -102,6 +103,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
       </header>
 
       <main className={styles.wrap}>
+        {data.guide && <DemoGuide guide={data.guide} current={header.recallNumber} />}
         <section className={styles.recall} aria-labelledby="title">
           <svg
             className={styles.art}

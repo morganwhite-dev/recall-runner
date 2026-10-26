@@ -105,6 +105,20 @@ export default function Home() {
                 Resets the demo store: real recalls waiting for your approval
                 and sandbox PayPal orders. About 20 seconds.
               </p>
+              <ol className={styles.tryIt} aria-label="How to try the demo">
+                <li>
+                  <b>Start fresh demo</b> opens the store dashboard.
+                </li>
+                <li>
+                  <b>Approve the campaign</b> as the store.
+                </li>
+                <li>
+                  <b>Open the buyer page</b> and confirm with PayPal.
+                </li>
+                <li>
+                  <b>Watch it settle</b> back on the dashboard.
+                </li>
+              </ol>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 import type { IconName } from "@/components/Icon";
 import type { BuyerCase, RemedyKind } from "@/lib/buyer";
-import { formatUsd } from "@/lib/policy";
+import { formatUsd, REFUND_WINDOW_DAYS } from "@/lib/policy";
 
 // Wording and small helpers for the buyer page. The facts themselves (recall, order, amounts)
 // come from the database through loadBuyerPage in src/lib/buyer.ts.
@@ -100,3 +100,34 @@ const DONE = [
   "REPAIR_KIT_REQUESTED",
 ];
 export const isDone = (c: BuyerCase) => DONE.includes(c.status);
+
+// A buyer can have several orders of the same recalled product. They are one recall to settle:
+// one card, one remedy choice, one amount. Order of first appearance is kept.
+export interface RecallGroup {
+  recallNumber: string;
+  cases: BuyerCase[];
+}
+
+export function groupByRecall(cases: BuyerCase[]): RecallGroup[] {
+  const groups = new Map<string, RecallGroup>();
+  for (const c of cases) {
+    const g = groups.get(c.recallNumber) ?? { recallNumber: c.recallNumber, cases: [] };
+    g.cases.push(c);
+    groups.set(c.recallNumber, g);
+  }
+  return [...groups.values()];
+}
+
+// How one order will be paid for a remedy: refunds past PayPal's 180 days go by PayPal Payouts.
+export function howPaid(c: BuyerCase, kind: RemedyKind): string {
+  if (kind === "replace") return "free replacement";
+  if (kind === "repair") return "free repair kit";
+  return c.daysAgo > REFUND_WINDOW_DAYS ? "paid by PayPal Payouts" : "refunded to PayPal";
+}
+
+// What the buyer gets for a remedy across several orders: the prices added up, or "Free".
+export function groupAmount(cases: BuyerCase[], kind: RemedyKind): string {
+  return kind === "refund"
+    ? formatUsd(cases.reduce((sum, c) => sum + c.priceCents, 0))
+    : "Free";
+}

@@ -54,6 +54,13 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 - [ ] Public YouTube video under 3 minutes
 - [ ] Sandbox test credentials for judges (README and Devpost testing field)
 
+## Try the demo (about 2 minutes)
+
+1. Open the live site and press **Start fresh demo**. It resets the store and opens the store dashboard.
+2. **Approve the campaign** for the hand-warmers recall (you are the store). Nothing is sent or paid until you do.
+3. Press **Open buyer page** in the "Try the demo" strip (you are now the customer). Press **Confirm with PayPal** and sign in with the sandbox buyer account. The login is in the Devpost testing instructions (added in Phase 7). A wrong account is refused and nothing is sent.
+4. PayPal sends the refund or payout. About a minute later its webhook confirms it, and the dashboard shows the case as **Settled**.
+
 ## Run locally
 
 ```bash

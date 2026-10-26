@@ -8,30 +8,35 @@ import {
   artFor,
   cpscLabel,
   formatDate,
+  groupAmount,
   headline,
+  howPaid,
   loginHref,
   pronounFor,
-  remedyAmount,
   remedyCopy,
 } from "./data";
 import styles from "./page.module.css";
 import { Art, Blob, Reassure, RuleLine, SectionTitle, TopBand } from "./parts";
 import { formatUsd } from "@/lib/policy";
 
-// The notice for a single recall. The several-recalls view lives in SeveralFlow.
+// The notice for one recall, which may cover several of the buyer's orders of the same product.
+// The recall offers a single remedy, so there is nothing to choose: one button settles it all.
+// The several-recalls view lives in SeveralFlow.
 export function RecallFlow({
   token,
   store,
-  recall,
+  recalls,
 }: {
   token: string;
   store: string;
-  recall: BuyerCase;
+  recalls: BuyerCase[]; // every order for this recall, all still open
 }) {
+  const recall = recalls[0];
   const kind = recall.offers[0];
   const remedy = remedyCopy(kind);
   const pronoun = pronounFor(recall.productName);
-  const price = formatUsd(recall.priceCents);
+  const amount = groupAmount(recalls, kind);
+  const several = recalls.length > 1;
 
   return (
     <>
@@ -48,7 +53,8 @@ export function RecallFlow({
           <h1 className={styles.h1}>{headline(recall)}</h1>
           <p className={styles.lede}>
             <b>Please stop using {pronoun}.</b> You bought {pronoun} from {store}{" "}
-            {recall.daysAgo} days ago. Here is what the recall says and how to settle it in one tap.
+            {several ? `in ${recalls.length} orders` : `${recall.daysAgo} days ago`}. Here is what the
+            recall says and how to settle {several ? "them" : "it"} in one tap.
           </p>
         </div>
         <Blob>
@@ -90,11 +96,18 @@ export function RecallFlow({
 
             <section aria-labelledby="s3" className={styles.orderSection}>
               <SectionTitle id="s3" icon="box">
-                Your order
+                {several ? "Your orders" : "Your order"}
               </SectionTitle>
-              <p className={styles.order}>
-                <b>{recall.productName}</b> · bought from {store} {recall.daysAgo} days ago · {price}
-              </p>
+              <ul className={styles.orders}>
+                {recalls.map((c) => (
+                  <li key={c.caseId}>
+                    <span>
+                      <b>{c.productName}</b> · bought {c.daysAgo} days ago · {formatUsd(c.priceCents)}
+                    </span>
+                    <span className={styles.how}>{howPaid(c, kind)}</span>
+                  </li>
+                ))}
+              </ul>
             </section>
           </main>
 
@@ -111,7 +124,7 @@ export function RecallFlow({
                   <b>{remedy.name}</b>
                   <span className={styles.d}>{remedy.detail}</span>
                 </div>
-                <span className={styles.amt}>{remedyAmount(recall, kind)}</span>
+                <span className={styles.amt}>{amount}</span>
               </div>
               <RuleLine>{remedy.rule}</RuleLine>
               <Reassure className={styles.reassureMobile} />
@@ -120,15 +133,19 @@ export function RecallFlow({
           <aside className={`${styles.sum} ${styles.fixable} ${styles.inCard}`} aria-label="Summary">
             <div className={styles.sumMeta}>
               <span className={styles.lab}>Your remedy</span>
-              <span className={styles.amt}>{remedyAmount(recall, kind)}</span>
+              <span className={styles.amt}>{amount}</span>
               <p className={styles.nm}>{remedy.name}</p>
               <p className={styles.od}>
-                {recall.productName} · bought from {store} {recall.daysAgo} days ago · {price}
+                {recall.productName} ·{" "}
+                {several ? `${recalls.length} orders from ${store}` : `bought from ${store} ${recall.daysAgo} days ago`}
               </p>
             </div>
             <div className={styles.sumAct}>
               {/* Plain anchor: the login route redirects off-site, so no client navigation or prefetch. */}
-              <ConfirmLink className={styles.btn} href={loginHref(token, [{ caseId: recall.caseId, remedy: kind }])}>
+              <ConfirmLink className={styles.btn} href={loginHref(
+                  token,
+                  recalls.map((c) => ({ caseId: c.caseId, remedy: kind })),
+                )}>
                 Confirm with PayPal
               </ConfirmLink>
               <Reassure className={styles.reassureDesktop} />

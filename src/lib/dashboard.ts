@@ -2,7 +2,7 @@
 //
 //   campaign (recall + matched products) -> its cases -> buyer, order, notice, ledger
 //   and, for each case, the "Why this happened" timeline built from the audit trail.
-import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, like } from "drizzle-orm";
 import {
   agentDecisions,
   buyerLinks,
@@ -29,6 +29,7 @@ import {
   type BuyerCase,
   type CampaignHeader,
   type CampaignOption,
+  type DemoGuideState,
   clip,
   type TimelineStep,
 } from "@/app/dashboard/data";
@@ -39,7 +40,11 @@ const tagOf = (actor: string): TagKind =>
     (t) => t === actor.toLowerCase(),
   ) ?? "tool";
 
+// Case states that mean PayPal has accepted a refund or payout.
+const PAID = ["REFUNDED", "PAYOUT_SENT"];
+
 export type DashboardData = {
+  guide: DemoGuideState | null;
   campaigns: CampaignOption[];
   header: CampaignHeader;
   cases: BuyerCase[];
@@ -243,5 +248,51 @@ export async function loadDashboard(
     };
   });
 
-  return { campaigns: options, header, cases: out, affected: lines.length };
+  return {
+    campaigns: options,
+    header,
+    cases: out,
+    affected: lines.length,
+    guide: await loadGuide(all, nameOf),
+  };
+}
+
+// The demo has one buyer who can really sign in: the sandbox personal account. The guide points
+// at the campaign that affects that buyer, and works out which step the visitor is on.
+async function loadGuide(
+  all: { campaign: typeof campaigns.$inferSelect; recall: typeof recalls.$inferSelect }[],
+  nameOf: (sku: string) => string,
+): Promise<DemoGuideState | null> {
+  const [sandbox] = await db
+    .select()
+    .from(buyers)
+    .where(like(buyers.email, "%@personal.example.com"))
+    .limit(1);
+  if (!sandbox) return null;
+
+  const bought = await db
+    .select({ sku: products.sku })
+    .from(orderItems)
+    .innerJoin(orders, eq(orderItems.orderId, orders.id))
+    .innerJoin(products, eq(orderItems.productId, products.id))
+    .where(eq(orders.buyerId, sandbox.id));
+  const skus = new Set(bought.map((b) => b.sku));
+  const target = all.find((a) => a.campaign.matchedSkus.some((s) => skus.has(s)));
+  if (!target) return null;
+
+  const [link] = await db.select().from(buyerLinks).where(eq(buyerLinks.buyerId, sandbox.id));
+  const theirCases = await db
+    .select({ status: cases.status, settledAt: cases.settledAt })
+    .from(cases)
+    .innerJoin(orders, eq(cases.orderId, orders.id))
+    .where(and(eq(cases.campaignId, target.campaign.id), eq(orders.buyerId, sandbox.id)));
+  const approved = target.campaign.status === "APPROVED";
+  return {
+    recallNumber: target.recall.recallNumber,
+    label: `${nameOf(target.campaign.matchedSkus[0] ?? "")} recall`,
+    approved,
+    buyerPath: approved && link ? `/r/${link.token}` : null,
+    paid: theirCases.some((c) => PAID.includes(c.status)),
+    settled: theirCases.some((c) => c.settledAt !== null),
+  };
 }
