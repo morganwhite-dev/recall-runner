@@ -23,7 +23,7 @@ import {
   sendPayout,
 } from "./paypal-client";
 
-const FINISHED = [
+export const FINISHED = [
   "REFUNDED",
   "PAYOUT_SENT",
   "REPLACEMENT_SHIPPED",

@@ -4,6 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   campaignStats,
+  clip,
   caseStatus,
   maskEmail,
   relativeTime,
@@ -75,4 +76,11 @@ test("the numbers count settled cases per path, and 'products fixed' is settled 
   assert.equal(stats.fixedPercent, 50);
   assert.equal(stats.byPath.Refund, 2);
   assert.equal(campaignStats([], 6).fixedPercent, 0);
+});
+
+test("long timeline lines are cut to one line with an ellipsis, short ones are untouched", () => {
+  assert.equal(clip("short line"), "short line");
+  const long = "x".repeat(300);
+  assert.equal(clip(long, 50).length, 50);
+  assert.ok(clip(long, 50).endsWith("…"));
 });

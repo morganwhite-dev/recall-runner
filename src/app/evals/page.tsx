@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, type CSSProperties } from "react";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
 import { loadAiResults, loadUnitResults } from "@/lib/evals";
@@ -44,33 +44,56 @@ function Groups({
 }) {
   return (
     <div className={styles.groups}>
-      {groups.map((g) => (
-        <div key={g.id} className={styles.grp} role="group" aria-labelledby={`g-${area}-${g.id}`}>
-          <p className={styles.glabel} id={`g-${area}-${g.id}`}>
-            <Icon name={g.icon} />
-            {g.label}
-          </p>
-          <ol className={styles.rows}>
-            {g.tests.map((t) => {
-              const st = statusOf(t);
-              const note = noteOf?.(t);
-              return (
-                <li key={t.n}>
-                  <span className={styles.st}>
-                    <Icon name={STATUS_ICON[st]} />
-                    <span className="sr-only">{STATUS_WORD[st]}</span>
-                  </span>
-                  <span className={styles.n}>{pad(t.n)}</span>
-                  <span className={styles.t}>
-                    {t.text}
-                    {note && <> ({note})</>}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-      ))}
+      {groups.map((g, gi) => {
+        const statuses = g.tests.map(statusOf);
+        const passed = statuses.filter((x) => x === "pass").length;
+        return (
+          <div
+            key={g.id}
+            className={styles.grp}
+            style={{ "--i": gi, "--span": g.span } as CSSProperties}
+            role="group"
+            aria-labelledby={`g-${area}-${g.id}`}
+          >
+            <header className={styles.ghead}>
+              <p className={styles.glabel} id={`g-${area}-${g.id}`}>
+                <span className={styles.gico}>
+                  <Icon name={g.icon} />
+                </span>
+                {g.label}
+              </p>
+              <span className={styles.gcount}>
+                {passed}/{g.tests.length}
+                <span className="sr-only"> passed</span>
+              </span>
+            </header>
+            <span className={styles.meter} aria-hidden="true">
+              {statuses.map((st, i) => (
+                <i key={i} className={styles[st]} />
+              ))}
+            </span>
+            <ol className={styles.rows}>
+              {g.tests.map((t) => {
+                const st = statusOf(t);
+                const note = noteOf?.(t);
+                return (
+                  <li key={t.n}>
+                    <span className={`${styles.st} ${styles[st]}`}>
+                      <Icon name={STATUS_ICON[st]} />
+                      <span className="sr-only">{STATUS_WORD[st]}</span>
+                    </span>
+                    <span className={styles.n}>{pad(t.n)}</span>
+                    <span className={styles.t}>
+                      {t.text}
+                      {note && <span className={styles.note}> {note}</span>}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        );
+      })}
     </div>
   );
 }

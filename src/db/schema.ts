@@ -256,18 +256,32 @@ export const buyerLinks = pgTable("buyer_links", {
     .defaultNow(),
 });
 
-// One "Confirm with PayPal" click: which case, which remedy. The random state value also sits in
-// the buyer's cookie, so a login can only finish in the browser that started it, and only once.
+// One "Confirm with PayPal" click, covering one or several of a buyer's recalls. The random state
+// value also sits in the buyer's cookie, so a login can only finish in the browser that started
+// it, and only once. What was picked for each case lives in login_attempt_items.
 export const loginAttempts = pgTable("login_attempts", {
   state: text("state").primaryKey(),
-  caseId: uuid("case_id")
-    .notNull()
-    .references(() => cases.id, { onDelete: "cascade" }),
-  choice: text("choice").notNull(), // refund, replacement or repair
+  buyerId: uuid("buyer_id").references(() => buyers.id, { onDelete: "cascade" }),
+  // Old single-case columns from the first Phase 4 build; unused now, dropped in a later cleanup
+  // (kept so the previous deployment keeps working while the new one rolls out).
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  choice: text("choice"),
   usedAt: timestamp("used_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
+});
+
+// The remedy chosen for each case in one sign-in. One PayPal sign-in settles all of them.
+export const loginAttemptItems = pgTable("login_attempt_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  state: text("state")
+    .notNull()
+    .references(() => loginAttempts.state, { onDelete: "cascade" }),
+  caseId: uuid("case_id")
+    .notNull()
+    .references(() => cases.id, { onDelete: "cascade" }),
+  choice: text("choice").notNull(), // refund, replacement or repair
 });
 
 // Saved AI answers, keyed by a fingerprint of the task, its inputs and the prompt version,

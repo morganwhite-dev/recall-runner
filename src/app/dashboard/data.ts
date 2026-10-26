@@ -32,6 +32,14 @@ export interface TimelineStep {
   tag: TagKind;
   text: string;
   code?: string;
+  // The AI's background work for the whole campaign (lookups, rule checks). It is kept behind a
+  // "show" toggle so the timeline for one case stays short.
+  research?: boolean;
+}
+
+// One line is enough on screen; the full text stays in the audit trail.
+export function clip(text: string, max = 140): string {
+  return text.length <= max ? text : `${text.slice(0, max - 1).trimEnd()}…`;
 }
 
 export interface CampaignHeader {

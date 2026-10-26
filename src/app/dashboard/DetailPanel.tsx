@@ -20,12 +20,31 @@ function CaseHeading({ c, withAmount }: { c: BuyerCase; withAmount: boolean }) {
 }
 
 function Timeline({ c }: { c: BuyerCase }) {
+  const research = c.timeline.filter((s) => s.research);
+  const steps = c.timeline.filter((s) => !s.research);
   return (
     <>
       <h2 className={styles.panelTitle}>Why this happened</h2>
       <CaseHeading c={c} withAmount />
+      {research.length > 0 && (
+        <details className={styles.more}>
+          <summary>
+            <Icon name="chev" />
+            How the AI found this recall
+            <span>{research.length} steps</span>
+          </summary>
+          <ul className={styles.researchList}>
+            {research.map((step, i) => (
+              <li key={`${i}-${step.text}`}>
+                <Tag kind={step.tag} />
+                <p title={step.text}>{step.text}</p>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
       <ol className={styles.steps}>
-        {c.timeline.map((step, i) => (
+        {steps.map((step, i) => (
           <li
             key={`${i}-${step.tag}-${step.text}`}
             style={{ "--i": i } as CSSProperties}

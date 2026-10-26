@@ -29,6 +29,7 @@ import {
   type BuyerCase,
   type CampaignHeader,
   type CampaignOption,
+  clip,
   type TimelineStep,
 } from "@/app/dashboard/data";
 
@@ -169,9 +170,16 @@ export async function loadDashboard(
     });
 
     // "Why this happened": the campaign's steps, then this case's own.
+    // Only three campaign steps matter to one buyer: the match, your approval and the notice draft.
+    // The rest (tool lookups, rule checks) is the AI's research, shown behind a toggle.
+    const headline = (d: { step: string; actor: string }) =>
+      (d.step === "MATCH" && d.actor === "MODEL") ||
+      d.step === "APPROVE" ||
+      (d.step === "NOTIFY" && d.actor === "MODEL");
     const timeline: TimelineStep[] = campaignDecisions.map((d) => ({
       tag: tagOf(d.actor),
-      text: d.summary,
+      text: clip(d.summary),
+      research: !headline(d),
     }));
     if (notice)
       timeline.push({
@@ -182,7 +190,7 @@ export async function loadDashboard(
       timeline.push({ tag: "tool", text: "Buyer opened the notice" });
     const mine = caseDecisions.filter((d) => d.caseId === kase.id);
     for (const d of mine.filter((d) => d.step !== "SETTLE")) {
-      timeline.push({ tag: tagOf(d.actor), text: d.summary });
+      timeline.push({ tag: tagOf(d.actor), text: clip(d.summary) });
     }
     if (kase.rationale) {
       timeline.push({
@@ -206,7 +214,7 @@ export async function loadDashboard(
       timeline.push({ tag: "tool", text });
     }
     for (const d of mine.filter((d) => d.step === "SETTLE")) {
-      timeline.push({ tag: tagOf(d.actor), text: d.summary });
+      timeline.push({ tag: tagOf(d.actor), text: clip(d.summary) });
     }
     if (kase.status === "OPEN") {
       timeline.push({

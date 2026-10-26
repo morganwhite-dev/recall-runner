@@ -4,15 +4,18 @@ export type TestGroup = {
   id: string;
   label: string;
   icon: IconName;
+  // Width on the 12-column grid, so every row of cards fills evenly: 3 (four across) or 4 (three across).
+  span: 3 | 4;
   tests: { n: number; text: string }[];
 };
 
-// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18 tests/buyer.test.ts, 19 to 27 tests/dashboard.test.ts.
+// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18 tests/buyer.test.ts, 19 to 28 tests/dashboard.test.ts.
 export const MONEY_GROUPS: TestGroup[] = [
   {
     id: "refund",
     label: "Refund",
     icon: "refund",
+    span: 3,
     tests: [
       { n: 1, text: "an order paid 179 days ago is refunded" },
       { n: 2, text: "an order paid exactly 180 days ago is still refunded (the window includes day 180)" },
@@ -22,6 +25,7 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "payout",
     label: "PayPal Payout",
     icon: "payout",
+    span: 3,
     tests: [
       { n: 3, text: "one millisecond past 180 days switches to PayPal Payouts" },
       { n: 4, text: "an order paid 400 days ago is paid by Payouts, and the reason says so" },
@@ -31,18 +35,21 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "replacement",
     label: "Replacement",
     icon: "truck",
+    span: 3,
     tests: [{ n: 5, text: "a replacement adds tracking and moves no money" }],
   },
   {
     id: "repair",
     label: "Repair",
     icon: "wrench",
+    span: 3,
     tests: [{ n: 6, text: "a repair records the kit request and moves no money" }],
   },
   {
     id: "guard",
     label: "Guard",
     icon: "shield",
+    span: 4,
     tests: [
       { n: 7, text: "a buyer cannot pick a remedy the recall does not offer" },
       { n: 8, text: "no PayPal payment on record means no money, even inside the window" },
@@ -55,6 +62,7 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "identity",
     label: "Identity and settling",
     icon: "lock",
+    span: 4,
     tests: [
       { n: 12, text: "a verified PayPal email is accepted, ignoring case" },
       { n: 13, text: "an email PayPal has not verified is never accepted" },
@@ -67,8 +75,9 @@ export const MONEY_GROUPS: TestGroup[] = [
   },
   {
     id: "dashboard",
-    label: "Dashboard status and numbers",
+    label: "Dashboard rules",
     icon: "info",
+    span: 4,
     tests: [
       { n: 19, text: "a refund or payout is Settled only after PayPal's webhook, not when the request is accepted" },
       { n: 20, text: "replacements and repair kits are Settled at once, because PayPal sends no webhook for them" },
@@ -79,6 +88,7 @@ export const MONEY_GROUPS: TestGroup[] = [
       { n: 25, text: "emails are masked to the first letter and the domain" },
       { n: 26, text: "time ago reads in minutes, hours and days" },
       { n: 27, text: "the numbers count settled cases per path, and 'products fixed' is settled over affected" },
+      { n: 28, text: "long timeline lines are cut to one line with an ellipsis, short ones are untouched" },
     ],
   },
 ];
@@ -89,6 +99,7 @@ export const AI_GROUPS: TestGroup[] = [
     id: "match",
     label: "Matching",
     icon: "match",
+    span: 3,
     tests: [
       { n: 1, text: "correct match from a reworded title" },
       { n: 2, text: "match by brand plus product type" },
@@ -98,6 +109,7 @@ export const AI_GROUPS: TestGroup[] = [
     id: "refuse",
     label: "Refusal",
     icon: "ban",
+    span: 3,
     tests: [
       { n: 3, text: "near-miss product correctly refused" },
       { n: 4, text: "different brand correctly refused (the Emberly decoy)" },
@@ -107,6 +119,7 @@ export const AI_GROUPS: TestGroup[] = [
     id: "inject",
     label: "Prompt injection",
     icon: "alert",
+    span: 3,
     tests: [
       { n: 5, text: "a product description that tries to instruct the AI (prompt injection) has no effect" },
       { n: 6, text: "a recall text with an injected link adds no link to the buyer notice" },
@@ -116,6 +129,7 @@ export const AI_GROUPS: TestGroup[] = [
     id: "quote",
     label: "Quoting and fallback",
     icon: "quote",
+    span: 3,
     tests: [
       { n: 7, text: "the buyer notice quotes the recall word for word" },
       { n: 8, text: "a missing AI key falls back to templates" },

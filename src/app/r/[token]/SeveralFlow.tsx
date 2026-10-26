@@ -44,6 +44,18 @@ export function SeveralFlow({
     setPicked((prev) => prev.map((p, i) => (i === k ? kind : p)));
   }
 
+  // The recalls still waiting for a choice, and the ones the buyer has picked a remedy for.
+  // One PayPal sign-in settles all the picked ones.
+  const open = RECALLS.filter((r) => r.status === "OPEN");
+  const ready = RECALLS.flatMap((r, i) => {
+    const remedy = picked[i];
+    return r.status === "OPEN" && remedy ? [{ caseId: r.caseId, remedy }] : [];
+  });
+  const refundCents = ready
+    .filter((p) => p.remedy === "refund")
+    .reduce((sum, p) => sum + (RECALLS.find((r) => r.caseId === p.caseId)?.priceCents ?? 0), 0);
+  const totalLabel = refundCents > 0 ? `${formatUsd(refundCents)} back` : "Free";
+
   return (
     <div className={styles.root}>
       <div className={styles.top}>
@@ -185,40 +197,54 @@ export function SeveralFlow({
                     </p>
                   </div>
 
-                  <div className={styles.buy}>
-                    <div className={styles.buyMeta}>
-                      <span className={styles.lab}>Your remedy</span>
-                      <span className={styles.amt}>
-                        {!claimable
-                          ? recall.choice
-                            ? remedyAmount(recall, recall.choice)
-                            : "None"
-                          : choice
-                            ? remedyAmount(recall, choice)
-                            : "Choose one"}
-                      </span>
-                    </div>
-                    <div className={styles.act}>
-                      {!claimable ? (
-                        <Link className={styles.btn} href={`/r/${token}?case=${recall.caseId}`}>
-                          {done ? "View your receipt" : "See what happened"}
-                        </Link>
-                      ) : choice ? (
-                        // Plain anchor: the login route redirects off-site, so no client navigation or prefetch.
-                        <ConfirmLink className={styles.btn} href={loginHref(token, recall.caseId, choice)}>
-                          Confirm with PayPal
-                        </ConfirmLink>
-                      ) : (
-                        <button type="button" className={styles.btn} disabled>
-                          Choose a remedy
-                        </button>
-                      )}
-                    </div>
+                  <div className={styles.mine}>
+                    <span className={styles.mineLab}>Your remedy</span>
+                    <span className={styles.mineAmt}>
+                      {!claimable
+                        ? recall.choice
+                          ? remedyAmount(recall, recall.choice)
+                          : "None"
+                        : choice
+                          ? remedyAmount(recall, choice)
+                          : "Choose one"}
+                    </span>
+                    {!claimable && (
+                      <Link className={styles.mineLink} href={`/r/${token}?case=${recall.caseId}`}>
+                        {done ? "View your receipt" : "See what happened"}
+                      </Link>
+                    )}
                   </div>
                 </article>
               );
             })}
           </div>
+
+          {ready.length > 0 || open.length > 0 ? (
+            <div className={`${styles.buy} ${styles.bar}`}>
+              <div className={styles.buyMeta}>
+                <span className={styles.lab}>
+                  {ready.length === 0
+                    ? "Choose a remedy for each recall you want to settle"
+                    : ready.length === open.length
+                      ? `All ${open.length} recall${open.length === 1 ? "" : "s"} chosen`
+                      : `${ready.length} of ${open.length} chosen`}
+                </span>
+                <span className={styles.amt}>{ready.length === 0 ? "Choose one" : totalLabel}</span>
+              </div>
+              <div className={styles.act}>
+                {ready.length > 0 ? (
+                  // Plain anchor: the login route redirects off-site, so no client navigation or prefetch.
+                  <ConfirmLink className={styles.btn} href={loginHref(token, ready)}>
+                    {ready.length > 1 ? `Confirm all ${ready.length} with PayPal` : "Confirm with PayPal"}
+                  </ConfirmLink>
+                ) : (
+                  <button type="button" className={styles.btn} disabled>
+                    Choose a remedy
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : null}
 
           <p className={styles.reassure}>
             <Icon name="lock" />

@@ -133,14 +133,24 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
 
         <dl className={styles.kpis} aria-label="Campaign results">
           <div>
-            <dt>Buyers affected</dt>
+            <dt>
+              <span className={styles.kico}>
+                <Icon name="person" />
+              </span>
+              Buyers affected
+            </dt>
             <dd>
               <Count className={styles.countUp} value={stats.affected} />
             </dd>
             <p>Found in PayPal orders</p>
           </div>
           <div>
-            <dt>Notified</dt>
+            <dt>
+              <span className={styles.kico}>
+                <Icon name="bell" />
+              </span>
+              Notified
+            </dt>
             <dd>
               <Count className={styles.countUp} value={stats.notified} />
             </dd>
@@ -149,7 +159,12 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
             </p>
           </div>
           <div>
-            <dt>Settled</dt>
+            <dt>
+              <span className={styles.kico}>
+                <Icon name="check" />
+              </span>
+              Settled
+            </dt>
             <dd>
               <Count className={styles.countUp} value={stats.settled} />
             </dd>
@@ -161,7 +176,12 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
             </p>
           </div>
           <div>
-            <dt>Products fixed</dt>
+            <dt>
+              <span className={styles.kico}>
+                <Icon name="wrench" />
+              </span>
+              Products fixed
+            </dt>
             <dd>
               <Count
                 className={styles.countUp}

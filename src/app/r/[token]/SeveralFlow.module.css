@@ -511,6 +511,60 @@
   padding-bottom: 56px;
 }
 
+/* What this recall will give the buyer, shown inside its card. Confirming is one button for all. */
+.mine {
+  padding-top: 16px;
+  border-top: 2px solid var(--lav);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-content: end;
+}
+
+.mineLab {
+  font: 700 14px/1 var(--font-body);
+  color: var(--ink-muted);
+}
+
+.mineAmt {
+  font: 800 28px/1 var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.mineLink {
+  flex-basis: 100%;
+  font-weight: 600;
+  color: var(--brand);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* The one confirm bar for every recall picked: a strip under the cards on a laptop, pinned on a phone. */
+.bar {
+  margin-top: 24px;
+  padding: 16px 24px;
+  border: 2px solid var(--lav);
+  border-radius: 20px;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.bar .buyMeta {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bar .act {
+  width: min(380px, 100%);
+}
+
 @supports not (grid-template-rows: subgrid) {
   .rc {
     grid-template-rows: none;
@@ -634,6 +688,12 @@
 
   .stack {
     padding-bottom: 150px;
+  }
+
+  .bar {
+    margin-top: 0;
+    border: 0;
+    gap: 14px;
   }
 
   .buy {

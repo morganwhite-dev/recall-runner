@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { loadBuyerPage, markOpened } from "@/lib/buyer";
 import { isDone } from "./data";
 import { Mismatch } from "./Mismatch";
+import { MultiSuccess } from "./MultiSuccess";
 import styles from "./page.module.css";
 import { Problem } from "./Problem";
 import { RecallFlow } from "./RecallFlow";
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
 const ALERTS: Record<string, string> = {
   expired: "That sign-in took too long or was already used. Please choose again.",
   error: "PayPal had a problem, and nothing was sent. Please try again.",
+  partial:
+    "One of your recalls couldn't be completed, and nothing was sent for it. The others are settled. Open the one marked Couldn't complete to see why.",
 };
 
 // What the page shows is decided by the database, not by the URL:
@@ -29,7 +32,7 @@ async function BuyerView({
   searchParams,
 }: PageProps<"/r/[token]">) {
   const { token } = await params;
-  const { case: caseParam, result } = await searchParams;
+  const { case: caseParam, result, done: doneParam } = await searchParams;
   const page = await loadBuyerPage(token);
   if (!page) notFound();
 
@@ -38,11 +41,27 @@ async function BuyerView({
   const picked =
     typeof caseParam === "string" ? cases.find((c) => c.caseId === caseParam) : undefined;
   const target = picked ?? only;
+  // ?done=<ids> comes from the PayPal sign-in that just settled these cases.
+  const justDone =
+    typeof doneParam === "string"
+      ? cases.filter((c) => doneParam.split(",").includes(c.caseId) && isDone(c))
+      : [];
   const alert = typeof result === "string" ? ALERTS[result] : undefined;
 
   let view;
   if (result === "mismatch") {
     view = <Mismatch token={token} store={store} />;
+  } else if (justDone.length > 1) {
+    view = (
+      <MultiSuccess
+        token={token}
+        store={store}
+        cases={justDone}
+        others={cases.some((c) => c.status === "OPEN")}
+      />
+    );
+  } else if (justDone.length === 1) {
+    view = <Success token={token} store={store} c={justDone[0]} others={cases.length > 1} />;
   } else if (target && isDone(target)) {
     view = <Success token={token} store={store} c={target} others={cases.length > 1} />;
   } else if (picked && !isDone(picked) && picked.status !== "OPEN") {

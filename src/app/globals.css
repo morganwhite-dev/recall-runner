@@ -202,3 +202,172 @@ a {
     transform: rotate(360deg);
   }
 }
+
+/* Product art (src/components/ProductArt.tsx). The peach shapes are fills; they sit still by
+   default and move only when the device allows motion. */
+.art-fill {
+  fill: var(--accent);
+  stroke: none;
+}
+
+.art-glow {
+  opacity: 0.16;
+}
+
+.art-bar {
+  opacity: 0.9;
+}
+
+.art-drawer {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .art-steam {
+    animation: art-rise 2.6s ease-in-out infinite;
+    transform-box: fill-box;
+  }
+
+  .art-steam2 {
+    animation-delay: 0.45s;
+  }
+
+  .art-steam3 {
+    animation-delay: 0.9s;
+  }
+
+  .art-pulse {
+    animation: art-pulse 2.2s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .art-glow {
+    animation: art-glow 2.8s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .art-bar {
+    animation: art-charge 2.7s ease-in-out infinite;
+  }
+
+  .art-bar2 {
+    animation-delay: 0.35s;
+  }
+
+  .art-bar3 {
+    animation-delay: 0.7s;
+  }
+
+  .art-wobble {
+    animation: art-wobble 5s ease-in-out infinite;
+    transform-box: view-box;
+    transform-origin: 48px 88px;
+  }
+
+  .art-drawer {
+    animation: art-drawer 3.6s ease-in-out infinite;
+  }
+
+  .art-drawer2 {
+    animation-delay: 0.9s;
+  }
+
+  .art-drawer3 {
+    animation-delay: 1.8s;
+  }
+
+  .art-drawer4 {
+    animation-delay: 2.7s;
+  }
+
+  .art-lid {
+    animation: art-lid 3.2s ease-in-out infinite;
+  }
+}
+
+@keyframes art-rise {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(4px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes art-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes art-glow {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.24;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes art-charge {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  35%,
+  70% {
+    opacity: 1;
+  }
+}
+
+@keyframes art-wobble {
+  0%,
+  78%,
+  100% {
+    transform: rotate(0);
+  }
+  84% {
+    transform: rotate(-2.2deg);
+  }
+  92% {
+    transform: rotate(1.6deg);
+  }
+}
+
+@keyframes art-drawer {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  15%,
+  30% {
+    opacity: 0.55;
+  }
+  45% {
+    opacity: 0;
+  }
+}
+
+@keyframes art-lid {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}

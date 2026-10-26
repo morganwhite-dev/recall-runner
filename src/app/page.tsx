@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ART_PATHS } from "@/components/ProductArt";
 import { StartFreshDemo } from "@/components/StartFreshDemo";
 import { Icon, type IconName } from "@/components/Icon";
 import { StatusPill } from "@/components/StatusPill";
@@ -118,17 +119,7 @@ export default function Home() {
                 strokeLinejoin="round"
                 aria-hidden="true"
               >
-                <rect x="22" y="40" width="52" height="40" rx="12" />
-                <rect
-                  x="30"
-                  y="48"
-                  width="36"
-                  height="24"
-                  rx="7"
-                  strokeWidth="1.5"
-                  strokeDasharray="3 4"
-                />
-                <path d="M36 30c-3-4 3-6 0-11M48 30c-3-4 3-6 0-11M60 30c-3-4 3-6 0-11" />
+                {ART_PATHS.warmer}
               </svg>
               <div>
                 <span className={styles.badge}>CPSC #27011</span>

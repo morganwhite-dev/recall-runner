@@ -1,7 +1,7 @@
 {
-  "ranAt": "2026-10-25T22:56:44.029Z",
-  "durationMs": 131,
-  "total": 27,
+  "ranAt": "2026-10-25T23:17:51.968Z",
+  "durationMs": 192,
+  "total": 28,
   "failing": 0,
   "tests": [
     {
@@ -81,6 +81,11 @@
     },
     {
       "name": "the numbers count settled cases per path, and 'products fixed' is settled over affected",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "long timeline lines are cut to one line with an ellipsis, short ones are untouched",
       "file": "dashboard.test.ts",
       "passed": true
     },

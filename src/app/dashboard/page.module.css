@@ -143,19 +143,26 @@
   color: var(--on-ground-muted);
 }
 
-/* Recall header and KPI strip */
+/* Recall header: a lavender band with the product drawing in a tile, like the buyer page. */
 .recall {
   display: grid;
-  grid-template-columns: 88px 1fr;
-  gap: 20px;
-  padding: 28px 0 20px;
+  grid-template-columns: 112px 1fr;
+  gap: 24px;
+  margin: 24px 0 16px;
+  padding: 20px 26px;
   align-items: center;
+  background: var(--lav);
+  border-radius: 20px;
 }
 
 .art {
-  width: 88px;
-  height: 88px;
+  width: 112px;
+  height: 112px;
+  padding: 14px;
   color: var(--brand);
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 6px 16px -10px rgba(59, 31, 63, 0.5);
 }
 
 .meta {
@@ -196,31 +203,45 @@
 
 .kpis {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .kpis > div {
-  padding: 14px 20px;
-  border-left: 1px solid var(--line);
-}
-
-.kpis > div:first-child {
-  padding-left: 0;
-  border-left: 0;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  display: grid;
+  align-content: start;
+  gap: 2px;
 }
 
 .kpis dt {
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
   color: var(--ink-muted);
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.kico {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--lav);
+  color: var(--brand);
+  font-size: 16px;
 }
 
 .kpis dd {
-  font: 800 32px/1.15 var(--font-display);
-  letter-spacing: -0.02em;
+  font: 800 38px/1.1 var(--font-display);
+  letter-spacing: -0.03em;
   color: var(--brand);
+  margin-top: 6px;
 }
 
 .kpis p {
@@ -481,6 +502,8 @@
 .panel {
   position: sticky;
   top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -502,6 +525,68 @@
   margin: 6px 0 16px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--line);
+}
+
+/* The AI's background work, folded away so the timeline for one case stays short. */
+.more {
+  margin: -4px 0 16px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+
+.more summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.more summary::-webkit-details-marker {
+  display: none;
+}
+
+.more summary > span {
+  margin-left: auto;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+.more summary :global(.icon) {
+  font-size: 16px;
+  transition: transform 0.15s;
+}
+
+.more[open] summary :global(.icon) {
+  transform: rotate(180deg);
+}
+
+.more[open] summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.researchList {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  padding: 12px 0 14px;
+}
+
+.researchList li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.researchList p {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ink-muted);
 }
 
 .steps {
@@ -647,8 +732,7 @@
 /* How money moves */
 .money {
   margin-top: 32px;
-  padding: 24px 0;
-  border-top: 1px solid var(--line);
+  padding: 8px 0 24px;
 }
 
 .money header {
@@ -672,22 +756,20 @@
 .paths {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .paths li {
-  padding: 14px 20px 0;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-top: 3px solid var(--brand);
-  border-left: 1px solid var(--line);
+  border-radius: 14px;
   display: grid;
   grid-template-columns: auto 1fr;
   column-gap: 10px;
   align-content: start;
-}
-
-.paths li:first-child {
-  padding-left: 0;
-  border-left: 0;
 }
 
 .paths :global(.icon) {
@@ -777,15 +859,6 @@ footer .wrap {
 
   .kpis {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .kpis > div:nth-child(odd) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .kpis > div:nth-child(n + 3) {
-    border-top: 1px solid var(--line);
   }
 
   .split {

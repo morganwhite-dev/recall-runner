@@ -81,13 +81,14 @@ export const cpscLabel = (c: BuyerCase) => `CPSC #${c.recallNumber}`;
 export const headline = (c: BuyerCase) =>
   `Your ${shortName(c.productName)} ${pronounFor(c.productName) === "them" ? "have" : "has"} been recalled`;
 
-// Where "Confirm with PayPal" goes: the login route checks the case belongs to this link.
+// Where "Confirm with PayPal" goes. One sign-in can settle several recalls, one pick per case;
+// the login route checks every case belongs to this link.
 export function loginHref(
   token: string,
-  caseId: string,
-  remedy: RemedyKind,
+  picks: { caseId: string; remedy: RemedyKind }[],
 ): string {
-  const q = new URLSearchParams({ token, case: caseId, remedy });
+  const q = new URLSearchParams({ token });
+  for (const p of picks) q.append("pick", `${p.caseId}:${p.remedy}`);
   return `/api/auth/paypal/login?${q}`;
 }
 
