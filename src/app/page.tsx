@@ -5,6 +5,8 @@ import { StartFreshDemo } from "@/components/StartFreshDemo";
 import { Icon, type IconName } from "@/components/Icon";
 import { StatusPill } from "@/components/StatusPill";
 import { Tag, type TagKind } from "@/components/Tag";
+import { JudgeLogin } from "@/components/JudgeLogin";
+import { DEMO_STEPS } from "@/lib/demo-config";
 import { loadImpact, type Impact } from "@/lib/impact";
 import styles from "./page.module.css";
 
@@ -12,7 +14,7 @@ const GITHUB_URL = "https://github.com/morganwhite-dev/recall-runner";
 
 const STEPS: { tag: TagKind; title: string; cap?: string }[] = [
   { tag: "model", title: "The agent finds a matching recall", cap: "AI" },
-  { tag: "you", title: "You approve the campaign" },
+  { tag: "you", title: "You approve the campaign", cap: "You" },
   {
     tag: "tool",
     title: "Buyers tap their link and sign in with PayPal",
@@ -54,19 +56,11 @@ const PAYPAL: { icon: IconName; title: string; text: string }[] = [
   },
 ];
 
-const JUDGE_STEPS = [
-  "Start fresh demo",
-  "Approve the campaign",
-  "Open a buyer link from the Outbox",
-  "Sign in with the sandbox buyer",
-  "Watch the case settle",
-];
-
 // The three figures in the impact strip. Each reads one count from the recalls table.
 const impactFigures = (i: Impact) => [
   { n: i.soldOnline, label: `of ${i.total} recalls involved online sales` },
   { n: i.amazon, label: `of ${i.total} were sold on Amazon` },
-  { n: i.barcodeListed, label: `of ${i.total} listed a barcode number` },
+  { n: i.barcodeListed, label: `of ${i.total} listed a barcode number, so text matching is needed` },
 ];
 
 const sinceLabel = (iso: string) =>
@@ -117,7 +111,7 @@ export default async function Home() {
             <p className={styles.lede}>
               An AI agent watches the US government recall feed, finds a store’s
               affected buyers in its PayPal orders, and lets each buyer settle
-              in one tap.
+              in one sign-in.
             </p>
             <div className={styles.cta}>
               <StartFreshDemo />
@@ -126,23 +120,19 @@ export default async function Home() {
                 and sandbox PayPal orders. About 20 seconds.
               </p>
               <ol className={styles.tryIt} aria-label="How to try the demo">
-                <li>
-                  <b>Start fresh demo</b> opens the store dashboard.
-                </li>
-                <li>
-                  <b>Approve the campaign</b> as the store.
-                </li>
-                <li>
-                  <b>Open the buyer page</b> and confirm with PayPal.
-                </li>
-                <li>
-                  <b>Watch it settle</b> back on the dashboard.
-                </li>
+                {DEMO_STEPS.map((step) => (
+                  <li key={step.title}>
+                    <span>
+                      <b>{step.title}</b> {step.text}
+                    </span>
+                  </li>
+                ))}
               </ol>
             </div>
           </div>
 
           <aside className={styles.case} aria-label="Example case">
+            <p className={styles.exampleTag}>Example</p>
             <div className={styles.caseHead}>
               <svg
                 viewBox="0 0 96 96"
@@ -197,7 +187,7 @@ export default async function Home() {
                   window, so the buyer is paid by PayPal Payouts instead:
                   $34.00.
                 </p>
-                <code className={styles.code}>REFUND_WINDOW_EXCEEDED</code>
+                <p className={styles.codeNote}>Rule that applied: paid past the 180-day refund window</p>
               </div>
             </div>
           </aside>
@@ -255,7 +245,7 @@ export default async function Home() {
                 <div className={styles.n}>6%</div>
                 <span className={styles.bar} aria-hidden="true" />
                 <p>
-                  Press release only<span>Buyers who act</span>
+                  Press release only<span>act on the recall</span>
                 </p>
               </div>
               <div className={`${styles.stat} ${styles.hi}`}>
@@ -267,7 +257,7 @@ export default async function Home() {
                 </div>
                 <span className={styles.bar} aria-hidden="true" />
                 <p>
-                  Notified directly<span>Buyers who act</span>
+                  Notified directly<span>act on the recall</span>
                 </p>
               </div>
               <p className={styles.cite}>
@@ -287,6 +277,9 @@ export default async function Home() {
               </h2>
               <p className={styles.sub}>
                 AI suggests, you approve, fixed rules move the money.
+              </p>
+              <p className={styles.legend}>
+                Model = the AI · Rule = fixed code · Tool = a lookup or PayPal call · You = a person
               </p>
             </div>
             <ol className={styles.timeline}>
@@ -331,15 +324,14 @@ export default async function Home() {
           aria-labelledby="s4"
         >
           <div className={styles.judgesHead}>
-            <h2 id="s4">For judges</h2>
-            <span className={styles.when}>About 2 minutes</span>
+            <h2 id="s4">Sandbox login for judges</h2>
+            <span className={styles.when}>PayPal test account, fake money</span>
           </div>
-          <ol className={styles.judgeList}>
-            {JUDGE_STEPS.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
-          <p className={styles.readme}>Sandbox login is in the README.</p>
+          <JudgeLogin />
+          <p className={styles.readme}>
+            The steps are at the top of this page. Only this sandbox buyer can sign in; the other
+            buyers on the dashboard are fictional.
+          </p>
         </section>
       </main>
 

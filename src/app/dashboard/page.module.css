@@ -1125,3 +1125,97 @@ footer .wrap {
   color: var(--ink-muted);
   font-weight: 600;
 }
+
+/* Marks the one buyer who can really sign in with PayPal. */
+.you {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 700 11px/1.4 var(--font-body);
+  white-space: nowrap;
+}
+
+/* The short pointer shown instead of the four steps on a campaign that is not the featured one. */
+.guideNote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: var(--lav);
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+.guideNote p {
+  flex: 1 1 260px;
+  font-weight: 600;
+}
+
+/* Phones: nothing may be wider than the screen. The campaign switcher shrinks to fit and the case
+   table scrolls inside its own box instead of pushing the whole page sideways. */
+.switch {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.switch select {
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+
+.agWrap {
+  overflow-x: auto;
+}
+
+@media (max-width: 760px) {
+  .topBar {
+    flex-wrap: wrap;
+  }
+
+  .switch {
+    width: 100%;
+  }
+
+  .switch select {
+    width: 100%;
+  }
+
+  .toolbar {
+    padding: 10px;
+  }
+
+  .search input {
+    width: 100%;
+  }
+
+  .search {
+    flex: 1 1 100%;
+  }
+
+  .exportBtn {
+    margin-left: 0;
+  }
+}
+
+.legend {
+  padding: 8px 14px 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.legend b {
+  color: var(--ink);
+}
+
+.kpis p {
+  font-size: 14px;
+  color: var(--ink);
+  opacity: 0.75;
+}

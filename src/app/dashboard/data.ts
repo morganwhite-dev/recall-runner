@@ -25,6 +25,8 @@ export interface BuyerCase {
   body: string;
   draftedBy: "MODEL" | "TEMPLATE" | null;
   buyerPath: string; // /r/<token>
+  canSignIn: boolean; // the sandbox buyer: the one account that can really sign in with PayPal
+  awaitingPayPal: boolean; // PayPal accepted the money step; its confirmation has not arrived yet
   timeline: TimelineStep[];
 }
 
@@ -103,6 +105,7 @@ export function campaignStats(cases: BuyerCase[], affectedOverride?: number) {
     affected,
     notified: cases.length,
     settled: settled.length,
+    awaiting: cases.filter((c) => c.awaitingPayPal).length,
     settledRefunds: settled.filter((c) => money(c, "Refund")).length,
     settledPayouts: settled.filter((c) => money(c, "PayPal Payout")).length,
     settledOther: settled.filter(

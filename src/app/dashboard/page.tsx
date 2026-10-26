@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Icon, type IconName } from "@/components/Icon";
 import { StatusPill } from "@/components/StatusPill";
 import { Tag } from "@/components/Tag";
@@ -33,6 +34,8 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
       </main>
     );
   }
+  // An address for a campaign that doesn't exist is an error, not a silent switch to another one.
+  if (typeof campaign === "string" && campaign !== data.header.recallNumber) notFound();
   const { header, cases: CASES } = data;
   const approved = header.status === "APPROVED";
   const stats = campaignStats(CASES, data.affected);
@@ -106,7 +109,9 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
       </header>
 
       <main className={styles.wrap}>
-        {data.guide && <DemoGuide guide={data.guide} current={header.recallNumber} />}
+        {data.guide && (
+          <DemoGuide guide={data.guide} current={header.recallNumber} waiting={stats.awaiting > 0} />
+        )}
         <section className={styles.recall} aria-labelledby="title">
           <svg
             className={styles.art}
@@ -178,6 +183,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               {stats.settledOther > 0 && (
                 <> · {stats.settledOther} kits or replacements</>
               )}
+              {stats.awaiting > 0 && <> · {stats.awaiting} waiting for PayPal</>}
             </p>
           </div>
           <div>
@@ -185,7 +191,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               <span className={styles.kico}>
                 <Icon name="wrench" />
               </span>
-              Products fixed
+              Cases closed
             </dt>
             <dd>
               <Count
@@ -200,7 +206,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               aria-valuenow={stats.fixedPercent}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label={`Products fixed, ${stats.settled} of ${stats.affected}`}
+              aria-label={`Cases closed, ${stats.settled} of ${stats.affected}`}
             >
               <i style={{ width: `${stats.fixedPercent}%` }} />
             </div>

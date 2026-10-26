@@ -78,7 +78,7 @@ export function MessagePreview({ c }: { c: BuyerCase }) {
         </dl>
         {c.buyerPath && (
           <Link className={`${styles.btn} ${delight.lift}`} href={c.buyerPath}>
-            Open buyer page <Icon name="ext" />
+            {c.canSignIn ? "Open buyer page" : "Preview (fictional buyer)"} <Icon name="ext" />
           </Link>
         )}
       </div>

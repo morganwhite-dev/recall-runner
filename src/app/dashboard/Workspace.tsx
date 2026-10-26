@@ -23,7 +23,10 @@ export function Workspace({
   approved: boolean;
 }) {
   const [tab, setTab] = useState<GridKind>("cases");
-  const [selectedId, setSelectedId] = useState(CASES[0]?.id ?? "");
+  // Start on the buyer who can really sign in, so the panel shows the case a judge will act on.
+  const [selectedId, setSelectedId] = useState(
+    (CASES.find((c) => c.canSignIn) ?? CASES[0])?.id ?? "",
+  );
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<CaseStatus | "All">("All");
   const [api, setApi] = useState<GridApi<BuyerCase> | null>(null);
@@ -124,6 +127,10 @@ export function Workspace({
               Export CSV
             </button>
           </div>
+          <p className={styles.legend}>
+            <b>Notified</b> sent, not opened · <b>Waiting</b> opened, or paid and waiting for PayPal to
+            confirm · <b>Settled</b> PayPal confirmed · <b>Problem</b> could not complete
+          </p>
           {shown === 0 && (
             <p className={styles.noMatch} role="status">
               No cases match these filters. Clear the search or choose All.

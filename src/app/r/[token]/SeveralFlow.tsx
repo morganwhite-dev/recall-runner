@@ -80,10 +80,15 @@ export function SeveralFlow({
               </span>
               {STORE}
             </div>
-            <p>
-              <Icon name="info" />
-              <span>Safety recall notice</span>
-            </p>
+            <div className={styles.navRight}>
+              <Link className={styles.navBack} href="/dashboard">
+                Store dashboard
+              </Link>
+              <p>
+                <Icon name="info" />
+                <span>Safety recall notice</span>
+              </p>
+            </div>
           </div>
         </nav>
         <header className={`${styles.wrap} ${styles.hero}`}>
@@ -251,7 +256,7 @@ export function SeveralFlow({
                     </p>
                   </div>
 
-                  <div className={styles.mine}>
+                  <div className={`${styles.mine} ${claimable && single ? styles.mineQuiet : ""}`}>
                     <span className={styles.mineLab}>Your remedy</span>
                     <span className={styles.mineAmt}>
                       {/* Money remedies show the amount; the others name the remedy, since "Free" is already on the option above. */}

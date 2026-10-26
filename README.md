@@ -58,7 +58,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 
 1. Open the live site and press **Start fresh demo**. It resets the store and opens the store dashboard.
 2. **Approve the hand-warmers recall** (you are the store). Nothing is sent or paid until you do. The battery-pack and dresser recalls were approved in advance when the demo was reset, so the buyer sees every remedy: a refund, a replacement and a repair kit.
-3. Press **Open buyer page** in the "Try the demo" strip (you are now the customer: the sandbox buyer, whose orders were set up to cover every remedy; the other buyers on the dashboard are fictional). Press **Confirm with PayPal** and sign in with the sandbox buyer account. The login is in the Devpost testing instructions (added in Phase 7). A wrong account is refused and nothing is sent.
+3. Press **Open buyer page** in the "Try the demo" strip (you are now the customer: the sandbox buyer, whose orders were set up to cover every remedy; the other buyers on the dashboard are fictional). Press **Confirm with PayPal** and sign in with the sandbox buyer account. The login is shown in the "Try the demo" strip on the dashboard and at the bottom of the home page (and in the Devpost testing instructions). A wrong account is refused and nothing is sent.
 4. PayPal sends the refund or payout. About a minute later its webhook confirms it, and the dashboard shows the case as **Settled**.
 
 ## Run locally

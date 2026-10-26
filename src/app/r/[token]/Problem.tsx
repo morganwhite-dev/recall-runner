@@ -1,6 +1,5 @@
 import { Icon } from "@/components/Icon";
 import type { BuyerCase } from "@/lib/buyer";
-import { HELP_HREF } from "./data";
 import styles from "./page.module.css";
 import { Blob, SectionTitle, TopBand } from "./parts";
 
@@ -44,11 +43,8 @@ export function Problem({ store, c }: { store: string; c: BuyerCase }) {
                 What you can do
               </SectionTitle>
               <p className={styles.order}>
-                Please stop using the {c.productName} and{" "}
-                <a className={styles.link} href={HELP_HREF}>
-                  contact {store}
-                </a>
-                . They can look into it.
+                Please stop using the {c.productName} and ask {store} about it. The store
+                can see exactly why on its dashboard.
               </p>
             </section>
           </main>

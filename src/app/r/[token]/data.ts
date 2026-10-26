@@ -16,8 +16,6 @@ export interface Remedy {
   rule: string;
 }
 
-export const HELP_HREF = "mailto:help@example.com"; // placeholder address
-
 // Product names carry extras ("Hand Warmers, 2-pack", "Battery Pack for Reclining Chairs",
 // "The Blue Cactus ..."). Headlines use the core name: no leading "The", and nothing after the
 // first comma, bracket or " for ".

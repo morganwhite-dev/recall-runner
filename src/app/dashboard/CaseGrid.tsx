@@ -62,6 +62,7 @@ function BuyerCell({ data }: ICellRendererParams<BuyerCase>) {
         {data.initials}
       </span>
       {data.name}
+      {data.canSignIn && <span className={styles.you}>Sign in here</span>}
     </span>
   );
 }
@@ -91,7 +92,7 @@ function LinkCell({ data }: ICellRendererParams<BuyerCase>) {
   if (!data || !data.buyerPath) return null;
   return (
     <Link className={styles.link} href={data.buyerPath}>
-      Open buyer page
+      {data.canSignIn ? "Open buyer page" : "Preview (fictional buyer)"}
     </Link>
   );
 }

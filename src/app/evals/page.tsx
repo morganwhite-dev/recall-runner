@@ -202,7 +202,7 @@ async function Results() {
               </div>
               <div>
                 <dt>Last run</dt>
-                <dd>{unit ? fmtDate(new Date(unit.ranAt)) : "never"}</dd>
+                <dd>{unit ? `${fmtDate(new Date(unit.ranAt))} UTC` : "never"}</dd>
               </div>
             </dl>
           </div>

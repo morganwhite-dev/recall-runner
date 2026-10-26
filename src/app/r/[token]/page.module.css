@@ -962,3 +962,23 @@
 .orders .how {
   color: var(--ink-muted);
 }
+
+/* A way back to the store from the customer view (this is a demo, so judges move between both). */
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.navBack {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

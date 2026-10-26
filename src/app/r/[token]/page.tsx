@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { loadBuyerPage, markOpened } from "@/lib/buyer";
@@ -37,6 +38,7 @@ async function BuyerView({
   if (!page) notFound();
 
   const { cases, storeName: store } = page;
+  const sandboxPath = page.fictional ? page.sandboxPath : null;
   const only = cases.length === 1 ? cases[0] : null;
   const groups = groupByRecall(cases);
   const picked =
@@ -86,6 +88,18 @@ async function BuyerView({
 
   return (
     <>
+      {page.fictional && (
+        <div className={styles.wrap}>
+          <p className={styles.alert} role="note">
+            This is a demo buyer, so nobody can sign in as them and no payment can finish here.{" "}
+            {sandboxPath && (
+              <Link className={styles.link} href={sandboxPath}>
+                Open the sandbox buyer&apos;s page instead
+              </Link>
+            )}
+          </p>
+        </div>
+      )}
       {alert && (
         <div className={styles.wrap}>
           <p className={styles.alert} role="alert">

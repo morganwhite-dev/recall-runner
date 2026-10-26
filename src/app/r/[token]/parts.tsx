@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
@@ -24,10 +25,16 @@ export function TopBand({ store, children }: { store: string; children: ReactNod
             </span>
             {store}
           </div>
-          <p>
-            <Icon name="info" />
-            <span>Safety recall notice</span>
-          </p>
+          <div className={styles.navRight}>
+            {/* For anyone trying the demo: the customer view always has a way back to the store. */}
+            <Link className={styles.navBack} href="/dashboard">
+              Store dashboard
+            </Link>
+            <p>
+              <Icon name="info" />
+              <span>Safety recall notice</span>
+            </p>
+          </div>
         </div>
       </nav>
       <header className={`${styles.wrap} ${styles.hero}`}>{children}</header>

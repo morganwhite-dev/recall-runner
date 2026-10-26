@@ -674,3 +674,28 @@
     font-size: 14px;
   }
 }
+
+/* "Example" label on the sample case card, and the plain-words rule note under the settled line. */
+.exampleTag {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--lav);
+  color: var(--brand);
+  font: 700 12px/1.4 var(--font-body);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.codeNote {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.legend {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}

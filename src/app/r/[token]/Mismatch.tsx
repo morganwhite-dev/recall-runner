@@ -1,5 +1,4 @@
 import { Icon } from "@/components/Icon";
-import { HELP_HREF } from "./data";
 import styles from "./page.module.css";
 import { Blob, SectionTitle, TopBand } from "./parts";
 
@@ -43,9 +42,10 @@ export function Mismatch({ token, store }: { token: string; store: string }) {
                 What you can do
               </SectionTitle>
               <p className={styles.order}>
-                Sign in again with the PayPal account you used when you bought
-                from {store}. If you&apos;re not sure which one that is,
-                we&apos;re happy to help.
+                Go back to your recalls and press Confirm with PayPal again, then
+                sign in with the PayPal account you used when you bought from {store}.
+                If you&apos;re trying the demo, use the sandbox buyer login shown on the store
+                dashboard.
               </p>
             </section>
           </main>
@@ -60,12 +60,12 @@ export function Mismatch({ token, store }: { token: string; store: string }) {
             </div>
             <div className={styles.sumAct}>
               <a className={styles.btn} href={`/r/${token}`}>
-                Try a different PayPal account
+                Back to my recalls
               </a>
               <p className={styles.helpRow}>
-                <a className={styles.link} href={HELP_HREF}>
+                <a className={styles.link} href="/dashboard">
                   <Icon name="help" />
-                  Not sure which one? Get help
+                  Demo: find the sandbox login on the store dashboard
                 </a>
               </p>
             </div>

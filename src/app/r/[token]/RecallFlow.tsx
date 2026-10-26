@@ -133,7 +133,7 @@ export function RecallFlow({
           <aside className={`${styles.sum} ${styles.fixable} ${styles.inCard}`} aria-label="Summary">
             <div className={styles.sumMeta}>
               <span className={styles.lab}>Your remedy</span>
-              <span className={styles.amt}>{amount}</span>
+              <span className={styles.amt}>{kind === "refund" ? amount : "No cost"}</span>
               <p className={styles.nm}>{remedy.name}</p>
               <p className={styles.od}>
                 {recall.productName} ·{" "}

@@ -253,6 +253,8 @@ export async function loadDashboard(
       draftedBy:
         (notice?.draftedBy as "MODEL" | "TEMPLATE" | undefined) ?? null,
       buyerPath: token ? `/r/${token}` : "",
+      canSignIn: buyer.email.toLowerCase().endsWith("@personal.example.com"),
+      awaitingPayPal: PAID.includes(kase.status) && !kase.settledAt,
       timeline,
     };
   });
