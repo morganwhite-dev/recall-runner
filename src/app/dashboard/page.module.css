@@ -1013,6 +1013,12 @@ footer .wrap {
   border-style: solid !important;
 }
 
+.guideHint {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand) !important;
+}
+
 .guideLink {
   display: inline-flex;
   align-items: center;

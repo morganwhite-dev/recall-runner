@@ -57,7 +57,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 ## Try the demo (about 2 minutes)
 
 1. Open the live site and press **Start fresh demo**. It resets the store and opens the store dashboard.
-2. **Approve the campaign** for the hand-warmers recall (you are the store). Nothing is sent or paid until you do.
+2. **Approve the three campaigns** (you are the store): a refund, a replacement and a repair kit. Nothing is sent or paid until you do. The buyers on the dashboard are fictional; only the sandbox buyer can sign in.
 3. Press **Open buyer page** in the "Try the demo" strip (you are now the customer). Press **Confirm with PayPal** and sign in with the sandbox buyer account. The login is in the Devpost testing instructions (added in Phase 7). A wrong account is refused and nothing is sent.
 4. PayPal sends the refund or payout. About a minute later its webhook confirms it, and the dashboard shows the case as **Settled**.
 
@@ -77,6 +77,7 @@ npm run cpsc:fetch    # refresh data/cpsc-snapshot.json from the CPSC API
 npm run cpsc:ingest   # load the snapshot into the recalls table
 npm run db:seed       # rebuild the fictional demo store (safe to re-run)
 npm run paypal:attach # give every seeded order a real sandbox payment
+npm run demo:sandbox-orders # give the sandbox buyer one order of each recalled product
 npm test              # policy, buyer-identity and dashboard tests
 npm run test:record   # run them and save the results the Test results page shows
 npm run demo:money    # run every money path against the sandbox

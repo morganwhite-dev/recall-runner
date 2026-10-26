@@ -277,21 +277,28 @@ async function loadGuide(
     .innerJoin(products, eq(orderItems.productId, products.id))
     .where(eq(orders.buyerId, sandbox.id));
   const skus = new Set(bought.map((b) => b.sku));
-  const target = all.find((a) => a.campaign.matchedSkus.some((s) => skus.has(s)));
-  if (!target) return null;
+  const targets = all.filter((a) => a.campaign.matchedSkus.some((s) => skus.has(s)));
+  if (targets.length === 0) return null;
 
   const [link] = await db.select().from(buyerLinks).where(eq(buyerLinks.buyerId, sandbox.id));
   const theirCases = await db
     .select({ status: cases.status, settledAt: cases.settledAt })
     .from(cases)
     .innerJoin(orders, eq(cases.orderId, orders.id))
-    .where(and(eq(cases.campaignId, target.campaign.id), eq(orders.buyerId, sandbox.id)));
-  const approved = target.campaign.status === "APPROVED";
+    .where(
+      and(
+        inArray(cases.campaignId, targets.map((t) => t.campaign.id)),
+        eq(orders.buyerId, sandbox.id),
+      ),
+    );
+  const anyApproved = targets.some((t) => t.campaign.status === "APPROVED");
   return {
-    recallNumber: target.recall.recallNumber,
-    label: `${nameOf(target.campaign.matchedSkus[0] ?? "")} recall`,
-    approved,
-    buyerPath: approved && link ? `/r/${link.token}` : null,
+    campaigns: targets.map((t) => ({
+      recallNumber: t.recall.recallNumber,
+      label: `${nameOf(t.campaign.matchedSkus[0] ?? "")} recall`,
+      approved: t.campaign.status === "APPROVED",
+    })),
+    buyerPath: anyApproved && link ? `/r/${link.token}` : null,
     paid: theirCases.some((c) => PAID.includes(c.status)),
     settled: theirCases.some((c) => c.settledAt !== null),
   };

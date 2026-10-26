@@ -118,12 +118,13 @@ const BUYERS = [
 const ORDERS: [number, number, string[]][] = [
   // Hand warmers (recall 27011, refund)
   [4, 12, ["BH-HW-2P"]],
-  [1, 45, ["BH-HW-2P", "BH-CA-3"]],
+  [0, 45, ["BH-HW-2P", "BH-CA-3"]], // the sandbox buyer: refund path (a two-item order, only the warmers are refunded)
   [2, 120, ["BH-HW-2P"]],
   [3, 165, ["BH-HW-2P"]],
   [0, 200, ["BH-HW-2P"]], // the sandbox buyer: past 180 days, so the Payouts path lands in a real sandbox account
   [5, 260, ["BH-HW-2P"]],
   // Chair battery packs (recall 26791, replacement)
+  [0, 30, ["BH-RC-BP"]], // the sandbox buyer: replacement path
   [6, 30, ["BH-RC-BP"]],
   [7, 95, ["BH-RC-BP"]],
   [8, 150, ["BH-RC-BP"]],
@@ -131,6 +132,7 @@ const ORDERS: [number, number, string[]][] = [
   [10, 400, ["BH-RC-BP"]],
   // Dressers (recall 26794, repair kit)
   [11, 18, ["BH-DR-8"]],
+  [0, 70, ["BH-DR-8"]], // the sandbox buyer: repair path
   [1, 70, ["BH-DR-8"]],
   [3, 140, ["BH-DR-8"]],
   [5, 230, ["BH-DR-8"]],

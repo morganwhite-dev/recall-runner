@@ -17,6 +17,7 @@
     "paypal:attach": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/attach-captures.ts",
     "demo:money": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/demo-money.ts",
     "buyer:links": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/make-buyer-links.ts",
+    "demo:sandbox-orders": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/add-sandbox-orders.ts",
     "agent:run": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/run-agent.ts",
     "eval": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/run-evals.ts"
   },
