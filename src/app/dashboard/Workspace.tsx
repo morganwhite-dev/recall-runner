@@ -8,7 +8,14 @@ import { DetailPanel, MessagePreview } from "./DetailPanel";
 import delight from "./delight.module.css";
 import styles from "./page.module.css";
 
-const STATUSES: (CaseStatus | "All")[] = ["All", "Notified", "Waiting", "Settled", "Problem"];
+const STATUSES: (CaseStatus | "All")[] = [
+  "All",
+  "Sent",
+  "Opened",
+  "Waiting on PayPal",
+  "Settled",
+  "Problem",
+];
 
 const TABS: { id: GridKind; label: string }[] = [
   { id: "cases", label: "Cases" },
@@ -128,8 +135,8 @@ export function Workspace({
             </button>
           </div>
           <p className={styles.legend}>
-            <b>Notified</b> sent, not opened · <b>Waiting</b> opened, or paid and waiting for PayPal to
-            confirm · <b>Settled</b> PayPal confirmed · <b>Problem</b> could not complete
+            <b>Sent</b> not opened · <b>Opened</b> buyer read it · <b>Waiting on PayPal</b> paid,
+            confirming · <b>Settled</b> PayPal confirmed · <b>Problem</b> could not complete
           </p>
           {shown === 0 && (
             <p className={styles.noMatch} role="status">

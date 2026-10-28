@@ -95,7 +95,7 @@ export const MONEY_GROUPS: TestGroup[] = [
     tests: [
       { n: 19, text: "a refund or payout is Settled only after PayPal's webhook, not when the request is accepted" },
       { n: 20, text: "replacements and repair kits are Settled at once, because PayPal sends no webhook for them" },
-      { n: 21, text: "an open case is Notified until the buyer opens the notice, then Waiting" },
+      { n: 21, text: "an open case is Sent until the buyer opens the notice, then Opened" },
       { n: 22, text: "a refused or failed case shows as Problem, never as waiting or settled" },
       { n: 23, text: "before a decision, the path comes from the recall's remedy and the order's age" },
       { n: 24, text: "once the policy engine has decided, its action wins over the preview" },

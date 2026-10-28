@@ -85,7 +85,7 @@ export async function settleFromEvent(
 //
 // PayPal accepting a request is not the end: a payout can later fail, be blocked or be returned,
 // and a refund can fail. Those events are as important as the happy ones, or a case would sit on
-// "Waiting" forever.
+// "Waiting on PayPal" forever.
 
 export type Failure = {
   kind: "REFUND" | "PAYOUT";
@@ -112,15 +112,28 @@ export function failureFor(event: PayPalEvent): Failure | null {
   const why = detail(r);
   switch (event.event_type) {
     case "PAYMENT.PAYOUTS-ITEM.FAILED":
-      return payoutFailure(r, `PayPal could not deliver the payout${why ? `: ${why}` : ""}.`);
+      return payoutFailure(
+        r,
+        `PayPal could not deliver the payout${why ? `: ${why}` : ""}.`,
+      );
     case "PAYMENT.PAYOUTS-ITEM.BLOCKED":
-      return payoutFailure(r, `PayPal blocked the payout${why ? `: ${why}` : ""}.`);
+      return payoutFailure(
+        r,
+        `PayPal blocked the payout${why ? `: ${why}` : ""}.`,
+      );
     case "PAYMENT.PAYOUTS-ITEM.RETURNED":
-      return payoutFailure(r, "The payout was returned to the store, so the buyer did not receive it.");
+      return payoutFailure(
+        r,
+        "The payout was returned to the store, so the buyer did not receive it.",
+      );
     case "PAYMENT.REFUND.FAILED": {
       const id = str(r.id);
       return id
-        ? { kind: "REFUND", ref: id, reason: `PayPal could not complete the refund${why ? `: ${why}` : ""}.` }
+        ? {
+            kind: "REFUND",
+            ref: id,
+            reason: `PayPal could not complete the refund${why ? `: ${why}` : ""}.`,
+          }
         : null;
     }
     default:
@@ -128,7 +141,10 @@ export function failureFor(event: PayPalEvent): Failure | null {
   }
 }
 
-function payoutFailure(r: Record<string, unknown>, reason: string): Failure | null {
+function payoutFailure(
+  r: Record<string, unknown>,
+  reason: string,
+): Failure | null {
   const batch = str(r.payout_batch_id);
   return batch ? { kind: "PAYOUT", ref: batch, reason } : null;
 }
@@ -148,7 +164,11 @@ export function limboFor(event: PayPalEvent): Failure | null {
           "The payout is unclaimed: the recipient has no PayPal account for this email yet. PayPal holds it and returns it to the store if it is never claimed.",
       };
     case "PAYMENT.PAYOUTS-ITEM.HELD":
-      return { kind: "PAYOUT", ref: batch, reason: "PayPal is holding the payout for review." };
+      return {
+        kind: "PAYOUT",
+        ref: batch,
+        reason: "PayPal is holding the payout for review.",
+      };
     default:
       return null;
   }
@@ -157,7 +177,9 @@ export function limboFor(event: PayPalEvent): Failure | null {
 // Marks the matching case FAILED (it was accepted by PayPal and not yet settled), marks its ledger
 // row FAILED with the reason, and writes one line on the audit trail. Running it twice does nothing
 // the second time. Returns the case id when this call changed it.
-export async function failFromEvent(event: PayPalEvent): Promise<string | null> {
+export async function failFromEvent(
+  event: PayPalEvent,
+): Promise<string | null> {
   const failure = failureFor(event);
   if (!failure) return null;
 
@@ -181,12 +203,23 @@ export async function failFromEvent(event: PayPalEvent): Promise<string | null> 
     .update(paypalActions)
     .set({
       status: "FAILED",
-      response: sql`coalesce(${paypalActions.response}, '{}'::jsonb) || ${JSON.stringify({
-        failure: { event: event.event_type, eventId: event.id, reason: failure.reason },
-      })}::jsonb`,
+      response: sql`coalesce(${paypalActions.response}, '{}'::jsonb) || ${JSON.stringify(
+        {
+          failure: {
+            event: event.event_type,
+            eventId: event.id,
+            reason: failure.reason,
+          },
+        },
+      )}::jsonb`,
       updatedAt: new Date(),
     })
-    .where(and(eq(paypalActions.caseId, failed.id), eq(paypalActions.paypalRef, failure.ref)));
+    .where(
+      and(
+        eq(paypalActions.caseId, failed.id),
+        eq(paypalActions.paypalRef, failure.ref),
+      ),
+    );
 
   await logSettleStep(failed.campaignId, failed.id, failure.reason, event);
   return failed.id;
@@ -199,19 +232,43 @@ export async function noteLimbo(event: PayPalEvent): Promise<string | null> {
   const [kase] = await db
     .select()
     .from(cases)
-    .where(and(eq(cases.paypalRef, limbo.ref), eq(cases.status, "PAYOUT_SENT"), isNull(cases.settledAt)));
+    .where(
+      and(
+        eq(cases.paypalRef, limbo.ref),
+        eq(cases.status, "PAYOUT_SENT"),
+        isNull(cases.settledAt),
+      ),
+    );
   if (!kase) return null;
   const already = await db
     .select()
     .from(agentDecisions)
-    .where(and(eq(agentDecisions.caseId, kase.id), eq(agentDecisions.step, "SETTLE")));
-  if (already.some((d) => (d.detail as { eventId?: string } | null)?.eventId === event.id)) return null;
+    .where(
+      and(
+        eq(agentDecisions.caseId, kase.id),
+        eq(agentDecisions.step, "SETTLE"),
+      ),
+    );
+  if (
+    already.some(
+      (d) => (d.detail as { eventId?: string } | null)?.eventId === event.id,
+    )
+  )
+    return null;
   await logSettleStep(kase.campaignId, kase.id, limbo.reason, event);
   return kase.id;
 }
 
-async function logSettleStep(campaignId: string, caseId: string, summary: string, event: PayPalEvent) {
-  const [campaign] = await db.select().from(campaigns).where(eq(campaigns.id, campaignId));
+async function logSettleStep(
+  campaignId: string,
+  caseId: string,
+  summary: string,
+  event: PayPalEvent,
+) {
+  const [campaign] = await db
+    .select()
+    .from(campaigns)
+    .where(eq(campaigns.id, campaignId));
   await db.insert(agentDecisions).values({
     merchantId: campaign.merchantId,
     campaignId,
@@ -227,7 +284,10 @@ async function logSettleStep(campaignId: string, caseId: string, summary: string
 // a payout in limbo. Safe to run again for the same event.
 export async function handleVerifiedEvent(
   event: PayPalEvent,
-): Promise<{ outcome: "settled" | "failed" | "noted" | "ignored"; caseId: string | null }> {
+): Promise<{
+  outcome: "settled" | "failed" | "noted" | "ignored";
+  caseId: string | null;
+}> {
   const settled = await settleFromEvent(event);
   if (settled) return { outcome: "settled", caseId: settled };
   const failed = await failFromEvent(event);

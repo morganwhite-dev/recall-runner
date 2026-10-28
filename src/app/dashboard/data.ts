@@ -6,9 +6,10 @@ import { REFUND_WINDOW_DAYS } from "@/lib/policy";
 // (a client component) can import it. The server builds these shapes in src/lib/dashboard.ts.
 
 export type RemedyPath = "Refund" | "PayPal Payout" | "Replacement" | "Repair";
-// Notified: notice sent, not opened. Waiting: opened, or PayPal has the request and has not yet
-// confirmed. Settled: confirmed. Problem: the rules refused it or PayPal returned an error.
-export type CaseStatus = "Notified" | "Waiting" | "Settled" | "Problem";
+// Sent: notice sent, not opened. Opened: the buyer read it, no money step yet. Waiting on PayPal:
+// PayPal has the request and has not yet confirmed. Settled: confirmed. Problem: the rules refused
+// it or PayPal returned an error.
+export type CaseStatus = "Sent" | "Opened" | "Waiting on PayPal" | "Settled" | "Problem";
 
 export interface BuyerCase {
   id: string;
@@ -154,7 +155,7 @@ export function caseStatus(k: {
     case "REFUNDED":
     case "PAYOUT_SENT":
       // PayPal accepted the request; settled only once its webhook says the money moved.
-      return k.settledAt ? "Settled" : "Waiting";
+      return k.settledAt ? "Settled" : "Waiting on PayPal";
     case "REPLACEMENT_SHIPPED":
     case "REPAIR_KIT_REQUESTED":
       return "Settled"; // no money moves and PayPal sends no webhook for these
@@ -162,7 +163,7 @@ export function caseStatus(k: {
     case "FAILED":
       return "Problem";
     default:
-      return k.openedAt ? "Waiting" : "Notified";
+      return k.openedAt ? "Opened" : "Sent";
   }
 }
 

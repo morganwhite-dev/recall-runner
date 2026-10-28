@@ -17,9 +17,9 @@ import { groupAmount, groupByRecall, howPaid } from "../src/app/r/[token]/data";
 const T = new Date("2026-10-25T12:00:00Z");
 
 test("a refund or payout is Settled only after PayPal's webhook, not when the request is accepted", () => {
-  assert.equal(caseStatus({ status: "REFUNDED", settledAt: null, openedAt: T }), "Waiting");
+  assert.equal(caseStatus({ status: "REFUNDED", settledAt: null, openedAt: T }), "Waiting on PayPal");
   assert.equal(caseStatus({ status: "REFUNDED", settledAt: T, openedAt: T }), "Settled");
-  assert.equal(caseStatus({ status: "PAYOUT_SENT", settledAt: null, openedAt: null }), "Waiting");
+  assert.equal(caseStatus({ status: "PAYOUT_SENT", settledAt: null, openedAt: null }), "Waiting on PayPal");
   assert.equal(caseStatus({ status: "PAYOUT_SENT", settledAt: T, openedAt: null }), "Settled");
 });
 
@@ -28,9 +28,9 @@ test("replacements and repair kits are Settled at once, because PayPal sends no 
   assert.equal(caseStatus({ status: "REPAIR_KIT_REQUESTED", settledAt: null, openedAt: null }), "Settled");
 });
 
-test("an open case is Notified until the buyer opens the notice, then Waiting", () => {
-  assert.equal(caseStatus({ status: "OPEN", settledAt: null, openedAt: null }), "Notified");
-  assert.equal(caseStatus({ status: "OPEN", settledAt: null, openedAt: T }), "Waiting");
+test("an open case is Sent until the buyer opens the notice, then Opened", () => {
+  assert.equal(caseStatus({ status: "OPEN", settledAt: null, openedAt: null }), "Sent");
+  assert.equal(caseStatus({ status: "OPEN", settledAt: null, openedAt: T }), "Opened");
 });
 
 test("a refused or failed case shows as Problem, never as waiting or settled", () => {
@@ -67,9 +67,9 @@ test("the numbers count settled cases per path, and 'products fixed' is settled 
   const c = (path: BuyerCase["path"], status: BuyerCase["status"]) => ({ path, status }) as BuyerCase;
   const stats = campaignStats([
     c("Refund", "Settled"),
-    c("Refund", "Waiting"),
+    c("Refund", "Waiting on PayPal"),
     c("PayPal Payout", "Settled"),
-    c("PayPal Payout", "Notified"),
+    c("PayPal Payout", "Sent"),
   ]);
   assert.equal(stats.affected, 4);
   assert.equal(stats.settled, 2);
