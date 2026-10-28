@@ -1,6 +1,6 @@
 {
-  "ranAt": "2026-10-26T04:07:52.680Z",
-  "durationMs": 225,
+  "ranAt": "2026-10-28T01:14:11.940Z",
+  "durationMs": 179,
   "total": 43,
   "failing": 0,
   "tests": [
@@ -80,7 +80,7 @@
       "passed": true
     },
     {
-      "name": "an open case is Notified until the buyer opens the notice, then Waiting",
+      "name": "an open case is Sent until the buyer opens the notice, then Opened",
       "file": "dashboard.test.ts",
       "passed": true
     },

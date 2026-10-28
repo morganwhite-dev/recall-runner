@@ -126,16 +126,11 @@ export function DetailPanel({ selected }: { selected: BuyerCase }) {
       >
         {tab === "why" ? <Timeline c={selected} /> : <Message c={selected} />}
       </div>
-      {selected.buyerPath && (
+      {/* The sandbox buyer's page is opened from the demo steps at the top, so it has one home. */}
+      {selected.buyerPath && !selected.canSignIn && (
         <div className={panel.cta}>
-          <Link
-            className={selected.canSignIn ? panel.ctaYou : panel.ctaOther}
-            href={selected.buyerPath}
-          >
-            {selected.canSignIn
-              ? "Open buyer page"
-              : "Preview (fictional buyer)"}{" "}
-            <Icon name="ext" />
+          <Link className={panel.ctaOther} href={selected.buyerPath}>
+            Preview (fictional buyer) <Icon name="ext" />
           </Link>
         </div>
       )}

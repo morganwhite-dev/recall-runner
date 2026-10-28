@@ -55,8 +55,8 @@ export function DemoGuide({
   ];
   const hints = [
     "Press Approve campaign in the recall header. It opens the cases and notifies the buyers.",
-    "You are the customer now: the sandbox buyer, marked “You · sign in here” in the table.",
-    "The sandbox login is shown under the Confirm with PayPal button on the buyer page.",
+    "You are the customer now: the sandbox buyer, marked “You · sign in here” in the table. Press Open buyer page.",
+    "On the buyer page, press Confirm with PayPal. “Show sandbox login” under it gives you the test account.",
     "PayPal confirms the payment, usually in under a minute. This page updates by itself.",
   ];
 
@@ -93,7 +93,7 @@ export function DemoGuide({
             target="_blank"
             rel="noopener noreferrer"
           >
-            Open page <Icon name="ext" />
+            Open buyer page <Icon name="ext" />
           </a>
         ) : active >= 0 ? (
           <span>{hints[active]}</span>

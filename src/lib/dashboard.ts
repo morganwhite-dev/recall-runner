@@ -37,6 +37,7 @@ import {
 } from "@/app/dashboard/data";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const SLOW_CONFIRM_MS = 3 * 60 * 1000; // PayPal usually confirms in under a minute
 const tagOf = (actor: string): TagKind =>
   (["model", "rule", "tool", "you"] as const).find(
     (t) => t === actor.toLowerCase(),
@@ -100,7 +101,9 @@ export async function loadDashboard(
           : recall.recallNumber === FEATURED_RECALL
             ? "Approved by you"
             : "Pre-approved",
-      closed: mine.filter((k) => caseStatus({ ...k, openedAt: null }) === "Settled").length,
+      closed: mine.filter(
+        (k) => caseStatus({ ...k, openedAt: null }) === "Settled",
+      ).length,
       total: mine.length,
     };
   });
@@ -253,6 +256,24 @@ export async function loadDashboard(
             ? `${text} (PayPal id ${a.paypalRef})`
             : text,
       });
+    }
+    // PayPal normally confirms within a minute. If it has not after a few minutes, say so and
+    // say why, instead of leaving the case on "Waiting on PayPal" with no explanation.
+    if (PAID.includes(kase.status) && !kase.settledAt) {
+      const sent = ledger
+        .filter(
+          (a) =>
+            a.caseId === kase.id &&
+            a.status === "SUCCEEDED" &&
+            a.op !== "TRACKING",
+        )
+        .at(-1);
+      if (sent && now.getTime() - sent.updatedAt.getTime() > SLOW_CONFIRM_MS) {
+        timeline.push({
+          tag: "tool",
+          text: "PayPal has not confirmed yet, which is slower than usual. A payout to an email with no PayPal account stays unclaimed until the recipient joins. Nothing is retried.",
+        });
+      }
     }
     for (const d of mine.filter((d) => d.step === "SETTLE")) {
       timeline.push({ tag: tagOf(d.actor), text: clip(d.summary) });
