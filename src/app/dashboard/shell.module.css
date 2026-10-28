@@ -1,0 +1,535 @@
+/* The dashboard shell: plum sidebar, demo stepper and recall header (direction 2a).
+   Phone widths stack the sidebar on top and let the page scroll normally. */
+
+.root {
+  display: grid;
+  grid-template-columns: clamp(216px, 18vw, 264px) minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--ground);
+}
+
+/* Sidebar */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 26px 18px;
+  background: var(--brand);
+  color: var(--on-ground);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 19px var(--font-display);
+  text-decoration: none;
+}
+
+.mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+
+.storeChip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.storeChip i {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.14);
+  font: 700 12px var(--font-body);
+  font-style: normal;
+}
+
+.storeChip span {
+  display: block;
+  font-size: 12px;
+  color: var(--on-ground-muted);
+}
+
+.storeChip b {
+  display: block;
+  font: 700 15px/1.2 var(--font-display);
+}
+
+.label {
+  margin-bottom: 8px;
+  font: 500 11px var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-ground-muted);
+}
+
+.campaigns {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+}
+
+.campaign {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-left: 3px solid transparent;
+  border-radius: 10px;
+  color: var(--on-ground);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.campaign:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.campaign[aria-current="page"] {
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: var(--accent);
+}
+
+.campaignTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font: 700 15px/1.25 var(--font-display);
+}
+
+.campaignTop span {
+  flex: none;
+  font: 500 12px var(--font-mono);
+  color: var(--on-ground-muted);
+}
+
+.campaign small {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--on-ground-muted);
+}
+
+.links {
+  display: grid;
+  gap: 2px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.links a {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: var(--on-ground);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.links a:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.disclaimer {
+  margin-top: auto;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--on-ground-muted);
+}
+
+/* Main column */
+.main {
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Every band uses the same side padding, so content stays centered and at most 1240px wide. */
+.band {
+  padding-left: max(24px, calc((100% - 1240px) / 2));
+  padding-right: max(24px, calc((100% - 1240px) / 2));
+}
+
+/* Demo stepper */
+.stepper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 60px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.stepperTitle {
+  font: 700 14px var(--font-display);
+  white-space: nowrap;
+}
+
+.stepperTitle span {
+  margin-left: 6px;
+  font: 400 12px var(--font-body);
+  color: var(--ink-muted);
+}
+
+.steps {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  min-width: 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 5px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.step + .step::before {
+  content: "";
+  width: clamp(6px, 2vw, 28px);
+  height: 2px;
+  margin-left: -4px;
+  margin-right: 4px;
+  background: var(--line);
+}
+
+.stepNum {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface-sunk);
+  font: 700 12px var(--font-body);
+  color: var(--ink-muted);
+}
+
+.stepDone .stepNum {
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+  font-size: 13px;
+}
+
+.stepNow {
+  background: var(--surface-sunk);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.stepNow .stepNum {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stepNow .stepNum {
+    animation: rrRing 1.8s infinite;
+  }
+}
+
+.stepperAct {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.stepperLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 700 13px var(--font-body);
+  text-decoration: none;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+}
+
+.stepperLink:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 158, 122, 0.35);
+}
+
+/* The coral line on the bottom edge: (steps done + half the current one) / 4. */
+.progressLine {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 60px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.note a {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+/* Recall header */
+.recall {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 18px;
+  padding-top: 18px;
+}
+
+.artTile {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--surface-sunk);
+  color: var(--brand);
+}
+
+.artTile svg {
+  width: 52px;
+  height: 52px;
+}
+
+.title {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+
+.recallMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--recall-bg);
+  color: var(--recall);
+  font: 500 12px var(--font-mono);
+  white-space: nowrap;
+}
+
+.title h1 {
+  margin: 6px 0 4px;
+  font: 700 24px/1.15 var(--font-display);
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.approval {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+/* Progress card */
+.progress {
+  flex: 1 1 360px;
+  max-width: 520px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.progressHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 13px var(--font-body);
+}
+
+.live {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2f8a57;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .live {
+    animation: rrBlink 1.6s infinite;
+  }
+}
+
+.money {
+  margin-left: auto;
+  font: 500 15px var(--font-mono);
+  color: #14633a;
+}
+
+.segs {
+  display: flex;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.seg {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface-sunk);
+  overflow: hidden;
+  display: flex;
+}
+
+.seg i {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+  transition: width 1.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.green {
+  background: #2f8a57;
+}
+
+.amber {
+  background: #e8a317;
+}
+
+.nums {
+  display: flex;
+  gap: 4px;
+}
+
+.nums div {
+  flex: 1;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.nums b {
+  display: block;
+  font: 700 20px/1.1 var(--font-display);
+  color: var(--ink);
+}
+
+/* Page content under the recall header */
+.content {
+  flex: 1 1 auto;
+  padding-top: 16px;
+  padding-bottom: 24px;
+}
+
+/* Phones: sidebar on top, page scrolls as one. */
+@media (max-width: 759px) {
+  .root {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    gap: 18px;
+  }
+
+  .disclaimer {
+    margin-top: 0;
+  }
+
+  .main {
+    height: auto;
+    overflow: visible;
+  }
+
+  .stepper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding-top: 12px;
+    padding-bottom: 14px;
+  }
+
+  .stepperAct {
+    width: 100%;
+  }
+
+  .steps {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .step + .step::before {
+    display: none;
+  }
+}
+
+@keyframes rrRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 31, 63, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(59, 31, 63, 0);
+  }
+}
+
+@keyframes rrBlink {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}

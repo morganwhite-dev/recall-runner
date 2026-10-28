@@ -287,6 +287,67 @@ a {
   }
 }
 
+/* Dashboard redesign motion (names are used by shell.module.css and the product art). */
+@keyframes rrCharge {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  35%,
+  70% {
+    opacity: 1;
+  }
+}
+
+@keyframes rrNudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.5px);
+  }
+}
+
+@keyframes rrBlink {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}
+
+@keyframes rrRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 31, 63, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(59, 31, 63, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .art-led {
+    animation: rrCharge 2.4s ease-in-out infinite;
+  }
+
+  .art-led2 {
+    animation-delay: 0.35s;
+  }
+
+  .art-led3 {
+    animation-delay: 0.7s;
+  }
+
+  .art-nudge {
+    animation: rrNudge 3.2s ease-in-out infinite;
+  }
+}
+
 @keyframes art-rise {
   0%,
   100% {

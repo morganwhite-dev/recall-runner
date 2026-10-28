@@ -1,10 +1,9 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { Icon } from "@/components/Icon";
+import Link from "next/link";
 import type { CampaignOption } from "./data";
-import styles from "./page.module.css";
+import styles from "./shell.module.css";
 
+// The campaigns in the sidebar. Plain links, so choosing one is a normal page load and the
+// current one is marked for screen readers with aria-current.
 export function CampaignSwitch({
   options,
   current,
@@ -12,21 +11,30 @@ export function CampaignSwitch({
   options: CampaignOption[];
   current: string;
 }) {
-  const router = useRouter();
   return (
-    <label className={styles.switch}>
-      <span className={styles.switchLabel}>Campaign</span>
-      <select
-        value={current}
-        onChange={(e) => router.push(`/dashboard?campaign=${e.target.value}`)}
-      >
+    <nav aria-label="Campaigns">
+      <p className={styles.label}>Campaigns</p>
+      <ul className={styles.campaigns}>
         {options.map((o) => (
-          <option key={o.recallNumber} value={o.recallNumber}>
-            {o.label}
-          </option>
+          <li key={o.recallNumber}>
+            <Link
+              className={styles.campaign}
+              href={`/dashboard?campaign=${o.recallNumber}`}
+              aria-current={o.recallNumber === current ? "page" : undefined}
+            >
+              <span className={styles.campaignTop}>
+                {o.name}
+                <span>
+                  {o.closed}/{o.total}
+                </span>
+              </span>
+              <small>
+                #{o.recallNumber} · {o.remedy} · {o.approval}
+              </small>
+            </Link>
+          </li>
         ))}
-      </select>
-      <Icon name="chev" />
-    </label>
+      </ul>
+    </nav>
   );
 }

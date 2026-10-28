@@ -5,7 +5,7 @@ import type { GridApi } from "ag-grid-community";
 import { CaseGrid, type GridKind } from "./CaseGrid";
 import { Activity } from "./Activity";
 import type { ActivityEvent, BuyerCase, CaseStatus } from "./data";
-import { DetailPanel, MessagePreview } from "./DetailPanel";
+import { DetailPanel } from "./DetailPanel";
 import delight from "./delight.module.css";
 import { LiveSettle } from "./LiveSettle";
 import styles from "./page.module.css";
@@ -187,8 +187,6 @@ export function Workspace({
         </div>
 
         <Activity events={activity} />
-
-        <MessagePreview c={selected} />
       </section>
 
       <DetailPanel selected={selected} />

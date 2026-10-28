@@ -82,6 +82,11 @@ export interface DemoGuideState {
 export interface CampaignOption {
   recallNumber: string;
   label: string;
+  name: string; // the product, for the sidebar
+  remedy: string; // "refund", "replace" or "repair"
+  approval: string; // "Needs your approval", "Approved by you" or "Pre-approved"
+  closed: number; // cases settled
+  total: number; // cases opened
 }
 
 export { REFUND_WINDOW_DAYS };

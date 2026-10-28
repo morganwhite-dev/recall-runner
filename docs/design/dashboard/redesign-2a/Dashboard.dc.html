@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#fbf9f7;font-family:'DM Sans',system-ui,sans-serif;color:#1f1a21;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}a{color:inherit}a:hover{color:#3b1f3f}
+@keyframes rrRise{0%,100%{opacity:.25;transform:translateY(4px)}50%{opacity:1;transform:translateY(-3px)}}
+@keyframes rrPulse{0%,100%{opacity:.55;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes rrGlow{0%,100%{opacity:.1;transform:scale(.94)}50%{opacity:.24;transform:scale(1.04)}}
+@keyframes rrBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+@keyframes rrBreath{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes rrRing{0%{box-shadow:0 0 0 0 rgba(59,31,63,.4)}100%{box-shadow:0 0 0 8px rgba(59,31,63,0)}}
+@keyframes rrCharge{0%,100%{opacity:.2}35%,70%{opacity:1}}
+@keyframes rrNudge{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div data-screen-label="Dashboard" style="min-width:760px;min-height:100vh;display:grid;grid-template-columns:clamp(216px,18vw,264px) minmax(0,1fr);background:#fbf9f7">
+  <aside style="background:#3b1f3f;color:#fff;padding:26px 18px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 4px;font:700 17px 'DM Sans',sans-serif"><span style="width:30px;height:30px;border-radius:50%;background:#ff9e7a;color:#2a1530;display:grid;place-items:center;font-size:16px;transition:transform .5s cubic-bezier(.34,1.56,.64,1)" style-hover="transform:rotate(180deg)">↻</span>Recall Runner</div>
+    <div style="padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.07);display:flex;align-items:center;gap:10px"><span style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.14);font-size:11px;font-weight:700;display:grid;place-items:center">BH</span><div style="line-height:1.25"><div style="font-size:12px;color:#dccbdd">Store</div><b style="font-size:14px">Brightnest Home</b></div></div>
+    <div>
+      <div style="font:500 11px 'DM Mono',monospace;letter-spacing:.08em;color:#dccbdd;padding:0 6px 8px">CAMPAIGNS</div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 #ff9e7a"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:14px">Hand warmers</b><span style="font:500 11.5px 'DM Mono',monospace">{{ k.closed }}/6</span></div><div style="font-size:12px;color:#dccbdd;margin-top:2px">#27011 · Refund · ✓ Approved by you</div></div>
+        <div style="padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .15s" style-hover="background:rgba(255,255,255,.06)"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:500">Battery pack</span><span style="font:500 11.5px 'DM Mono',monospace;color:#dccbdd">0/4</span></div><div style="font-size:12px;color:#dccbdd;margin-top:2px">#26791 · Replacement · Pre-approved</div></div>
+        <div style="padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .15s" style-hover="background:rgba(255,255,255,.06)"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:500">8-drawer dresser</span><span style="font:500 11.5px 'DM Mono',monospace;color:#dccbdd">0/3</span></div><div style="font-size:12px;color:#dccbdd;margin-top:2px">#26794 · Repair kit · Pre-approved</div></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;font-size:14px;color:#dccbdd;border-top:1px solid rgba(255,255,255,.14);padding-top:14px">
+      <span style="padding:7px 6px;display:flex;justify-content:space-between;border-radius:6px;cursor:pointer" style-hover="background:rgba(255,255,255,.06);color:#fff">Test results <span style="font:500 11.5px 'DM Mono',monospace;color:#9fe0b8">✓ 51/51</span></span>
+      <span style="padding:7px 6px;border-radius:6px;cursor:pointer" style-hover="background:rgba(255,255,255,.06);color:#fff">GitHub ↗</span>
+    </div>
+    <p style="margin:auto 0 0;font-size:11.5px;line-height:1.5;color:#dccbdd;padding:0 6px">Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.</p>
+  </aside>
+
+  <main ref="{{ mainRef }}" style="min-width:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto">
+    <div style="flex:none;position:relative;display:flex;align-items:center;gap:20px;height:60px;padding:0 max(24px, calc((100% - 1240px) / 2));background:#fff;border-bottom:1px solid #e0d9dd;font-size:13.5px">
+      <sc-if value="{{ bar.full }}" hint-placeholder-val="{{ true }}"><div style="white-space:nowrap"><b>Try the demo</b></div></sc-if>
+      <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden">
+        <span style="display:flex;align-items:center;gap:8px;color:#5a525c" title="Approve the recall (done)"><span style="flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:#ff9e7a;color:#2a1530">✓</span></span>
+        <span style="flex:1;max-width:28px;min-width:6px;height:2px;border-radius:1px;background:#e0d9dd"></span>
+        <span style="display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:999px;background:#f2edef;font-weight:700">{{ stepBar }}Open buyer page</span>
+        <span style="flex:1;max-width:28px;min-width:6px;height:2px;border-radius:1px;background:#e0d9dd"></span>
+        <span style="display:flex;align-items:center;gap:8px;color:#5a525c" title="Confirm with PayPal"><span style="flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;border:1.5px solid #c9bfc6">3</span><span title="sb-buyer@personal.example.com" style="display:inline-flex;align-items:center;gap:6px;margin-left:2px;padding:{{ bar.chipPad }};border:1px dashed #c9bfc6;border-radius:999px;font-size:12px"><sc-if value="{{ bar.full }}" hint-placeholder-val="{{ true }}">Sandbox login</sc-if><span onClick="{{ copy }}" style="font:600 11px 'DM Sans',sans-serif;padding:2px 8px;border-radius:999px;background:#f2edef;color:#3b1f3f;cursor:pointer;transition:background .15s" style-hover="background:#e6dce2">{{ bar.copy }}</span></span></span>
+        <span style="flex:1;max-width:28px;min-width:6px;height:2px;border-radius:1px;background:#e0d9dd"></span>
+        <span style="display:flex;align-items:center;gap:8px;color:#5a525c" title="Watch it settle"><span style="flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;border:1.5px solid #c9bfc6">4</span></span>
+      </div>
+      <span style="display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 18px;border-radius:999px;background:#ff9e7a;color:#2a1530;font-weight:700;font-size:14px;white-space:nowrap;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s" style-hover="transform:translateY(-2px);background:#ffb394;box-shadow:0 6px 16px rgba(255,158,122,.35)" style-active="transform:translateY(1px)">{{ bar.cta }}</span>
+      <span style="position:absolute;left:0;bottom:-1px;height:2px;width:37.5%;background:#ff9e7a;border-radius:0 2px 2px 0"></span>
+    </div>
+
+    <div style="flex:none;padding:18px max(24px, calc((100% - 1240px) / 2)) 0">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px 18px">
+        <div style="flex:none;width:72px;height:72px;border-radius:14px;background:#f2edef;display:grid;place-items:center">{{ art }}</div>
+        <div style="flex:1 1 380px;min-width:0">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#5a525c;margin-bottom:6px;white-space:nowrap"><span style="background:#fbe9da;color:#9a4a12;font:500 12px 'DM Mono',monospace;padding:4px 9px;border-radius:999px;white-space:nowrap">⚠ CPSC #27011</span>Recalled Oct 1, 2026 · Fire and burn hazard</div>
+          <h1 style="margin:0;font:700 24px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;text-wrap:pretty">Kobayashi recalls rechargeable hand warmers due to risk of fire and burn hazards</h1>
+          <div style="display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:6px;font-size:13px;color:#5a525c"><span>HotHands Rechargeable Hand Warmers, 2-pack</span><span>Remedy: <b style="color:#1f1a21">Refund · $34.00 each</b></span><span style="color:#14633a;font-weight:700">✓ Approved by you</span></div>
+        </div>
+      <div style="flex:1 1 360px;max-width:520px;background:#fff;border:1px solid #e0d9dd;border-radius:12px;padding:10px 16px">
+        <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+          <b style="font-size:13.5px">Progress</b>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#14633a;font-weight:600">{{ liveDot }} Live</span>
+          <span onClick="{{ replay }}" style="font-size:12.5px;color:#5a525c;text-decoration:underline;text-underline-offset:3px;cursor:pointer" style-hover="color:#3b1f3f">Replay</span>
+          <span style="margin-left:auto;font-size:13px;color:#5a525c"><b style="font:500 15px 'DM Mono',monospace;color:#14633a">{{ k.money }}</b> / $204</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px">
+          <div><div style="height:8px;background:#f2edef;border-radius:5px 0 0 5px;overflow:hidden"><div style="height:100%;background:#3b1f3f;width:{{ k.w1 }};transition:width .2s linear"></div></div><div style="display:flex;align-items:baseline;gap:6px;margin-top:6px;white-space:nowrap"><b style="font:700 20px 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums">{{ k.found }}</b><span style="font-size:12px;color:#5a525c">Found</span></div></div>
+          <div><div style="height:8px;background:#f2edef;overflow:hidden"><div style="height:100%;background:#3b1f3f;width:{{ k.w2 }};transition:width .2s linear"></div></div><div style="display:flex;align-items:baseline;gap:6px;margin-top:6px;white-space:nowrap"><b style="font:700 20px 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums">{{ k.notified }}</b><span style="font-size:12px;color:#5a525c">Notified</span></div></div>
+          <div><div style="height:8px;background:#f2edef;overflow:hidden"><div style="height:100%;background:#3b1f3f;width:{{ k.w3 }};transition:width .2s linear"></div></div><div style="display:flex;align-items:baseline;gap:6px;margin-top:6px;white-space:nowrap"><b style="font:700 20px 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums">{{ k.opened }}</b><span style="font-size:12px;color:#5a525c">Opened</span></div></div>
+          <div><div style="height:8px;background:#f2edef;border-radius:0 5px 5px 0;overflow:hidden;display:flex"><div style="height:100%;background:#2f8a57;width:{{ k.wSettled }};transition:width .8s cubic-bezier(.2,.8,.2,1)"></div><div style="height:100%;background:#e8a317;width:{{ k.wWait }};transition:width .8s cubic-bezier(.2,.8,.2,1)"></div></div><div style="display:flex;align-items:baseline;gap:6px;margin-top:6px;white-space:nowrap"><b style="font:700 20px 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums">{{ k.settled }}</b><span style="font-size:12px;color:#5a525c">Settled</span></div></div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div style="flex:{{ lay.rowFlex }};min-height:{{ lay.rowMinH }};display:grid;grid-template-rows:{{ lay.rows }};grid-template-columns:{{ lay.cols }};gap:16px;padding:16px max(24px, calc((100% - 1240px) / 2)) 16px;align-items:stretch">
+      <div ref="{{ leftRef }}" style="min-width:0;min-height:0;display:flex;flex-direction:column;gap:16px">
+      <div ref="{{ tableRef }}" style="flex:none;display:flex;flex-direction:column;background:#fff;border:1px solid #e0d9dd;border-radius:12px;overflow:hidden">
+        <div style="flex:none;display:flex;align-items:center;gap:4px;padding:6px 12px;border-bottom:1px solid #e0d9dd;font-size:14px">
+          <span style="padding:8px 14px;border-radius:8px;background:#f2edef;font-weight:700">Cases <span style="color:#5a525c;font-weight:500">6</span></span>
+          <span style="padding:8px 14px;color:#5a525c;border-radius:8px;cursor:pointer" style-hover="background:#f8f4f6">Outbox 6</span>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border:1px solid #e0d9dd;border-radius:999px;color:#5a525c;font-size:13px;width:200px">⌕ Search buyers</span><span style="display:inline-flex;align-items:center;height:34px;padding:0 14px;border:1px solid #e0d9dd;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .15s" style-hover="border-color:#3b1f3f">Export CSV</span>
+        </div>
+        <div style="flex:none;display:grid;grid-template-columns:minmax(140px,200px) minmax(120px,150px) 72px 150px;gap:10px;padding:8px 18px;background:#f2edef;font-size:12px;font-weight:600;color:#5a525c"><span>Buyer</span><span>Path · paid</span><span style="text-align:right">Amount</span><span>Status</span></div>
+        <div>
+        <sc-for list="{{ rows }}" as="row" hint-placeholder-count="6">
+          <div onClick="{{ row.select }}" style="display:grid;grid-template-columns:minmax(140px,200px) minmax(120px,150px) 72px 150px;gap:10px;align-items:center;padding:0 18px 0 15px;min-height:50px;padding-top:4px;padding-bottom:4px;border-top:1px solid #efe9ec;border-left:3px solid {{ row.bar }};background:{{ row.bg }};font-size:14px;cursor:pointer;transition:background 1s ease,border-color .2s">
+            <span style="display:flex;align-items:center;gap:10px;min-width:0"><span style="flex:none;width:28px;height:28px;border-radius:50%;background:#f2edef;color:#5a525c;font-size:11px;font-weight:700;display:grid;place-items:center">{{ row.initials }}</span><span style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0"><b style="font-weight:600;white-space:nowrap">{{ row.name }}</b><sc-if value="{{ row.you }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:#ff9e7a;color:#2a1530;white-space:nowrap">You · sign in here</span></sc-if></span></span>
+            <span style="display:flex;flex-direction:column;line-height:1.3;white-space:nowrap"><span>{{ row.pathIcon }} {{ row.path }}</span><span style="font:400 12px 'DM Mono',monospace;color:#5a525c">{{ row.days }} days ago</span></span>
+            <span style="text-align:right;font:500 13.5px 'DM Mono',monospace">$34.00</span>
+            <span><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px 3px 8px;border-radius:999px;background:{{ row.pillBg }};color:{{ row.pillInk }};font-weight:700;font-size:12.5px;white-space:nowrap;transition:background .4s,color .4s">{{ row.iconEl }} {{ row.label }}</span></span>
+          </div>
+        </sc-for>
+        </div>
+        <div style="flex:none;padding:8px 18px;border-top:1px solid #e0d9dd;font-size:12px;color:#5a525c"><b>Sent</b> not opened · <b>Opened</b> buyer read it · <b>Waiting on PayPal</b> paid, confirming · <b>Settled</b> PayPal confirmed</div>
+      </div>
+      <sc-if value="{{ actFits }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:{{ lay.actFlex }};min-height:0;display:flex;flex-direction:column;background:#fff;border:1px solid #e0d9dd;border-radius:12px;overflow:hidden">
+        <div style="flex:none;display:flex;align-items:baseline;gap:10px;padding:12px 18px;border-bottom:1px solid #e0d9dd"><b style="font:700 15px 'Bricolage Grotesque',sans-serif">Activity</b><span style="font-size:12.5px;color:#5a525c">Live from PayPal webhooks and the Outbox</span><span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#14633a;font-weight:600">{{ liveDot }} Live</span></div>
+        <div style="flex:1;min-height:0;overflow-y:auto;padding:4px 0 20px;mask-image:linear-gradient(to bottom,#000 calc(100% - 28px),transparent);-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 28px),transparent)">
+          <sc-for list="{{ activity }}" as="a" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:86px 14px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 18px;font-size:13.5px;background:{{ a.bg }};transition:background 1.2s ease">
+              <span style="font:400 12px 'DM Mono',monospace;color:#5a525c">{{ a.t }}</span>
+              <span style="width:8px;height:8px;border-radius:50%;background:{{ a.dot }}"></span>
+              <span style="min-width:0">{{ a.text }}</span>
+              <span style="font:500 12.5px 'DM Mono',monospace;color:{{ a.amtInk }}">{{ a.amt }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+      </div>
+
+      <div style="position:relative;min-height:0;height:{{ lay.panelH }}"><div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;border:1px solid #e0d9dd;border-radius:12px;overflow:hidden">
+        <div style="flex:none;padding:12px 16px;border-bottom:1px solid #e0d9dd;display:flex;align-items:center;gap:10px"><span style="flex:none;width:34px;height:34px;border-radius:50%;background:#f2edef;color:#5a525c;font-size:12px;font-weight:700;display:grid;place-items:center">{{ sel.initials }}</span><div><div style="font:700 17px 'Bricolage Grotesque',sans-serif">{{ sel.name }}</div><div style="font-size:12.5px;color:#5a525c">{{ sel.path }} · $34.00 · {{ sel.label }}</div></div></div>
+        <div style="flex:none;position:relative;display:flex;gap:18px;padding:0 18px;border-bottom:1px solid #e0d9dd;height:42px;font-size:13.5px">
+          <span ref="{{ whyRef }}" onClick="{{ showWhy }}" style="display:flex;align-items:center;cursor:pointer;font-weight:700;color:{{ tab.whyInk }};transition:color .2s">Why this happened</span>
+          <span ref="{{ msgRef }}" onClick="{{ showMsg }}" style="display:flex;align-items:center;cursor:pointer;font-weight:700;color:{{ tab.msgInk }};transition:color .2s">Message</span>
+          <span style="position:absolute;bottom:0;height:2px;background:#ff9e7a;border-radius:2px;left:{{ tab.ulLeft }};width:{{ tab.ulWidth }};transition:left .3s cubic-bezier(.2,.8,.2,1),width .3s cubic-bezier(.2,.8,.2,1)"></span>
+        </div>
+        <div style="flex:1;min-height:0;overflow-y:auto;padding:6px 18px 24px;mask-image:linear-gradient(to bottom,#000 calc(100% - 28px),transparent);-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 28px),transparent)">
+          <sc-if value="{{ tab.why }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+              <div style="display:grid;grid-template-columns:14px minmax(0,1fr);gap:10px;padding:10px 0;opacity:{{ s.vis }};transform:translateY({{ s.dy }});transition:opacity .35s ease,transform .35s ease">
+                <span style="width:10px;height:10px;border-radius:50%;margin-top:5px;background:{{ s.dot }}"></span>
+                <div><span style="display:inline-flex;align-items:center;gap:4px;font:700 10.5px/1 'DM Sans',sans-serif;letter-spacing:.08em;padding:4px 7px;border-radius:999px;background:{{ s.bg }};color:{{ s.ink }};border:{{ s.border }}">{{ s.icon }} {{ s.tag }}</span><div style="font-size:13.5px;line-height:1.5;margin-top:6px">{{ s.text }}</div><sc-if value="{{ s.code }}" hint-placeholder-val="{{ false }}"><div style="margin-top:5px;font-size:12px;color:#5a525c">Rule that applied: <code style="font:500 11px 'DM Mono',monospace;background:#f2edef;padding:2px 5px;border-radius:4px;color:#1f1a21">{{ s.code }}</code></div></sc-if></div>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ tab.msg }}" hint-placeholder-val="{{ false }}">
+            <div style="opacity:{{ msgVis }};transform:translateY({{ msgDy }});transition:opacity .35s ease,transform .35s ease">
+              <div style="padding-top:12px;font:400 12px 'DM Mono',monospace;color:#5a525c">to {{ sel.email }} · 4 min ago</div>
+              <div style="font-weight:700;font-size:15px;margin:8px 0 10px">Safety recall: your HotHands hand warmers</div>
+              <p style="margin:0 0 10px;font-size:13.5px;line-height:1.55">Hi {{ sel.first }}, the hand warmers you bought {{ sel.days }} days ago have been recalled. Please stop using them.</p>
+              <p style="margin:0 0 10px;font-size:13.5px;line-height:1.55;padding-left:12px;border-left:3px solid #ff9e7a">“The lithium-ion battery and electrical components can overheat and ignite…” <span style="display:block;margin-top:4px;font-size:11.5px;color:#5a525c">Quoted from CPSC</span></p>
+              <p style="margin:0 0 12px;font-size:13.5px">Your remedy: <b>{{ sel.remedy }}</b></p>
+              <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#5a525c"><span style="flex:none;font:700 10px/1 'DM Sans',sans-serif;letter-spacing:.08em;padding:4px 7px;border-radius:999px;background:#f1e7f2;color:#5b2a66;border:1.5px dashed #5b2a66">✦ MODEL</span>Drafted by the AI; hazard and remedy quoted word for word.</div>
+            </div>
+          </sc-if>
+        </div>
+        <div style="flex:none;padding:12px 18px 16px;border-top:1px solid #efe9ec">
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;height:44px;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;background:{{ sel.ctaBg }};color:{{ sel.ctaInk }};border:1.5px solid {{ sel.ctaLine }};transition:transform .15s,box-shadow .15s" style-hover="transform:translateY(-2px);box-shadow:0 6px 16px rgba(59,31,63,.14)" style-active="transform:translateY(1px)">{{ sel.cta }} ↗</div>
+        </div>
+      </div></div>
+    </div>
+  </main>
+
+  <div style="position:fixed;right:24px;bottom:24px;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:#1f1a21;color:#fff;font-size:14px;box-shadow:0 12px 32px rgba(31,26,33,.28);pointer-events:none;opacity:{{ toast.op }};transform:translateY({{ toast.dy }});transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)">
+    <span style="width:26px;height:26px;border-radius:50%;background:#2f8a57;display:grid;place-items:center;font-weight:700">✓</span>
+    <div style="line-height:1.35"><b>PayPal confirmed Mei Chen's refund</b><div style="font-size:12.5px;color:#dccbdd">$34.00 · just now</div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;liveUpdate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Live demo&quot;},&quot;settleDelay&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:4,&quot;min&quot;:2,&quot;max&quot;:12,&quot;step&quot;:1,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Live demo&quot;}}">
+class Component extends DCLogic {
+  state = { barFull: true, actFits: true, sel: 'md', tab: 'why', p: 0, mei: false, flash: false, toast: false, money: 0, shown: 5, ul: null, copied: false };
+  whyRef = React.createRef();
+  leftRef = React.createRef();
+  mainRef = React.createRef();
+  tableRef = React.createRef();
+  msgRef = React.createRef();
+  timers = [];
+  componentDidMount() {
+    this.reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.measure();
+    setTimeout(() => this.measure(), 500);
+    document.fonts && document.fonts.ready.then(() => this.measure());
+    this.play();
+    const fit = () => { const M = this.mainRef.current, L = this.leftRef.current, T = this.tableRef.current; if (!M) return; const stacked = M.clientWidth < 960; const ok = stacked || (!!L && !!T && L.clientHeight - T.offsetHeight - 16 >= 96); if (ok !== this.state.actFits || stacked !== this.state.stacked) this.setState({ actFits: ok, stacked }); const full = M.clientWidth >= 1040; if (full !== this.state.barFull) this.setState({ barFull: full }); };
+    if (window.ResizeObserver) { this.ro = new ResizeObserver(fit); this.mainRef.current && this.ro.observe(this.mainRef.current); this.leftRef.current && this.ro.observe(this.leftRef.current); }
+    fit();
+  }
+  componentDidUpdate() { if (this._lastTab !== this.state.tab) { this._lastTab = this.state.tab; this.measure(); } }
+  componentWillUnmount() { this.clear(); this.ro && this.ro.disconnect(); }
+  clear() { this.timers.forEach(clearTimeout); this.timers = []; Object.values(this.rafs || {}).forEach(cancelAnimationFrame); this.rafs = {}; }
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+  tween(key, dur, fn, done) {
+    this.rafs = this.rafs || {};
+    if (this.reduced || document.hidden) { fn(1); done && done(); return; }
+    cancelAnimationFrame(this.rafs[key]);
+    const t0 = performance.now();
+    const step = (t) => { const k = Math.min(1, (t - t0) / dur); fn(1 - Math.pow(1 - k, 3)); if (k < 1) this.rafs[key] = requestAnimationFrame(step); else done && done(); };
+    this.rafs[key] = requestAnimationFrame(step);
+  }
+  measure() {
+    const el = this.state.tab === 'why' ? this.whyRef.current : this.msgRef.current;
+    if (el) this.setState({ ul: { l: el.offsetLeft, w: el.offsetWidth } });
+  }
+  play = () => {
+    this.clear();
+    this.setState({ p: 0, mei: false, flash: false, toast: false, money: 0 });
+    this.tween('intro', 1300, (e) => this.setState({ p: e, money: 102 * e }));
+    if (this.props.liveUpdate ?? true) this.later(() => this.settle(), (this.props.settleDelay ?? 4) * 1000);
+  };
+  settle() {
+    cancelAnimationFrame((this.rafs || {}).intro);
+    this.setState({ p: 1, mei: true, flash: true, toast: true });
+    this.tween('settle', 900, (e) => this.setState({ money: 102 + 34 * e }));
+    this.later(() => this.setState({ flash: false }), 1500);
+    this.later(() => this.setState({ toast: false }), 5200);
+  }
+  stagger() {
+    if (this.reduced) return this.setState({ shown: 5 });
+    this.setState({ shown: 0 });
+    for (let i = 1; i <= 5; i++) setTimeout(() => this.setState({ shown: i }), 40 + i * 70);
+  }
+  renderVals() {
+    const e = React.createElement;
+    const { mei, p, flash, shown } = this.state;
+    const B = [
+      { id: 'md', name: 'Morgan Demo', initials: 'MD', you: true, days: 200, path: 'PayPal Payout', st: 'opened', opened: true },
+      { id: 'ar', name: 'Alicia Rivera', initials: 'AR', days: 45, path: 'Refund', st: 'settled', opened: true },
+      { id: 'jo', name: 'James Okafor', initials: 'JO', days: 30, path: 'Refund', st: 'settled', opened: true },
+      { id: 'pn', name: 'Priya Nair', initials: 'PN', days: 300, path: 'PayPal Payout', st: 'settled', opened: true },
+      { id: 'mc', name: 'Mei Chen', initials: 'MC', days: 120, path: 'Refund', st: mei ? 'settled' : 'waiting', opened: true },
+      { id: 'sn', name: 'Sam Novak', initials: 'SN', days: 12, path: 'Refund', st: 'sent', opened: false },
+    ];
+    const S = {
+      sent: ['Sent', '✉', '#f2edef', '#5a525c'], opened: ['Opened', '◉', '#e6edf7', '#2d4a7a'],
+      waiting: ['Waiting on PayPal', null, '#fdf0d5', '#7a4b00'], settled: ['Settled', '✓', '#ddf1e5', '#14633a'],
+    };
+    const blink = (c, d) => e('span', { style: { width: 7, height: 7, borderRadius: '50%', background: c, display: 'inline-block', animation: `rrBlink ${d}s ease-in-out infinite` } });
+    const rows = B.map((b) => {
+      const on = b.id === this.state.sel, s = S[b.st], fl = flash && b.id === 'mc';
+      return { ...b, label: s[0], iconEl: s[1] || blink('#c27c00', 1.1), pillBg: s[2], pillInk: s[3], pathIcon: b.path === 'Refund' ? '↩' : '➚',
+        bg: fl ? '#dcf2e4' : on ? '#f8f2f5' : '#fff', bar: on ? '#3b1f3f' : 'transparent',
+        select: () => { this.setState({ sel: b.id }); this.stagger(); } };
+    });
+    const b = B.find((x) => x.id === this.state.sel);
+    const late = b.days > 180;
+    const email = b.name[0].toLowerCase() + '•••@example.com';
+    const last = {
+      settled: ['tool', 'PayPal confirmed the money arrived. Case closed.', 1],
+      waiting: ['tool', 'Buyer signed in with PayPal and the payment was sent. Waiting for PayPal to confirm, usually under a minute.', 1],
+      opened: ['you', 'Buyer opened the notice. Next: they sign in with PayPal to claim.', 0.5],
+      sent: ['tool', 'Notice not opened yet.', 0.5],
+    }[b.st];
+    const TAG = { model: ['#f1e7f2', '#5b2a66', '1.5px dashed #5b2a66', '#5b2a66', '✦', 'MODEL'], rule: ['#1f1a21', '#fff', '1.5px solid #1f1a21', '#1f1a21', '⚖', 'RULE'], tool: ['transparent', '#1f1a21', '1px solid #5a525c', '#ff9e7a', '‹›', 'TOOL'], you: ['#f2edef', '#5a525c', '1.5px solid #f2edef', '#a89aa9', '●', 'YOU'] };
+    const raw = [
+      ['model', 'Matched “HotHands Rechargeable Hand Warmers, 2-pack” to CPSC #27011: same brand and product type.'],
+      ['you', 'You approved the campaign. Nothing was sent or paid before this.'],
+      ['tool', `Notice sent to ${email}${b.opened ? ' and opened.' : '.'}`],
+      ['rule', late ? `Paid ${b.days} days ago, past PayPal's 180-day refund window, so the buyer is paid by PayPal Payout: $34.00.` : `Paid ${b.days} days ago, inside PayPal's 180-day window, so the order is refunded: $34.00.`, late ? 'REFUND_WINDOW_EXCEEDED' : 'WITHIN_REFUND_WINDOW'],
+      [last[0], last[1], null, last[2]],
+    ];
+    const steps = raw.map(([k, text, code, op], i) => { const t = TAG[k]; const v = i < shown;
+      return { text, code: code || null, bg: t[0], ink: t[1], border: t[2], dot: t[3], icon: t[4], tag: t[5], vis: v ? (op ?? 1) : 0, dy: v ? '0px' : '6px' }; });
+    const settledN = mei ? 4 : 3, waitN = mei ? 0 : 1;
+    const pct = (x) => (x * 100).toFixed(2) + '%';
+    const why = this.state.tab === 'why';
+    const ul = this.state.ul;
+    const led = (cx, cy, d) => e('circle', { cx, cy, r: 2.3, fill: '#ff9e7a', stroke: 'none', style: { animation: `rrCharge 2.4s ease-in-out ${d}s infinite` } });
+    const wave = (x, d) => e('path', { d: `M${x} 26c-3.5-4 3.5-6 0-11`, strokeWidth: 2.2, style: { animation: `rrRise 2.6s ease-in-out ${d}s infinite`, transformBox: 'fill-box' } });
+    const art = e('svg', { viewBox: '0 0 96 96', width: 76, height: 76, fill: 'none', stroke: '#3b1f3f', strokeWidth: 2.4, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true },
+      e('ellipse', { cx: 48, cy: 60, rx: 38, ry: 30, fill: '#ff9e7a', stroke: 'none', style: { opacity: 0.16, animation: 'rrGlow 2.8s ease-in-out infinite', transformBox: 'fill-box', transformOrigin: 'center' } }),
+      e('g', { transform: 'rotate(-10 32 58)' },
+        e('rect', { x: 15, y: 32, width: 34, height: 52, rx: 17, fill: '#fff' }),
+        e('rect', { x: 21, y: 40, width: 22, height: 36, rx: 11, strokeWidth: 1.4, strokeDasharray: '2.5 3.5', stroke: '#ff9e7a' }),
+        e('path', { d: 'M28 80.5h8', strokeWidth: 2 })),
+      e('g', { style: { animation: 'rrNudge 3.2s ease-in-out infinite' } }, e('g', { transform: 'rotate(9 63 60)' },
+        e('rect', { x: 46, y: 34, width: 34, height: 52, rx: 17, fill: '#fff' }),
+        e('circle', { cx: 63, cy: 49, r: 4.5, strokeWidth: 2 }),
+        e('path', { d: 'M63 46.5v3', strokeWidth: 1.8 }),
+        led(56, 66, 0), led(63, 66, 0.35), led(70, 66, 0.7),
+        e('path', { d: 'M59 82.5h8', strokeWidth: 2 }))),
+      wave(38, 0), wave(50, 0.45), wave(62, 0.9));
+    return {
+      rows, steps, art,
+      activity: [
+        ...(mei ? [{ t: 'just now', dot: '#2f8a57', text: 'PayPal confirmed the refund to Mei Chen', amt: '+$34.00', amtInk: '#14633a', bg: flash ? '#dcf2e4' : '#fff' }] : []),
+        { t: '1 min ago', dot: '#e8a317', text: 'Mei Chen signed in with PayPal; refund sent', amt: '$34.00', amtInk: '#5a525c', bg: '#fff' },
+        { t: '2 min ago', dot: '#2d4a7a', text: 'Morgan Demo opened the recall notice', amt: '', amtInk: '#5a525c', bg: '#fff' },
+        { t: '3 min ago', dot: '#2f8a57', text: 'PayPal confirmed the payout to Priya Nair', amt: '+$34.00', amtInk: '#14633a', bg: '#fff' },
+        { t: '3 min ago', dot: '#2f8a57', text: 'PayPal confirmed refunds to Alicia Rivera and James Okafor', amt: '+$68.00', amtInk: '#14633a', bg: '#fff' },
+        { t: '4 min ago', dot: '#ff9e7a', text: '6 recall notices sent from the Outbox', amt: '', amtInk: '#5a525c', bg: '#fff' },
+        { t: '4 min ago', dot: '#a89aa9', text: 'You approved the campaign', amt: '', amtInk: '#5a525c', bg: '#fff' },
+      ],
+      stepBar: e('span', { style: { flex: 'none', width: 22, height: 22, borderRadius: '50%', background: '#3b1f3f', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 700, animation: 'rrRing 1.8s ease-out infinite' } }, '2'),
+      liveDot: blink('#2f8a57', 1.6),
+      k: { found: Math.round(6 * p), notified: Math.round(6 * p), opened: Math.round(5 * p), settled: Math.round(settledN * p),
+        money: '$' + this.state.money.toFixed(2), closed: settledN,
+        w1: pct(p), w2: pct(p), w3: pct(p * 5 / 6), wSettled: pct(p * settledN / 6), wWait: pct(p * waitN / 6),
+        hasWait: waitN > 0, allConfirmed: waitN === 0 },
+      sel: { ...b, label: S[b.st][0], email, first: b.name.split(' ')[0], remedy: late ? 'PayPal Payout, $34.00' : 'full refund, $34.00',
+        cta: b.you ? 'Open buyer page' : 'Preview (fictional buyer)',
+        ctaBg: b.you ? '#ff9e7a' : '#fff', ctaInk: b.you ? '#2a1530' : '#3b1f3f', ctaLine: b.you ? '#ff9e7a' : '#e0d9dd' },
+      tab: { why, msg: !why, whyInk: why ? '#1f1a21' : '#5a525c', msgInk: why ? '#5a525c' : '#1f1a21',
+        ulLeft: ul ? ul.l + 'px' : '18px', ulWidth: ul ? ul.w + 'px' : '128px' },
+      msgVis: shown >= 2 ? 1 : 0, msgDy: shown >= 2 ? '0px' : '6px',
+      toast: { op: this.state.toast ? 1 : 0, dy: this.state.toast ? '0px' : '16px' },
+      whyRef: this.whyRef, msgRef: this.msgRef, leftRef: this.leftRef, tableRef: this.tableRef, mainRef: this.mainRef,
+      bar: this.state.barFull ? { full: true, chipPad: '3px 4px 3px 10px', copy: this.state.copied ? 'Copied ✓' : 'Copy', cta: "Open Morgan's page ↗" } : { full: false, chipPad: '3px', copy: this.state.copied ? 'Copied ✓' : 'Copy login', cta: 'Open page ↗' },
+      lay: this.state.stacked ? { rowFlex: 'none', rowMinH: '0px', rows: 'auto auto', cols: 'minmax(0,1fr)', actFlex: '0 0 300px', panelH: '560px' } : { rowFlex: '1 1 0', rowMinH: '461px', rows: 'minmax(0,1fr)', cols: 'minmax(0,640px) minmax(300px,1fr)', actFlex: '1 1 0', panelH: 'auto' }, actFits: this.state.actFits,
+      showWhy: () => { this.setState({ tab: 'why' }); this.stagger(); },
+      showMsg: () => { this.setState({ tab: 'msg' }); this.stagger(); },
+      replay: this.play,
+      copyLabel: this.state.copied ? 'Copied ✓' : 'Copy',
+      copy: () => { navigator.clipboard && navigator.clipboard.writeText('sb-buyer@personal.example.com').catch(() => {}); this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 1600); },
+    };
+  }
+}
+</script>
+</body>
+</html>
