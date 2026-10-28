@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef } from "react";
 import {
   CellStyleModule,
@@ -17,7 +16,6 @@ import {
   type ICellRendererParams,
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { Icon } from "@/components/Icon";
 import { amountLabel, type BuyerCase, type CaseStatus } from "./data";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./page.module.css";
@@ -48,10 +46,10 @@ const gridTheme = themeQuartz.withParams({
   headerTextColor: "#5a525c",
   headerFontSize: 12,
   headerFontWeight: 600,
-  rowHeight: 44,
+  rowHeight: 50,
   cellHorizontalPadding: 12,
-  rowHoverColor: "#f8f4f6",
-  selectedRowBackgroundColor: "#f2edef",
+  rowHoverColor: "#fbf7f9",
+  selectedRowBackgroundColor: "#f8f2f5",
 });
 
 function BuyerCell({ data }: ICellRendererParams<BuyerCase>) {
@@ -61,40 +59,29 @@ function BuyerCell({ data }: ICellRendererParams<BuyerCase>) {
       <span className={styles.avatar} aria-hidden="true">
         {data.initials}
       </span>
-      {data.name}
-      {data.canSignIn && <span className={styles.you}>Sign in here</span>}
+      <span className={styles.whoText}>
+        {data.name}
+        {data.canSignIn && (
+          <span className={styles.you}>You · sign in here</span>
+        )}
+      </span>
     </span>
   );
 }
 
-const PATH_ICON = {
-  Refund: "refund",
-  "PayPal Payout": "payout",
-  Replacement: "truck",
-  Repair: "wrench",
-} as const;
-
+// Path on the first line, how long ago the order was paid under it.
 function PathCell({ data }: ICellRendererParams<BuyerCase>) {
   if (!data) return null;
   return (
-    <span className={styles.path}>
-      <Icon name={PATH_ICON[data.path]} />
-      {data.path}
+    <span className={styles.pathTwo}>
+      <b>{data.path}</b>
+      <span>{data.daysAgo} days ago</span>
     </span>
   );
 }
 
 function StatusCell({ data }: ICellRendererParams<BuyerCase>) {
   return data ? <StatusBadge status={data.status} /> : null;
-}
-
-function LinkCell({ data }: ICellRendererParams<BuyerCase>) {
-  if (!data || !data.buyerPath) return null;
-  return (
-    <Link className={styles.link} href={data.buyerPath}>
-      {data.canSignIn ? "Open buyer page" : "Preview (fictional buyer)"}
-    </Link>
-  );
 }
 
 const cell = styles.cell;
@@ -105,26 +92,17 @@ const CASE_COLUMNS: ColDef<BuyerCase>[] = [
     headerName: "Buyer",
     field: "name",
     cellRenderer: BuyerCell,
-    flex: 1.5,
-    minWidth: 190,
-    cellClass: cell,
-  },
-  {
-    colId: "paid",
-    headerName: "Order paid",
-    field: "daysAgo",
-    valueFormatter: (p) => `${p.value} days ago`,
-    flex: 1,
-    minWidth: 120,
+    flex: 1.6,
+    minWidth: 150,
     cellClass: cell,
   },
   {
     colId: "path",
-    headerName: "Remedy path",
+    headerName: "Path",
     field: "path",
     cellRenderer: PathCell,
     flex: 1.2,
-    minWidth: 150,
+    minWidth: 120,
     cellClass: cell,
   },
   {
@@ -133,8 +111,8 @@ const CASE_COLUMNS: ColDef<BuyerCase>[] = [
     field: "amountCents",
     valueFormatter: (p) => (p.data ? amountLabel(p.data) : ""),
     type: "rightAligned",
-    flex: 0.8,
-    minWidth: 100,
+    flex: 0.7,
+    minWidth: 76,
     cellClass: [cell, styles.cellRight, styles.num],
   },
   {
@@ -142,21 +120,24 @@ const CASE_COLUMNS: ColDef<BuyerCase>[] = [
     headerName: "Status",
     field: "status",
     cellRenderer: StatusCell,
-    flex: 1,
+    flex: 1.2,
     minWidth: 130,
     cellClass: cell,
   },
 ];
 
-// Column minimums add up to less than the left column at 1280px, so the grid never scrolls sideways.
+const BUYER_COLUMN = CASE_COLUMNS[0];
+const STATUS_COLUMN = CASE_COLUMNS[3];
+
+// The outbox lists who each notice went to; the detail panel's button replaces the old Action column.
 const OUTBOX_COLUMNS: ColDef<BuyerCase>[] = [
-  { ...CASE_COLUMNS[0], flex: 1.2, minWidth: 150 },
+  { ...BUYER_COLUMN, flex: 1.4, minWidth: 150 },
   {
     colId: "to",
     headerName: "Sent to",
     field: "email",
     flex: 1.3,
-    minWidth: 140,
+    minWidth: 130,
     cellClass: [cell, styles.mono],
   },
   {
@@ -164,7 +145,7 @@ const OUTBOX_COLUMNS: ColDef<BuyerCase>[] = [
     headerName: "Sent",
     field: "sent",
     flex: 0.8,
-    minWidth: 88,
+    minWidth: 80,
     cellClass: cell,
   },
   {
@@ -175,20 +156,10 @@ const OUTBOX_COLUMNS: ColDef<BuyerCase>[] = [
     cellDataType: false,
     valueFormatter: (p) => (p.value ? "Yes" : "No"),
     flex: 0.7,
-    minWidth: 76,
+    minWidth: 70,
     cellClass: cell,
   },
-  { ...CASE_COLUMNS[4], flex: 1, minWidth: 112 },
-  {
-    colId: "action",
-    headerName: "Action",
-    cellRenderer: LinkCell,
-    sortable: false,
-    headerClass: styles.hiddenHeader,
-    flex: 1.2,
-    minWidth: 150,
-    cellClass: cell,
-  },
+  { ...STATUS_COLUMN, flex: 1.1, minWidth: 120 },
 ];
 
 export type GridKind = "cases" | "outbox";
@@ -236,9 +207,13 @@ export function CaseGrid({
         getRowId={(p) => p.data.id}
         domLayout="autoHeight"
         headerHeight={40}
-        rowHeight={44}
+        rowHeight={50}
         suppressMovableColumns
-        defaultColDef={{ sortable: true, resizable: false, suppressMovable: true }}
+        defaultColDef={{
+          sortable: true,
+          resizable: false,
+          suppressMovable: true,
+        }}
         rowSelection={{
           mode: "singleRow",
           checkboxes: false,

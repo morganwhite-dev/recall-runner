@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Icon, type IconName } from "@/components/Icon";
-import { StatusPill } from "@/components/StatusPill";
-import { Tag } from "@/components/Tag";
 import { Suspense } from "react";
 import { ART_PATHS } from "@/components/ProductArt";
+import { StatusPill } from "@/components/StatusPill";
 import { loadDashboard } from "@/lib/dashboard";
-import { Count } from "@/components/Count";
 import { ApproveButton } from "./ApproveButton";
-import { CampaignSwitch } from "./CampaignSwitch";
 import { DemoGuide } from "./DemoGuide";
 import { campaignStats, formatDate, formatMoney } from "./data";
 import styles from "./page.module.css";
+import { Sidebar } from "./Sidebar";
+import shell from "./shell.module.css";
 import { Workspace } from "./Workspace";
 
 export const metadata: Metadata = {
@@ -35,231 +32,130 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
     );
   }
   // An address for a campaign that doesn't exist is an error, not a silent switch to another one.
-  if (typeof campaign === "string" && campaign !== data.header.recallNumber) notFound();
+  if (typeof campaign === "string" && campaign !== data.header.recallNumber)
+    notFound();
   const { header, cases: CASES } = data;
   const approved = header.status === "APPROVED";
   const stats = campaignStats(CASES, data.affected);
   const offers = header.remedies;
-
-  const paths: {
-    icon: IconName;
-    title: string;
-    text: string;
-    count: number | null;
-  }[] = [
-    {
-      icon: "refund",
-      title: "Refund",
-      text: "Paid within 180 days",
-      count: offers.includes("Refund") ? stats.byPath.Refund : null,
-    },
-    {
-      icon: "payout",
-      title: "PayPal Payout",
-      text: "Paid more than 180 days ago",
-      count: offers.includes("Refund") ? stats.byPath["PayPal Payout"] : null,
-    },
-    {
-      icon: "truck",
-      title: "Replacement",
-      text: "Tracking added to the order",
-      count: offers.includes("Replace") ? stats.byPath.Replacement : null,
-    },
-    {
-      icon: "wrench",
-      title: "Repair",
-      text: "Kit request, no money",
-      count: offers.includes("Repair") ? stats.byPath.Repair : null,
-    },
-  ];
+  const opened = CASES.filter((c) => c.opened).length;
+  // Money that PayPal has confirmed moving, for the progress card.
+  const paidCents = CASES.filter(
+    (c) =>
+      c.status === "Settled" &&
+      (c.path === "Refund" || c.path === "PayPal Payout"),
+  ).reduce((sum, c) => sum + c.amountCents, 0);
+  // The four bars, each as a share of the buyers affected.
+  const share = (n: number) =>
+    `${stats.affected ? Math.round((n / stats.affected) * 100) : 0}%`;
 
   return (
-    <>
-      <header className={`${styles.top} on-plum`}>
-        <div className={`${styles.wrap} ${styles.topBar}`}>
-          <Link className={`${styles.logo} logo-turn`} href="/">
-            <span className={styles.mark}>
-              <Icon name="loop" />
-            </span>
-            Recall Runner
-          </Link>
-          <p className={styles.store}>
-            Store <b>Brightnest Home</b>
-          </p>
-          <nav aria-label="Primary" className={styles.topNav}>
-            <Link href="/evals">Test results</Link>
-          </nav>
-          <CampaignSwitch
-            options={data.campaigns}
-            current={header.recallNumber}
-          />
-          {approved ? (
-            <p className={styles.approval}>
-              {header.preApproved
-                ? "Approved in advance for the demo"
-                : "You approved this campaign"}{" "}
-              <StatusPill>Approved</StatusPill>
-            </p>
-          ) : (
-            <div className={styles.approval}>
-              <ApproveButton campaignId={header.id} />
-            </div>
-          )}
-        </div>
-      </header>
+    <div className={shell.root}>
+      <Sidebar campaigns={data.campaigns} current={header.recallNumber} />
 
-      <main className={styles.wrap}>
+      <main className={shell.main}>
         {data.guide && (
-          <DemoGuide guide={data.guide} current={header.recallNumber} waiting={stats.awaiting > 0} />
+          <DemoGuide
+            guide={data.guide}
+            current={header.recallNumber}
+            waiting={stats.awaiting > 0}
+          />
         )}
-        <section className={styles.recall} aria-labelledby="title">
-          <svg
-            className={styles.art}
-            viewBox="0 0 96 96"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            {ART_PATHS[header.art]}
-          </svg>
-          <div>
-            <p className={styles.meta}>
-              <span className={styles.badge}>CPSC #{header.recallNumber}</span>
+
+        <section
+          className={`${shell.recall} ${shell.band}`}
+          aria-labelledby="title"
+        >
+          <div className={shell.artTile}>
+            <svg
+              viewBox="0 0 96 96"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              {ART_PATHS[header.art]}
+            </svg>
+          </div>
+          <div className={shell.title}>
+            <p className={shell.recallMeta}>
+              <span className={shell.badge}>CPSC #{header.recallNumber}</span>
               <span>Recall · {formatDate(header.recallDate)}</span>
             </p>
             <h1 id="title">{header.title}</h1>
-            <p className={styles.sub}>
+            <p className={shell.sub}>
               <b>Product:</b> {header.productNames.join(", ")} · <b>Remedy:</b>{" "}
               {header.remedies.map((r) => r.toLowerCase()).join(" or ")}
               {header.priceCents !== null && offers.includes("Refund") && (
                 <> · {formatMoney(header.priceCents)} each</>
               )}
             </p>
+            {approved ? (
+              <p className={shell.approval}>
+                {header.preApproved
+                  ? "Approved in advance for the demo"
+                  : "You approved this campaign"}{" "}
+                <StatusPill>Approved</StatusPill>
+              </p>
+            ) : (
+              <div className={shell.approval}>
+                <ApproveButton campaignId={header.id} />
+              </div>
+            )}
           </div>
-        </section>
 
-        <dl className={styles.kpis} aria-label="Campaign results">
-          <div>
-            <dt>
-              <span className={styles.kico}>
-                <Icon name="person" />
-              </span>
-              Buyers affected
-            </dt>
-            <dd>
-              <Count className={styles.countUp} value={stats.affected} />
-            </dd>
-            <p>Found in PayPal orders</p>
-          </div>
-          <div>
-            <dt>
-              <span className={styles.kico}>
-                <Icon name="bell" />
-              </span>
-              Notified
-            </dt>
-            <dd>
-              <Count className={styles.countUp} value={stats.notified} />
-            </dd>
-            <p>
-              {stats.notified} of {stats.affected} buyers
-            </p>
-          </div>
-          <div>
-            <dt>
-              <span className={styles.kico}>
-                <Icon name="check" />
-              </span>
-              Settled
-            </dt>
-            <dd>
-              <Count className={styles.countUp} value={stats.settled} />
-            </dd>
-            <p>
-              {stats.settledRefunds} refunds · {stats.settledPayouts} payouts
-              {stats.settledOther > 0 && (
-                <> · {stats.settledOther} kits or replacements</>
+          <section className={shell.progress} aria-label="Campaign progress">
+            <p className={shell.progressHead}>
+              Progress
+              {stats.awaiting > 0 && (
+                <span className={shell.live} aria-hidden="true" />
               )}
-              {stats.awaiting > 0 && <> · {stats.awaiting} waiting for PayPal</>}
+              <span className={shell.money}>{formatMoney(paidCents)}</span>
             </p>
-          </div>
-          <div>
-            <dt>
-              <span className={styles.kico}>
-                <Icon name="wrench" />
+            <div className={shell.segs} aria-hidden="true">
+              <span className={shell.seg}>
+                <i style={{ width: stats.affected ? "100%" : "0%" }} />
               </span>
-              Cases closed
-            </dt>
-            <dd>
-              <Count
-                className={styles.countUp}
-                value={stats.fixedPercent}
-                unit="%"
-              />
-            </dd>
-            <div
-              className={styles.bar}
-              role="progressbar"
-              aria-valuenow={stats.fixedPercent}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`Cases closed, ${stats.settled} of ${stats.affected}`}
-            >
-              <i style={{ width: `${stats.fixedPercent}%` }} />
+              <span className={shell.seg}>
+                <i
+                  style={{
+                    width: stats.affected ? share(stats.notified) : "0%",
+                  }}
+                />
+              </span>
+              <span className={shell.seg}>
+                <i style={{ width: share(opened) }} />
+              </span>
+              <span className={shell.seg}>
+                <i className={shell.green} style={{ width: share(stats.settled) }} />
+                <i className={shell.amber} style={{ width: share(stats.awaiting) }} />
+              </span>
             </div>
-            <p>
-              {stats.settled} of {stats.affected}
-            </p>
-          </div>
-        </dl>
-
-        <Workspace cases={CASES} approved={approved} key={header.id} />
-
-        <section className={styles.money} aria-labelledby="money">
-          <header>
-            <Tag kind="rule" />
-            <h2 id="money">How money moves</h2>
-            <p>Fixed rules, not the AI, pick the path for each order</p>
-          </header>
-          <ul className={styles.paths}>
-            {paths.map((p) => (
-              <li
-                key={p.title}
-                className={p.count === null ? styles.off : undefined}
-              >
-                <Icon name={p.icon} />
-                <div>
-                  <b>{p.title}</b>
-                  <span>{p.text}</span>
-                  <span className={styles.cnt}>
-                    {p.count === null ? (
-                      <>
-                        <Icon name="minus" />
-                        Not in this recall
-                      </>
-                    ) : (
-                      `${p.count} cases`
-                    )}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
+            <div className={shell.nums}>
+              <div>
+                <b>{stats.affected}</b>Found
+              </div>
+              <div>
+                <b>{stats.notified}</b>Notified
+              </div>
+              <div>
+                <b>{opened}</b>Opened
+              </div>
+              <div>
+                <b>{stats.settled}</b>
+                Settled{stats.awaiting > 0 && <> · {stats.awaiting} waiting</>}
+              </div>
+            </div>
+          </section>
         </section>
-      </main>
 
-      <footer>
-        <div className={styles.wrap}>
-          <p className={styles.disclaimer}>
-            Demo store. The merchant and order dates are made up; the recalls
-            are real CPSC data. Not affiliated with CPSC or PayPal.
-          </p>
+        <div className={`${shell.content} ${shell.band}`}>
+          <Workspace cases={CASES} approved={approved} key={header.id} />
         </div>
-      </footer>
-    </>
+      </main>
+    </div>
   );
 }
 

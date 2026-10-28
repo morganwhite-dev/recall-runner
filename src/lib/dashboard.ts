@@ -77,10 +77,31 @@ export async function loadDashboard(
   const catalog = await db.select().from(products);
   const nameOf = (sku: string) =>
     catalog.find((p) => p.sku === sku)?.name ?? sku;
-  const options: CampaignOption[] = all.map(({ campaign, recall }) => ({
-    recallNumber: recall.recallNumber,
-    label: `${nameOf(campaign.matchedSkus[0] ?? "")} recall (CPSC #${recall.recallNumber})`,
-  }));
+  // Closed and total cases per campaign, for the sidebar list.
+  const caseStates = await db
+    .select({
+      campaignId: cases.campaignId,
+      status: cases.status,
+      settledAt: cases.settledAt,
+    })
+    .from(cases);
+  const options: CampaignOption[] = all.map(({ campaign, recall }) => {
+    const mine = caseStates.filter((k) => k.campaignId === campaign.id);
+    return {
+      recallNumber: recall.recallNumber,
+      label: `${nameOf(campaign.matchedSkus[0] ?? "")} recall (CPSC #${recall.recallNumber})`,
+      name: nameOf(campaign.matchedSkus[0] ?? ""),
+      remedy: recall.remedyOptions.map((r) => r.toLowerCase()).join(" or "),
+      approval:
+        campaign.status !== "APPROVED"
+          ? "Needs your approval"
+          : recall.recallNumber === FEATURED_RECALL
+            ? "Approved by you"
+            : "Pre-approved",
+      closed: mine.filter((k) => caseStatus({ ...k, openedAt: null }) === "Settled").length,
+      total: mine.length,
+    };
+  });
 
   const current =
     all.find((a) => a.recall.recallNumber === recallNumber) ?? all[0];

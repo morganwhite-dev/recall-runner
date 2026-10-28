@@ -21,6 +21,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 | 3   | AI agent                                 | Sat Oct 31                   | Done Oct 25 |
 | 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                    | Done Oct 25 |
 | 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)   | Done Oct 26 |
+| 6   | UI redesign of the pages (Claude Design)  | Nov 3–5 (to confirm)         | Not started |
 | 7   | Harden and package                       | Fri Nov 6                    | Not started |
 | 8   | Video and Devpost write-up               | Mon Nov 9, submit Tue Nov 10 | Not started |
 

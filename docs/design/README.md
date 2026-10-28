@@ -12,3 +12,7 @@ Recall Runner uses the plum design system. Read `PLUM-DESIGN.md` first: palette,
 Pages not designed yet: buyer page, Test results. For each, make three layouts, pick one, then build it.
 
 To see any HTML file, open it in a browser. The `not-chosen` folders hold layouts that were considered and not picked.
+
+## Redesign pass (Phase 6)
+
+New design images go in the same folder as the page's markdown spec, not in a separate `screenshots/` folder. For each page being redone, use `<page>/` with `<PAGE>.md` (the spec: what to keep, tokens, components) and the images next to it, for example `buyer/BUYER.md`, `buyer/phone.png`, `buyer/laptop.png`. Name images by what they show (`phone`, `laptop`, `several-recalls`). The older `screenshots/` folders stay as they are.

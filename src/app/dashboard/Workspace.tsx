@@ -4,11 +4,17 @@ import { useState, type KeyboardEvent } from "react";
 import type { GridApi } from "ag-grid-community";
 import { CaseGrid, type GridKind } from "./CaseGrid";
 import type { BuyerCase, CaseStatus } from "./data";
-import { DetailPanel, MessagePreview } from "./DetailPanel";
+import { DetailPanel } from "./DetailPanel";
 import delight from "./delight.module.css";
 import styles from "./page.module.css";
 
-const STATUSES: (CaseStatus | "All")[] = ["All", "Notified", "Waiting", "Settled", "Problem"];
+const STATUSES: (CaseStatus | "All")[] = [
+  "All",
+  "Notified",
+  "Waiting",
+  "Settled",
+  "Problem",
+];
 
 const TABS: { id: GridKind; label: string }[] = [
   { id: "cases", label: "Cases" },
@@ -100,7 +106,11 @@ export function Workspace({
                 onChange={(e) => setSearch(e.target.value)}
               />
             </label>
-            <div className={styles.chips} role="group" aria-label="Filter by status">
+            <div
+              className={styles.chips}
+              role="group"
+              aria-label="Filter by status"
+            >
               {STATUSES.map((s) => (
                 <button
                   key={s}
@@ -109,7 +119,11 @@ export function Workspace({
                   onClick={() => setStatus(s)}
                 >
                   {s}
-                  <span>{s === "All" ? CASES.length : CASES.filter((c) => c.status === s).length}</span>
+                  <span>
+                    {s === "All"
+                      ? CASES.length
+                      : CASES.filter((c) => c.status === s).length}
+                  </span>
                 </button>
               ))}
             </div>
@@ -128,8 +142,9 @@ export function Workspace({
             </button>
           </div>
           <p className={styles.legend}>
-            <b>Notified</b> sent, not opened · <b>Waiting</b> opened, or paid and waiting for PayPal to
-            confirm · <b>Settled</b> PayPal confirmed · <b>Problem</b> could not complete
+            <b>Notified</b> sent, not opened · <b>Waiting</b> opened, or paid
+            and waiting for PayPal to confirm · <b>Settled</b> PayPal confirmed
+            · <b>Problem</b> could not complete
           </p>
           {shown === 0 && (
             <p className={styles.noMatch} role="status">
@@ -162,8 +177,6 @@ export function Workspace({
             )}
           </div>
         </div>
-
-        <MessagePreview c={selected} />
       </section>
 
       <DetailPanel selected={selected} />

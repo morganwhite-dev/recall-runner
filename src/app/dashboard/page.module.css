@@ -1219,3 +1219,52 @@ footer .wrap {
   color: var(--ink);
   opacity: 0.75;
 }
+
+/* Workspace for the redesigned dashboard: table card on the left, detail panel on the right. */
+.split {
+  grid-template-columns: minmax(0, 640px) minmax(300px, 1fr);
+  gap: 16px;
+  padding: 0;
+  align-items: start;
+}
+
+.pathTwo {
+  display: grid;
+  line-height: 1.25;
+}
+
+.pathTwo b {
+  font-weight: 600;
+}
+
+.pathTwo span {
+  font: 400 12px var(--font-mono);
+  color: var(--ink-muted);
+}
+
+/* "You · sign in here": coral on dark, under the name. */
+.you {
+  background: #2a1530;
+  color: var(--accent);
+}
+
+@media (max-width: 959px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.whoText {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.whoText .you {
+  margin-left: 0;
+  padding: 1px 8px;
+  font-size: 10.5px;
+}
