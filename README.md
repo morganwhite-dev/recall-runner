@@ -53,7 +53,14 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 - [x] Working demo with run instructions (the live site and "Try the demo" below)
 - [x] Public repo with the MIT license shown in the About section
 - [ ] Public YouTube video under 3 minutes
-- [ ] Sandbox test credentials for judges (README and Devpost testing field)
+- [ ] Sandbox test credentials for judges (in the README now; still to paste into the Devpost testing field)
+
+## Sandbox test login for judges
+
+This is a PayPal **sandbox** buyer account (fake money, not a real PayPal account). Use it on PayPal's sandbox sign-in page after you press **Confirm with PayPal** on the buyer page.
+
+- Email: `sb-cpwe353506970@personal.example.com`
+- Password: `K-+%j-22`
 
 ## Try the demo (about 2 minutes)
 
