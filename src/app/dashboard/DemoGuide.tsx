@@ -130,9 +130,17 @@ export function DemoGuide({
         ) : (
           <>
             <span className={styles.stepperHint}>
-              {settledCents > 0
-                ? `Done. The buyer signed in once and PayPal moved ${formatMoney(settledCents)}.`
-                : "Done. The buyer signed in once and PayPal confirmed it."}
+              {/* The short sentence takes over below the phone breakpoint (see shell.module.css). */}
+              <span className={styles.hintLong}>
+                {settledCents > 0
+                  ? `Done. The buyer signed in once and PayPal moved ${formatMoney(settledCents)}.`
+                  : "Done. The buyer signed in once and PayPal confirmed it."}
+              </span>
+              <span className={styles.hintShort}>
+                {settledCents > 0
+                  ? `Done. PayPal moved ${formatMoney(settledCents)}.`
+                  : "Done. PayPal confirmed it."}
+              </span>
             </span>
             <StartFreshDemo
               look={{

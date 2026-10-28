@@ -76,7 +76,9 @@
 /* Arrival, once: the receipt badge pops, its ring settles, the tick draws and the sparkles twinkle.
    Calm badges rise in and their chip spins into place. The loading clock's minute hand keeps
    turning. Without motion everything is simply drawn. The tick's dash pattern leaves a gap at the
-   start so no stray dot shows before it draws. */
+   start so no stray dot shows before it draws. The badge is on screen from the first frame (it
+   only grows into place) and the tick starts drawing within 150ms, so a screenshot or a video
+   frame never catches an empty disc. */
 @media (prefers-reduced-motion: no-preference) {
   .ring,
   .badge,
@@ -88,24 +90,24 @@
   }
 
   .badge {
-    animation: pop 0.55s var(--ease-spring) 0.15s both;
+    animation: pop 0.55s var(--ease-spring) both;
   }
 
   .ring {
-    animation: ring 0.8s ease-out 0.35s both;
+    animation: ring 0.8s ease-out 0.1s both;
   }
 
   .tick {
     stroke-dasharray: 1 2;
-    animation: draw 0.4s ease-out 0.55s both;
+    animation: draw 0.4s ease-out 0.1s both;
   }
 
   .spark {
-    animation: twinkle 0.6s var(--ease-spring) 0.8s both;
+    animation: twinkle 0.6s var(--ease-spring) 0.4s both;
   }
 
   .sparkCoral {
-    animation-delay: 0.95s;
+    animation-delay: 0.55s;
   }
 
   .soft .badge {
@@ -138,8 +140,7 @@
 
 @keyframes pop {
   from {
-    transform: scale(0.3);
-    opacity: 0;
+    transform: scale(0.6);
   }
   to {
     transform: scale(1);

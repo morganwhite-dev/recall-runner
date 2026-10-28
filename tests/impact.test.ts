@@ -33,7 +33,7 @@ test("online recalls are counted from the sold-online flag", () => {
   assert.equal(out.soldOnline, 2);
 });
 
-test("Amazon is any recall whose retailers text mentions Amazon, in any letter case", () => {
+test("a major-marketplace recall is counted from its retailers text, in any letter case", () => {
   const out = summarizeImpact(
     [
       row({ retailers: "Amazon.com from March 2025 for about $13" }),

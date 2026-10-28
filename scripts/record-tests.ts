@@ -6,7 +6,7 @@ import { writeFileSync } from "node:fs";
 
 const run = spawnSync(
   "node_modules/.bin/tsx",
-  ["--test", "--test-reporter=junit", "tests/policy.test.ts", "tests/buyer.test.ts", "tests/dashboard.test.ts", "tests/impact.test.ts"],
+  ["--test", "--test-reporter=junit", "tests/policy.test.ts", "tests/buyer.test.ts", "tests/dashboard.test.ts", "tests/impact.test.ts", "tests/reset-notice.test.ts"],
   { encoding: "utf8" },
 );
 const xml = run.stdout;

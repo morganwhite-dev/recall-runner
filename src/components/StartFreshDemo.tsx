@@ -18,13 +18,13 @@ const DEFAULT_LOOK: Look = {
   className: "button",
 };
 
-function Submit({ look }: { look: Look }) {
+function Submit({ look, disabled }: { look: Look; disabled: boolean }) {
   const { pending } = useFormStatus();
   return (
     <button
       className={look.className}
       type="submit"
-      disabled={pending}
+      disabled={pending || disabled}
       aria-live="polite"
     >
       {pending ? (
@@ -38,11 +38,12 @@ function Submit({ look }: { look: Look }) {
   );
 }
 
-// The same reset wherever it is offered; "Replay demo" on the dashboard passes its own look.
-export function StartFreshDemo({ look }: { look?: Partial<Look> }) {
+// The same reset wherever it is offered; "Replay demo" on the dashboard passes its own look. The
+// cooldown banner passes `disabled` until its countdown ends.
+export function StartFreshDemo({ look, disabled = false }: { look?: Partial<Look>; disabled?: boolean }) {
   return (
     <form action={startFreshDemo}>
-      <Submit look={{ ...DEFAULT_LOOK, ...look }} />
+      <Submit look={{ ...DEFAULT_LOOK, ...look }} disabled={disabled} />
     </form>
   );
 }

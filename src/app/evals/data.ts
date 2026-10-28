@@ -9,7 +9,7 @@ export type TestGroup = {
   tests: { n: number; text: string }[];
 };
 
-// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18 and 32 to 37 tests/buyer.test.ts, 38 to 43 tests/impact.test.ts, 19 to 31 tests/dashboard.test.ts.
+// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18, 32 to 37 and 44 to 45 tests/buyer.test.ts, 38 to 43 tests/impact.test.ts, 19 to 31 and 46 to 48 tests/dashboard.test.ts, 49 to 54 tests/reset-notice.test.ts.
 export const MONEY_GROUPS: TestGroup[] = [
   {
     id: "refund",
@@ -71,6 +71,8 @@ export const MONEY_GROUPS: TestGroup[] = [
       { n: 16, text: "a refund event points at the refund id" },
       { n: 17, text: "payout item and batch events point at the payout batch id" },
       { n: 18, text: "other events, or events with no id, settle nothing" },
+      { n: 44, text: "a replayed sign-in whose recalls are all settled goes back to the success view" },
+      { n: 45, text: "a replay never succeeds for another buyer, an unused sign-in, or an unfinished case" },
     ],
   },
   {
@@ -116,10 +118,35 @@ export const MONEY_GROUPS: TestGroup[] = [
       { n: 31, text: "the amount for several orders adds the prices; remedies with no money say Free" },
       { n: 38, text: "no recalls gives all zeros, not an error" },
       { n: 39, text: "online recalls are counted from the sold-online flag" },
-      { n: 40, text: "Amazon is any recall whose retailers text mentions Amazon, in any letter case" },
+      { n: 40, text: "a major-marketplace recall is counted from its retailers text, in any letter case" },
       { n: 41, text: "a barcode counts as listed only when a UPC number is written out" },
       { n: 42, text: "a barcode that is only mentioned, with no number, does not count" },
       { n: 43, text: "a barcode number in the product list also counts" },
+    ],
+  },
+  {
+    id: "receipt",
+    label: "Receipt and Activity",
+    icon: "info",
+    span: 6,
+    tests: [
+      { n: 46, text: "the receipt counts recalls, not orders, and says how many orders it covered" },
+      { n: 47, text: "one sign-in that claims two orders is one Activity line, keeping the earliest id" },
+      { n: 48, text: "moments far apart, or of different kinds, stay separate lines" },
+    ],
+  },
+  {
+    id: "reset",
+    label: "Demo reset",
+    icon: "alert",
+    span: 6,
+    tests: [
+      { n: 49, text: "the time left counts down from a minute and stops at zero" },
+      { n: 50, text: "a reset time in the future (clock skew) never waits longer than the cooldown" },
+      { n: 51, text: "the outcome goes into the dashboard address and comes back out" },
+      { n: 52, text: "an old cooldown address says the wait is over" },
+      { n: 53, text: "unreadable addresses show no banner" },
+      { n: 54, text: "seconds are written in words, singular for one" },
     ],
   },
 ];

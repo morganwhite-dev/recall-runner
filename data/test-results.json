@@ -1,7 +1,7 @@
 {
-  "ranAt": "2026-10-28T01:14:11.940Z",
-  "durationMs": 179,
-  "total": 43,
+  "ranAt": "2026-10-28T15:58:50.439Z",
+  "durationMs": 235,
+  "total": 54,
   "failing": 0,
   "tests": [
     {
@@ -66,6 +66,16 @@
     },
     {
       "name": "after a definite failure the retry gets a fresh request id, one more for each failure",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a replayed sign-in whose recalls are all settled goes back to the success view",
+      "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a replay never succeeds for another buyer, an unused sign-in, or an unfinished case",
       "file": "buyer.test.ts",
       "passed": true
     },
@@ -135,6 +145,21 @@
       "passed": true
     },
     {
+      "name": "the receipt counts recalls, not orders, and says how many orders it covered",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "one sign-in that claims two orders is one Activity line, keeping the earliest id",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "moments far apart, or of different kinds, stay separate lines",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
       "name": "no recalls gives all zeros, not an error",
       "file": "impact.test.ts",
       "passed": true
@@ -145,7 +170,7 @@
       "passed": true
     },
     {
-      "name": "Amazon is any recall whose retailers text mentions Amazon, in any letter case",
+      "name": "a major-marketplace recall is counted from its retailers text, in any letter case",
       "file": "impact.test.ts",
       "passed": true
     },
@@ -217,6 +242,36 @@
     {
       "name": "refunds only the recalled item, not the whole order",
       "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the time left counts down from a minute and stops at zero",
+      "file": "reset-notice.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a reset time in the future (clock skew) never waits longer than the cooldown",
+      "file": "reset-notice.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the outcome goes into the dashboard address and comes back out",
+      "file": "reset-notice.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an old cooldown address says the wait is over",
+      "file": "reset-notice.test.ts",
+      "passed": true
+    },
+    {
+      "name": "unreadable addresses show no banner",
+      "file": "reset-notice.test.ts",
+      "passed": true
+    },
+    {
+      "name": "seconds are written in words, singular for one",
+      "file": "reset-notice.test.ts",
       "passed": true
     }
   ]

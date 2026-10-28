@@ -10,6 +10,7 @@ import {
   QuickFilterModule,
   RowApiModule,
   RowSelectionModule,
+  RowStyleModule,
   themeQuartz,
   type ColDef,
   type GridApi,
@@ -29,6 +30,7 @@ ModuleRegistry.registerModules([
   QuickFilterModule,
   RowApiModule,
   RowSelectionModule,
+  RowStyleModule,
 ]);
 
 // Plum look through the AG Grid theming API: 40px header, 44px rows.

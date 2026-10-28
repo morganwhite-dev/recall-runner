@@ -4,10 +4,12 @@ import { Suspense } from "react";
 import { ART_PATHS } from "@/components/ProductArt";
 import { StatusPill } from "@/components/StatusPill";
 import { loadDashboard } from "@/lib/dashboard";
+import { resetNoticeFrom } from "@/lib/reset-notice";
 import { TweenMoney } from "@/components/TweenMoney";
 import { shortName } from "@/app/r/[token]/data";
 import { ApproveButton } from "./ApproveButton";
 import { DemoGuide } from "./DemoGuide";
+import { ResetNotice } from "./ResetNotice";
 import { campaignStats, formatDate, formatMoney } from "./data";
 import styles from "./page.module.css";
 import { Sidebar } from "./Sidebar";
@@ -19,13 +21,16 @@ export const metadata: Metadata = {
 };
 
 async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
-  const { campaign } = await searchParams;
+  const { campaign, reset, since } = await searchParams;
+  // After "Start fresh demo" ran into the cooldown or an error (see demo/actions.ts).
+  const notice = resetNoticeFrom(reset, since);
   const data = await loadDashboard(
     typeof campaign === "string" ? campaign : undefined,
   );
   if (!data) {
     return (
       <main className={styles.wrap}>
+        {notice && <ResetNotice notice={notice} key={notice.kind} />}
         <p className={styles.empty}>
           Nothing here yet. Head back to the home page and choose Start fresh
           demo to set up a store.
@@ -56,6 +61,13 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
       <Sidebar campaigns={data.campaigns} current={header.recallNumber} />
 
       <main className={shell.main}>
+        <h1 className="sr-only">Merchant dashboard</h1>
+        {notice && (
+          <ResetNotice
+            notice={notice}
+            key={notice.kind === "cooldown" ? notice.since : notice.kind}
+          />
+        )}
         {data.guide && (
           <DemoGuide
             guide={data.guide}
@@ -87,9 +99,9 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               <span className={shell.badge}>CPSC #{header.recallNumber}</span>
               <span>Recall · {formatDate(header.recallDate)}</span>
             </p>
-            <h1 id="title">
+            <h2 id="title">
               {header.productNames.map(shortName).join(", ") || header.title}
-            </h1>
+            </h2>
             {/* The official CPSC wording, kept for the record but out of the way. */}
             <p className={shell.official} title={header.title}>
               {header.title}

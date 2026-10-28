@@ -55,13 +55,19 @@ const PAYPAL: { icon: IconName; title: string; text: string }[] = [
   },
 ];
 
-// The three figures in the impact strip. Each reads one count from the recalls table.
-const impactFigures = (i: Impact) => [
+// The three figures in the impact strip. Each reads one count from the recalls table. `zero` is
+// what stands in for the number when it is 0, so the line reads as a sentence, not a bug.
+type Figure = { n: number; label: string; zero?: string };
+const impactFigures = (i: Impact): Figure[] => [
   { n: i.soldOnline, label: `of ${i.total} recalls involved online sales` },
-  { n: i.amazon, label: `of ${i.total} were sold on Amazon` },
+  {
+    n: i.amazon,
+    label: `of ${i.total} were sold on a major online marketplace`,
+  },
   {
     n: i.barcodeListed,
     label: `of ${i.total} listed a barcode number, so text matching is needed`,
+    zero: "None",
   },
 ];
 
@@ -260,7 +266,11 @@ export default async function Home() {
                   {impactFigures(impact).map((f) => (
                     <div className={styles.fig} key={f.label}>
                       <dt>
-                        <Count className={styles.countUp} value={f.n} />
+                        {f.n === 0 && f.zero ? (
+                          f.zero
+                        ) : (
+                          <Count className={styles.countUp} value={f.n} />
+                        )}
                       </dt>
                       <dd>{f.label}</dd>
                     </div>

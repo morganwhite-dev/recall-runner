@@ -21,13 +21,14 @@ import {
 import { approveCampaign } from "./agent/pipeline";
 import { FEATURED_RECALL, PRE_APPROVED_BY } from "./demo-config";
 import { createCardOrder } from "./paypal-client";
+import { COOLDOWN_MS } from "./reset-notice";
 
-const COOLDOWN_MS = 60_000; // one reset a minute, so a button-masher can't burn PayPal calls
 const MAX_RECAPTURES = 8;
 
 export type ResetResult =
   | { reset: true; campaigns: number; newPayments: number }
-  | { reset: false; reason: "cooldown" | "no-merchant" };
+  | { reset: false; reason: "cooldown"; since: number } // since: when the last reset started
+  | { reset: false; reason: "no-merchant" };
 
 export async function resetDemo(): Promise<ResetResult> {
   if (process.env.PAYPAL_ENV !== "sandbox") {
@@ -43,7 +44,7 @@ export async function resetDemo(): Promise<ResetResult> {
     .from(agentDecisions)
     .where(and(eq(agentDecisions.merchantId, merchant.id), eq(agentDecisions.step, "RESET")));
   const last = Math.max(0, ...recent.map((d) => d.createdAt.getTime()));
-  if (Date.now() - last < COOLDOWN_MS) return { reset: false, reason: "cooldown" };
+  if (Date.now() - last < COOLDOWN_MS) return { reset: false, reason: "cooldown", since: last };
   await db.insert(agentDecisions).values({
     merchantId: merchant.id,
     step: "RESET",
