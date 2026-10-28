@@ -31,6 +31,17 @@ export interface BuyerCase {
   timeline: TimelineStep[];
 }
 
+// One line in the Activity feed. `when` is worded on the server so server and browser agree.
+export type ActivityKind = "approved" | "sent" | "opened" | "signin" | "paid" | "settled";
+export interface ActivityEvent {
+  id: string; // stable across refreshes, so the feed can tell which events are new
+  at: string; // ISO time, for sorting and the title tooltip
+  when: string; // "2 min ago"
+  kind: ActivityKind;
+  text: string;
+  amountCents?: number;
+}
+
 export interface TimelineStep {
   tag: TagKind;
   text: string;

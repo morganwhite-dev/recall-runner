@@ -3,9 +3,11 @@
 import { useState, type KeyboardEvent } from "react";
 import type { GridApi } from "ag-grid-community";
 import { CaseGrid, type GridKind } from "./CaseGrid";
-import type { BuyerCase, CaseStatus } from "./data";
+import { Activity } from "./Activity";
+import type { ActivityEvent, BuyerCase, CaseStatus } from "./data";
 import { DetailPanel, MessagePreview } from "./DetailPanel";
 import delight from "./delight.module.css";
+import { LiveSettle } from "./LiveSettle";
 import styles from "./page.module.css";
 
 const STATUSES: (CaseStatus | "All")[] = [
@@ -24,9 +26,11 @@ const TABS: { id: GridKind; label: string }[] = [
 
 export function Workspace({
   cases: CASES,
+  activity,
   approved,
 }: {
   cases: BuyerCase[];
+  activity: ActivityEvent[];
   approved: boolean;
 }) {
   const [tab, setTab] = useState<GridKind>("cases");
@@ -38,6 +42,7 @@ export function Workspace({
   const [status, setStatus] = useState<CaseStatus | "All">("All");
   const [api, setApi] = useState<GridApi<BuyerCase> | null>(null);
   const [shown, setShown] = useState(CASES.length);
+  const [flashIds, setFlashIds] = useState<string[]>([]);
   const selected = CASES.find((c) => c.id === selectedId) ?? CASES[0];
 
   if (!selected) {
@@ -71,6 +76,7 @@ export function Workspace({
 
   return (
     <div className={styles.split}>
+      <LiveSettle cases={CASES} onSettled={setFlashIds} />
       <section aria-label="Cases and outbox">
         <div className={styles.tabs} role="tablist" aria-label="Campaign views">
           {TABS.map((t, i) => (
@@ -107,7 +113,11 @@ export function Workspace({
                 onChange={(e) => setSearch(e.target.value)}
               />
             </label>
-            <div className={styles.chips} role="group" aria-label="Filter by status">
+            <div
+              className={styles.chips}
+              role="group"
+              aria-label="Filter by status"
+            >
               {STATUSES.map((s) => (
                 <button
                   key={s}
@@ -116,7 +126,11 @@ export function Workspace({
                   onClick={() => setStatus(s)}
                 >
                   {s}
-                  <span>{s === "All" ? CASES.length : CASES.filter((c) => c.status === s).length}</span>
+                  <span>
+                    {s === "All"
+                      ? CASES.length
+                      : CASES.filter((c) => c.status === s).length}
+                  </span>
                 </button>
               ))}
             </div>
@@ -135,8 +149,9 @@ export function Workspace({
             </button>
           </div>
           <p className={styles.legend}>
-            <b>Sent</b> not opened · <b>Opened</b> buyer read it · <b>Waiting on PayPal</b> paid,
-            confirming · <b>Settled</b> PayPal confirmed · <b>Problem</b> could not complete
+            <b>Sent</b> not opened · <b>Opened</b> buyer read it ·{" "}
+            <b>Waiting on PayPal</b> paid, confirming · <b>Settled</b> PayPal
+            confirmed · <b>Problem</b> could not complete
           </p>
           {shown === 0 && (
             <p className={styles.noMatch} role="status">
@@ -151,6 +166,7 @@ export function Workspace({
             onSelect={setSelectedId}
             search={search}
             status={status}
+            flashIds={flashIds}
             onApi={setApi}
             onShown={setShown}
           />
@@ -169,6 +185,8 @@ export function Workspace({
             )}
           </div>
         </div>
+
+        <Activity events={activity} />
 
         <MessagePreview c={selected} />
       </section>

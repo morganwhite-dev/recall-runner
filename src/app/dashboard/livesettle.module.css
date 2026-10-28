@@ -1,0 +1,52 @@
+/* The toast sits bottom-right; the region stays in the page so screen readers hear it. */
+.region {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.toast {
+  margin: 0;
+  padding: 12px 16px;
+  max-width: 340px;
+  border-radius: 12px;
+  background: #1f1a21;
+  color: #fff;
+  font-size: 13.5px;
+  box-shadow: 0 8px 24px rgb(31 26 33 / 0.25);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toast {
+    animation: toastIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+}
+
+/* A row that just turned Settled: green, then it fades back over the second half. */
+.row {
+  background-color: #dcf2e4 !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .row {
+    animation: rowFade 1.5s ease-out both;
+  }
+}
+
+@keyframes rowFade {
+  60% {
+    background-color: #dcf2e4;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

@@ -35,7 +35,8 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
     );
   }
   // An address for a campaign that doesn't exist is an error, not a silent switch to another one.
-  if (typeof campaign === "string" && campaign !== data.header.recallNumber) notFound();
+  if (typeof campaign === "string" && campaign !== data.header.recallNumber)
+    notFound();
   const { header, cases: CASES } = data;
   const approved = header.status === "APPROVED";
   const stats = campaignStats(CASES, data.affected);
@@ -110,7 +111,11 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
 
       <main className={styles.wrap}>
         {data.guide && (
-          <DemoGuide guide={data.guide} current={header.recallNumber} waiting={stats.awaiting > 0} />
+          <DemoGuide
+            guide={data.guide}
+            current={header.recallNumber}
+            waiting={stats.awaiting > 0}
+          />
         )}
         <section className={styles.recall} aria-labelledby="title">
           <svg
@@ -183,7 +188,9 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               {stats.settledOther > 0 && (
                 <> · {stats.settledOther} kits or replacements</>
               )}
-              {stats.awaiting > 0 && <> · {stats.awaiting} waiting for PayPal</>}
+              {stats.awaiting > 0 && (
+                <> · {stats.awaiting} waiting for PayPal</>
+              )}
             </p>
           </div>
           <div>
@@ -216,7 +223,12 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
           </div>
         </dl>
 
-        <Workspace cases={CASES} approved={approved} key={header.id} />
+        <Workspace
+          cases={CASES}
+          activity={data.activity}
+          approved={approved}
+          key={header.id}
+        />
 
         <section className={styles.money} aria-labelledby="money">
           <header>

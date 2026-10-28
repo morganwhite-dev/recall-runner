@@ -32,6 +32,7 @@ import {
   type CampaignOption,
   type DemoGuideState,
   clip,
+  type ActivityEvent,
   type TimelineStep,
 } from "@/app/dashboard/data";
 
@@ -49,6 +50,7 @@ export type DashboardData = {
   campaigns: CampaignOption[];
   header: CampaignHeader;
   cases: BuyerCase[];
+  activity: ActivityEvent[]; // newest first
   affected: number; // orders that contain a matched product, found in PayPal order records
 };
 
@@ -159,7 +161,8 @@ export async function loadDashboard(
 
   const approval = campaignDecisions.find((d) => d.step === "APPROVE");
   header.preApproved =
-    (approval?.detail as { approvedBy?: string } | null)?.approvedBy === PRE_APPROVED_BY;
+    (approval?.detail as { approvedBy?: string } | null)?.approvedBy ===
+    PRE_APPROVED_BY;
 
   const now = new Date();
   const out: BuyerCase[] = rows.map(({ kase, order, buyer, notice, token }) => {
@@ -224,7 +227,10 @@ export async function loadDashboard(
             : `${a.op} sent to PayPal, waiting for its answer`;
       timeline.push({
         tag: "tool",
-        text: a.status === "SUCCEEDED" && a.paypalRef ? `${text} (PayPal id ${a.paypalRef})` : text,
+        text:
+          a.status === "SUCCEEDED" && a.paypalRef
+            ? `${text} (PayPal id ${a.paypalRef})`
+            : text,
       });
     }
     for (const d of mine.filter((d) => d.step === "SETTLE")) {
@@ -259,19 +265,141 @@ export async function loadDashboard(
     };
   });
 
+  const activity = buildActivity({
+    rows,
+    ledger,
+    caseDecisions,
+    campaignDecisions,
+    out,
+    now,
+  });
+
   return {
     campaigns: options,
     header,
     cases: out,
+    activity,
     affected: lines.length,
     guide: await loadGuide(all, nameOf),
   };
 }
 
+// Recent events for the Activity feed, newest first. Every line comes from a stored row: the
+// notice, the sign-in step, the PayPal ledger and the settle time set by a verified webhook.
+function buildActivity(input: {
+  rows: {
+    kase: typeof cases.$inferSelect;
+    notice: typeof notices.$inferSelect | null;
+  }[];
+  ledger: (typeof paypalActions.$inferSelect)[];
+  caseDecisions: (typeof agentDecisions.$inferSelect)[];
+  campaignDecisions: (typeof agentDecisions.$inferSelect)[];
+  out: BuyerCase[];
+  now: Date;
+}): ActivityEvent[] {
+  const { rows, ledger, caseDecisions, campaignDecisions, out, now } = input;
+  const events: (ActivityEvent & { time: number })[] = [];
+  const add = (
+    id: string,
+    at: Date,
+    kind: ActivityEvent["kind"],
+    text: string,
+    amountCents?: number,
+  ) =>
+    events.push({
+      id,
+      at: at.toISOString(),
+      when: relativeTime(at, now),
+      kind,
+      text,
+      amountCents,
+      time: at.getTime(),
+    });
+
+  const approval = campaignDecisions.find((d) => d.step === "APPROVE");
+  if (approval)
+    add(
+      `approved-${approval.id}`,
+      approval.createdAt,
+      "approved",
+      "You approved the campaign",
+    );
+
+  for (const { kase, notice } of rows) {
+    const c = out.find((o) => o.id === kase.id);
+    if (!c) continue;
+    const first = c.name.split(" ")[0];
+    if (notice)
+      add(`sent-${kase.id}`, notice.sentAt, "sent", `Notice sent to ${c.name}`);
+    if (notice?.openedAt)
+      add(
+        `opened-${kase.id}`,
+        notice.openedAt,
+        "opened",
+        `${c.name} opened the notice`,
+      );
+    for (const d of caseDecisions.filter(
+      (d) => d.caseId === kase.id && d.step === "CLAIM",
+    )) {
+      add(
+        `signin-${d.id}`,
+        d.createdAt,
+        "signin",
+        `${first} signed in with PayPal`,
+      );
+    }
+    for (const a of ledger.filter(
+      (a) => a.caseId === kase.id && a.status === "SUCCEEDED",
+    )) {
+      if (a.op === "TRACKING") {
+        add(
+          `track-${a.id}`,
+          a.updatedAt,
+          "settled",
+          `Tracking added for ${first}'s replacement`,
+        );
+      } else {
+        const what = a.op === "REFUND" ? "refund" : "payout";
+        add(
+          `paid-${a.id}`,
+          a.updatedAt,
+          "paid",
+          `PayPal accepted ${first}'s ${what}`,
+          c.amountCents,
+        );
+      }
+    }
+    if (kase.settledAt && PAID.includes(kase.status)) {
+      const what = kase.status === "REFUNDED" ? "refund" : "payout";
+      add(
+        `settled-${kase.id}`,
+        kase.settledAt,
+        "settled",
+        `PayPal confirmed ${first}'s ${what}`,
+        c.amountCents,
+      );
+    }
+  }
+  return events
+    .sort((a, b) => b.time - a.time)
+    .slice(0, 20)
+    .map((e) => ({
+      id: e.id,
+      at: e.at,
+      when: e.when,
+      kind: e.kind,
+      text: e.text,
+      amountCents: e.amountCents,
+    }));
+}
+
 // The demo has one buyer who can really sign in: the sandbox personal account. The guide points
 // at the campaign that affects that buyer, and works out which step the visitor is on.
 async function loadGuide(
-  all: { campaign: typeof campaigns.$inferSelect; recall: typeof recalls.$inferSelect }[],
+  all: {
+    campaign: typeof campaigns.$inferSelect;
+    recall: typeof recalls.$inferSelect;
+  }[],
   nameOf: (sku: string) => string,
 ): Promise<DemoGuideState | null> {
   const [sandbox] = await db
@@ -288,21 +416,31 @@ async function loadGuide(
     .innerJoin(products, eq(orderItems.productId, products.id))
     .where(eq(orders.buyerId, sandbox.id));
   const skus = new Set(bought.map((b) => b.sku));
-  const targets = all.filter((a) => a.campaign.matchedSkus.some((s) => skus.has(s)));
+  const targets = all.filter((a) =>
+    a.campaign.matchedSkus.some((s) => skus.has(s)),
+  );
   if (targets.length === 0) return null;
 
-  const [link] = await db.select().from(buyerLinks).where(eq(buyerLinks.buyerId, sandbox.id));
+  const [link] = await db
+    .select()
+    .from(buyerLinks)
+    .where(eq(buyerLinks.buyerId, sandbox.id));
   const theirCases = await db
     .select({ status: cases.status, settledAt: cases.settledAt })
     .from(cases)
     .innerJoin(orders, eq(cases.orderId, orders.id))
     .where(
       and(
-        inArray(cases.campaignId, targets.map((t) => t.campaign.id)),
+        inArray(
+          cases.campaignId,
+          targets.map((t) => t.campaign.id),
+        ),
         eq(orders.buyerId, sandbox.id),
       ),
     );
-  const featured = targets.find((t) => t.recall.recallNumber === FEATURED_RECALL) ?? targets[0];
+  const featured =
+    targets.find((t) => t.recall.recallNumber === FEATURED_RECALL) ??
+    targets[0];
   const featuredApproved = featured.campaign.status === "APPROVED";
   return {
     featured: {

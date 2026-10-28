@@ -18,6 +18,7 @@ import {
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { Icon } from "@/components/Icon";
+import flash from "./livesettle.module.css";
 import { amountLabel, type BuyerCase, type CaseStatus } from "./data";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./page.module.css";
@@ -201,6 +202,8 @@ interface CaseGridProps {
   // Narrowing the list: free-text search (AG Grid's quick filter) and an exact status.
   search: string;
   status: CaseStatus | "All";
+  // Rows that just turned Settled; they flash green for a moment.
+  flashIds: string[];
   // Hands the toolbar the grid's API (for CSV export) and how many rows are showing.
   onApi: (api: GridApi<BuyerCase>) => void;
   onShown: (shown: number) => void;
@@ -214,6 +217,7 @@ export function CaseGrid({
   onSelect,
   search,
   status,
+  flashIds,
   onApi,
   onShown,
 }: CaseGridProps) {
@@ -227,6 +231,11 @@ export function CaseGrid({
   useEffect(() => {
     apiRef.current?.onFilterChanged();
   }, [status]);
+
+  // Row classes are only read when a row is drawn, so redraw the rows whose flash turns on or off.
+  useEffect(() => {
+    apiRef.current?.redrawRows();
+  }, [flashIds]);
   return (
     <div className={styles.agWrap}>
       <AgGridReact<BuyerCase>
@@ -234,11 +243,18 @@ export function CaseGrid({
         rowData={rows}
         columnDefs={columnDefs}
         getRowId={(p) => p.data.id}
+        getRowClass={(p) =>
+          p.data && flashIds.includes(p.data.id) ? flash.row : undefined
+        }
         domLayout="autoHeight"
         headerHeight={40}
         rowHeight={44}
         suppressMovableColumns
-        defaultColDef={{ sortable: true, resizable: false, suppressMovable: true }}
+        defaultColDef={{
+          sortable: true,
+          resizable: false,
+          suppressMovable: true,
+        }}
         rowSelection={{
           mode: "singleRow",
           checkboxes: false,
