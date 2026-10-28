@@ -7,6 +7,7 @@ Recall Runner uses the plum design system. Read `PLUM-DESIGN.md` first: palette,
 | `PLUM-DESIGN.md` | Palette, type, tag and status rules | Current |
 | `home/` | Home layouts. `split-APPROVED.html` is built | Done |
 | `dashboard/` | Dashboard layouts, plus screenshots of the built page. `master-detail-APPROVED.html` is built | Done |
+| `dashboard/redesign-2a/` | Dashboard redesign handoff from Claude Design (README, mock, directions). Being built in pieces; the layout is done, the status split, Activity feed and live-settle motion are not | In progress |
 | `archive-old-look/` | The first, rejected design and its DESIGN-SPEC.md | Reference only |
 
 Pages not designed yet: buyer page, Test results. For each, make three layouts, pick one, then build it.

@@ -4,7 +4,7 @@ An AI agent that watches the US product-recall feed (CPSC), finds the buyers of 
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
 
-**Status:** Phases 0–5 are complete; Phase 5 (dashboard on real data, approve campaign, demo reset) is done: the live check on Render passed on Oct 26 (refund, replacement and repair all settle). The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs.
+**Status:** Phases 0–5 are complete; Phase 5 (dashboard on real data, approve campaign, demo reset) is done: the live check on Render passed on Oct 26 (refund, replacement and repair all settle). The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs. The failure path was proven live on Oct 26: a payout to an email with no PayPal account is recorded as unclaimed and never retried. The dashboard is being redesigned (new sidebar, stepper and tabbed detail panel are built; the status split, Activity feed and live-settle animation are next).
 
 ## Why
 
@@ -21,7 +21,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 | 3   | AI agent                                 | Sat Oct 31                   | Done Oct 25 |
 | 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                    | Done Oct 25 |
 | 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)   | Done Oct 26 |
-| 6   | UI redesign of the pages (Claude Design)  | Nov 3–5 (to confirm)         | Not started |
+| 6   | UI redesign of the pages (Claude Design)  | Nov 3–5 (to confirm)         | In progress: dashboard layout built Oct 27 |
 | 7   | Harden and package                       | Fri Nov 6                    | Not started |
 | 8   | Video and Devpost write-up               | Mon Nov 9, submit Tue Nov 10 | Not started |
 
@@ -59,7 +59,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 
 1. Open the live site and press **Start fresh demo**. It resets the store and opens the store dashboard.
 2. **Approve the hand-warmers recall** (you are the store). Nothing is sent or paid until you do. The battery-pack and dresser recalls were approved in advance when the demo was reset, so the buyer sees every remedy: a refund, a replacement and a repair kit.
-3. Press **Open buyer page** in the "Try the demo" strip (you are now the customer: the sandbox buyer, whose orders were set up to cover every remedy; the other buyers on the dashboard are fictional). Press **Confirm with PayPal** and sign in with the sandbox buyer account. The login is shown in the "Try the demo" strip on the dashboard and at the bottom of the home page (and in the Devpost testing instructions). A wrong account is refused and nothing is sent.
+3. Press **Open page** in the "Try the demo" strip (you are now the customer: the sandbox buyer, whose orders were set up to cover every remedy; the other buyers on the dashboard are fictional). Press **Confirm with PayPal** and sign in with the sandbox buyer account. The login is shown right under the Confirm with PayPal button on the buyer page (and in the Devpost testing instructions). A wrong account is refused and nothing is sent.
 4. PayPal sends the refund or payout. About a minute later its webhook confirms it, and the dashboard shows the case as **Settled**.
 
 ## Run locally
