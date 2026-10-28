@@ -2,6 +2,7 @@ import { and, eq, gt, inArray, isNull } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import {
   agentDecisions,
+  buyerLinks,
   buyers,
   campaigns,
   cases,
@@ -13,6 +14,7 @@ import { emailsMatch, verifiedPayPalEmail } from "@/lib/buyer";
 import { executeCase, FINISHED } from "@/lib/executor";
 import { appOrigin } from "@/lib/origin";
 import { fetchPayPalIdentity } from "@/lib/paypal";
+import { replayDestination } from "@/lib/replay";
 
 const ATTEMPT_LIFETIME_MS = 10 * 60 * 1000;
 
@@ -53,7 +55,29 @@ export async function GET(request: NextRequest) {
       },
     );
   }
-  if (!state || !expected || state !== expected) return to("?result=expired");
+  // A sign-in that was already used and already settled is a replay (the buyer reopened the
+  // callback link). It never pays or claims again; it only returns to the success view.
+  const replayOrExpired = async () => {
+    if (!state) return to("?result=expired");
+    const [used] = await db
+      .select()
+      .from(loginAttempts)
+      .where(eq(loginAttempts.state, state));
+    if (!used) return to("?result=expired");
+    const [link] = await db
+      .select({ buyerId: buyerLinks.buyerId })
+      .from(buyerLinks)
+      .where(eq(buyerLinks.token, token));
+    const covered = await db
+      .select({ id: cases.id, status: cases.status })
+      .from(loginAttemptItems)
+      .innerJoin(cases, eq(loginAttemptItems.caseId, cases.id))
+      .where(eq(loginAttemptItems.state, state));
+    const dest = replayDestination(used, link?.buyerId ?? null, covered, FINISHED);
+    return to(dest ?? "?result=expired");
+  };
+
+  if (!state || !expected || state !== expected) return replayOrExpired();
   // The buyer closed or declined PayPal's page: nothing to do, show their recalls again.
   if (!code) return to("");
 
@@ -69,7 +93,7 @@ export async function GET(request: NextRequest) {
       ),
     )
     .returning();
-  if (!attempt) return to("?result=expired");
+  if (!attempt) return replayOrExpired();
 
   // Who is signing in, and what they chose for each recall in this one sign-in.
   const [buyer] = attempt.buyerId

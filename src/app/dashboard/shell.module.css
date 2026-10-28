@@ -183,8 +183,11 @@
   align-items: center;
   gap: 16px;
   min-height: 60px;
+  flex-shrink: 0; /* its parent is a flex column; when the strip wraps it must grow, not squash */
   background: var(--surface);
   border-bottom: 1px solid var(--line);
+  /* Lets the steps react to the strip's own width (it is the page minus the sidebar). */
+  container: stepper / inline-size;
 }
 
 .stepperTitle {
@@ -199,7 +202,8 @@
 }
 
 .steps {
-  flex: 1;
+  /* Never shrinks below its steps: the action area gives way instead. */
+  flex: 1 0 auto;
   display: flex;
   align-items: center;
   gap: 0;
@@ -280,8 +284,44 @@
   color: var(--ink-muted);
 }
 
-/* Once every step is ticked the closing sentence says it all, so the labels step aside for screen
-   readers only and the four green ticks stay. */
+/* When the strip is tight, only the current step keeps its label; finished and upcoming steps
+   shrink to their dot or tick (the label stays for screen readers, and the step's title attribute
+   is the tooltip). Once every step is ticked no step is current, so all labels step aside and the
+   closing sentence says it all. */
+@media (min-width: 760px) {
+  @container stepper (max-width: 1240px) {
+    .step:not(.stepNow) .stepLabel {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .step:not(.stepNow) {
+      padding-right: 5px;
+    }
+  }
+}
+
+/* Narrower than that the hint has no room beside the steps, so the action area takes the strip's
+   second row. It still never wraps inside itself. */
+@media (min-width: 760px) and (max-width: 1099px) {
+  .stepper {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding-top: 10px;
+    padding-bottom: 12px;
+  }
+
+  .stepperAct,
+  .stepperActDone {
+    flex: 1 0 100%;
+    max-width: none;
+  }
+}
+
 .stepsDone .stepLabel {
   position: absolute;
   width: 1px;
@@ -295,14 +335,21 @@
   padding-right: 5px;
 }
 
-/* The finished demo has a sentence and two actions to fit, so it gets more of the strip. */
+/* The finished demo has a sentence and two actions to fit, so it gets more of the strip. The
+   actions stay on one row; only the sentence gives way (it clamps to two lines). */
 .stepperActDone {
   max-width: 58%;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+.stepperActDone .stepperHint {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 /* Two lines at most, so a long hint can never run over the steps. */
 .stepperHint {
+  min-width: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;

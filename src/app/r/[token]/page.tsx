@@ -56,8 +56,13 @@ async function BuyerView({ params, searchParams }: PageProps<"/r/[token]">) {
   const retryNote = cases.some((c) => c.status === "FAILED")
     ? "PayPal couldn't complete your last try for one of your recalls. You can try again below."
     : undefined;
+  // "Expired" only means a sign-in couldn't be used. If every recall here is already settled,
+  // that is a replayed link and the buyer's money step worked, so don't say otherwise.
+  const allDone = cases.length > 0 && cases.every(isDone);
   const alert =
-    (typeof result === "string" ? ALERTS[result] : undefined) ?? retryNote;
+    (typeof result === "string" && !(result === "expired" && allDone)
+      ? ALERTS[result]
+      : undefined) ?? retryNote;
 
   // The sandbox login sits under the Confirm with PayPal button, so only the two flows that have
   // that button get it, and only for the buyer who can really sign in.

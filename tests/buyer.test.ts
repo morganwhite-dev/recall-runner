@@ -109,3 +109,23 @@ test("after a definite failure the retry gets a fresh request id, one more for e
   assert.equal(requestIdFor("c1", "REFUND", [rejected]), "case-c1-refund-retry1");
   assert.equal(requestIdFor("c1", "REFUND", [rejected, told]), "case-c1-refund-retry2");
 });
+
+// ---- a replayed PayPal callback ----
+import { replayDestination } from "../src/lib/replay";
+
+const FIN = ["REFUNDED", "PAYOUT_SENT", "REPLACEMENT_SHIPPED", "REPAIR_KIT_REQUESTED"];
+const used = { buyerId: "b1", usedAt: new Date("2026-10-25T12:00:00Z") };
+
+test("a replayed sign-in whose recalls are all settled goes back to the success view", () => {
+  const cases = [{ id: "c1", status: "REFUNDED" }, { id: "c2", status: "PAYOUT_SENT" }];
+  assert.equal(replayDestination(used, "b1", cases, FIN), "?done=c1,c2");
+});
+
+test("a replay never succeeds for another buyer, an unused sign-in, or an unfinished case", () => {
+  const done = [{ id: "c1", status: "REFUNDED" }];
+  assert.equal(replayDestination(used, "b2", done, FIN), null);
+  assert.equal(replayDestination(used, null, done, FIN), null);
+  assert.equal(replayDestination({ ...used, usedAt: null }, "b1", done, FIN), null);
+  assert.equal(replayDestination(used, "b1", [...done, { id: "c2", status: "OPEN" }], FIN), null);
+  assert.equal(replayDestination(used, "b1", [], FIN), null);
+});
