@@ -5,6 +5,7 @@ import { ART_PATHS } from "@/components/ProductArt";
 import { StatusPill } from "@/components/StatusPill";
 import { loadDashboard } from "@/lib/dashboard";
 import { TweenMoney } from "@/components/TweenMoney";
+import { shortName } from "@/app/r/[token]/data";
 import { ApproveButton } from "./ApproveButton";
 import { DemoGuide } from "./DemoGuide";
 import { campaignStats, formatDate, formatMoney } from "./data";
@@ -60,6 +61,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
             guide={data.guide}
             current={header.recallNumber}
             waiting={stats.awaiting > 0}
+            settledCents={paidCents}
           />
         )}
 
@@ -85,7 +87,13 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               <span className={shell.badge}>CPSC #{header.recallNumber}</span>
               <span>Recall · {formatDate(header.recallDate)}</span>
             </p>
-            <h1 id="title">{header.title}</h1>
+            <h1 id="title">
+              {header.productNames.map(shortName).join(", ") || header.title}
+            </h1>
+            {/* The official CPSC wording, kept for the record but out of the way. */}
+            <p className={shell.official} title={header.title}>
+              {header.title}
+            </p>
             <p className={shell.sub}>
               <b>Product:</b> {header.productNames.join(", ")} · <b>Remedy:</b>{" "}
               {header.remedies.map((r) => r.toLowerCase()).join(" or ")}
@@ -113,7 +121,10 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               {stats.awaiting > 0 && (
                 <span className={shell.live} aria-hidden="true" />
               )}
-              <TweenMoney className={shell.money} cents={paidCents} />
+              <span className={shell.moneyWrap}>
+                <TweenMoney className={shell.money} cents={paidCents} />
+                <span className={shell.moneyLabel}>settled</span>
+              </span>
             </p>
             <div className={shell.segs} aria-hidden="true">
               <span className={shell.seg}>
@@ -141,14 +152,14 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               </span>
             </div>
             <div className={shell.nums}>
-              <div>
-                <b>{stats.affected}</b>Found
+              <div title="Orders that contain the recalled product; each one is a case">
+                <b>{stats.affected}</b>Orders
               </div>
               <div>
                 <b>{stats.notified}</b>Sent
               </div>
-              <div>
-                <b>{opened}</b>Opened
+              <div title="Buyers who opened the notice, including those since settled">
+                <b>{opened}</b>Read
               </div>
               <div>
                 <b>{stats.settled}</b>

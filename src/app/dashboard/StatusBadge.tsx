@@ -4,14 +4,15 @@ import delight from "./delight.module.css";
 import styles from "./page.module.css";
 
 const STATUS: Record<CaseStatus, { icon: IconName; className: string }> = {
-  Settled: { icon: "check", className: `pill ${delight.settled}` },
+  Settled: { icon: "done", className: `pill ${delight.settled}` },
   Sent: { icon: "bell", className: styles.sent },
-  Opened: { icon: "check", className: styles.opened },
+  Opened: { icon: "opened", className: styles.opened },
   "Waiting on PayPal": { icon: "clock", className: styles.waiting },
   Problem: { icon: "alert", className: styles.problem },
 };
 
-// Status is always an icon plus a word: solid for settled, outline for sent, blue for opened, dashed for waiting.
+// Status is always an icon plus a word: green with the seal's filled tick for settled, grey for
+// sent, blue for opened, amber and dashed for waiting, a dark outline for a problem.
 export function StatusBadge({ status }: { status: CaseStatus }) {
   const { icon, className } = STATUS[status];
   return (

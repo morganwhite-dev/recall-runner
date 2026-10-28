@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AutoRefresh } from "./AutoRefresh";
+import { AutoRefresh } from "@/components/AutoRefresh";
+import { Icon } from "@/components/Icon";
 import { formatMoney, type BuyerCase } from "./data";
 import styles from "./livesettle.module.css";
 
@@ -77,6 +78,7 @@ export function LiveSettle({
       <div className={styles.region} role="status" aria-live="polite">
         {toast && (
           <p className={styles.toast}>
+            <Icon name="done" />
             <span>{toast}</span>
             <button
               type="button"

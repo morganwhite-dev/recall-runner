@@ -22,6 +22,11 @@
   color: var(--on-ground);
 }
 
+.sideTop,
+.sideBottom {
+  display: contents;
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -115,7 +120,7 @@
   font: 700 15px/1.25 var(--font-display);
 }
 
-.campaignTop span {
+.campaignTop .campaignCount {
   flex: none;
   font: 500 12px var(--font-mono);
   color: var(--on-ground-muted);
@@ -235,10 +240,11 @@
   color: var(--ink-muted);
 }
 
+/* A finished step: the receipt seal in miniature, a solid green dot with the seal's white tick. */
 .stepDone .stepNum {
-  background: var(--ok-bg);
-  color: var(--ok-ink);
-  font-size: 13px;
+  background: var(--ok-ink);
+  color: #fff;
+  font-size: 22px;
 }
 
 .stepNow {
@@ -256,10 +262,17 @@
   .stepNow .stepNum {
     animation: rrRing 1.8s infinite;
   }
+
+  /* The tick pops in once, when the step turns done. */
+  .stepDone .stepNum :global(.icon) {
+    animation: tickIn 0.5s var(--ease-spring) both;
+  }
 }
 
 .stepperAct {
-  flex: none;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 36%;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -267,7 +280,49 @@
   color: var(--ink-muted);
 }
 
+/* Once every step is ticked the closing sentence says it all, so the labels step aside for screen
+   readers only and the four green ticks stay. */
+.stepsDone .stepLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.stepsDone .step {
+  padding-right: 5px;
+}
+
+/* The finished demo has a sentence and two actions to fit, so it gets more of the strip. */
+.stepperActDone {
+  max-width: 58%;
+  flex-wrap: wrap;
+}
+
+/* Two lines at most, so a long hint can never run over the steps. */
+.stepperHint {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* The quieter "Open buyer page" beside the step 3 hint. */
+.stepperSub {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: var(--brand);
+  white-space: nowrap;
+}
+
 .stepperLink {
+  border: 0;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -275,12 +330,18 @@
   padding: 0 18px;
   border-radius: 999px;
   background: var(--accent);
-  color: #2a1530;
+  color: var(--on-accent);
   font: 700 14px var(--font-body);
   text-decoration: none;
+  white-space: nowrap;
   transition:
     transform 0.15s,
     box-shadow 0.15s;
+}
+
+.stepperLink:disabled {
+  opacity: 0.7;
+  cursor: progress;
 }
 
 .stepperLink:hover {
@@ -295,7 +356,7 @@
   bottom: -1px;
   height: 2px;
   background: var(--accent);
-  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: width 0.6s var(--ease-out);
 }
 
 .note {
@@ -372,6 +433,18 @@
   color: var(--ink-muted);
 }
 
+/* The long official recall title under the product name: two lines at most. */
+.official {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
 .approval {
   display: flex;
   align-items: center;
@@ -401,7 +474,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #2f8a57;
+  background: var(--ok-solid);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -410,10 +483,21 @@
   }
 }
 
-.money {
+.moneyWrap {
   margin-left: auto;
-  font: 500 15px var(--font-mono);
-  color: #14633a;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.money {
+  font: 700 28px/1 var(--font-display);
+  color: var(--ok-ink);
+}
+
+.moneyLabel {
+  font: 400 12px var(--font-body);
+  color: var(--ink-muted);
 }
 
 .segs {
@@ -435,15 +519,16 @@
   display: block;
   height: 100%;
   background: var(--brand);
-  transition: width 1.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: width 1.3s var(--ease-out);
 }
 
+/* Settled and waiting, in the same green and amber as the status pills. */
 .green {
-  background: #2f8a57;
+  background: var(--ok-solid);
 }
 
 .amber {
-  background: #e8a317;
+  background: var(--wait-line);
 }
 
 .nums {
@@ -470,25 +555,147 @@
   padding-bottom: 24px;
 }
 
-/* Phones: sidebar on top, page scrolls as one. */
+/* Phones: the demo strip comes first, then a compact plum block (store and campaign chips),
+   then the recall and cases; the links and the disclaimer close the page. The aside and main
+   dissolve (display: contents) so their children can be ordered as one column. */
 @media (max-width: 759px) {
   .root {
-    grid-template-columns: minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
   }
 
-  .sidebar {
-    position: static;
-    height: auto;
-    gap: 18px;
+  .sidebar,
+  .main {
+    display: contents;
+  }
+
+  .stepper,
+  .note {
+    order: 1;
+  }
+
+  .sideTop {
+    order: 2;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 10px 12px;
+    padding: 12px 16px;
+    background: var(--brand);
+    color: var(--on-ground);
+  }
+
+  .recall {
+    order: 3;
+  }
+
+  .content {
+    order: 4;
+  }
+
+  .sideBottom {
+    order: 5;
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+    background: var(--brand);
+    color: var(--on-ground);
+  }
+
+  .logo {
+    font-size: 16px;
+  }
+
+  .mark {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  .storeChip {
+    justify-self: end;
+    min-width: 0;
+    padding: 4px 10px 4px 4px;
+    border-radius: 999px;
+  }
+
+  .storeChip i {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  .storeChip span {
+    display: none;
+  }
+
+  .storeChip b {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  /* The campaigns: a row of chips that scrolls sideways inside its own strip. */
+  .sideTop > nav[aria-label="Campaigns"] {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .label,
+  .campaign small {
+    display: none;
+  }
+
+  .campaigns {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .campaigns li {
+    flex: none;
+  }
+
+  .campaign {
+    display: block;
+    padding: 7px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+  }
+
+  .campaign[aria-current="page"] {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .campaignTop {
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .campaignName {
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .links {
+    display: flex;
+    gap: 8px;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .links a {
+    align-items: center;
+    gap: 6px;
+    padding: 9px 4px;
   }
 
   .disclaimer {
     margin-top: 0;
-  }
-
-  .main {
-    height: auto;
-    overflow: visible;
   }
 
   .stepper {
@@ -501,6 +708,7 @@
 
   .stepperAct {
     width: 100%;
+    max-width: none;
   }
 
   .steps {
@@ -531,5 +739,11 @@
   50% {
     opacity: 0.35;
     transform: scale(0.7);
+  }
+}
+
+@keyframes tickIn {
+  from {
+    transform: scale(0) rotate(-40deg);
   }
 }

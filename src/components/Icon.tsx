@@ -4,6 +4,9 @@ export type IconName =
   | "code"
   | "person"
   | "check"
+  | "tick"
+  | "done"
+  | "opened"
   | "arrow"
   | "loop"
   | "orders"
@@ -34,9 +37,17 @@ export type IconName =
   | "copy";
 
 // Inline SVG symbol set. Render <IconSprite /> once per page, then use <Icon />.
+// Every tick is the receipt seal's tick (src/components/Seal.tsx) scaled down, so a check reads the
+// same everywhere: "check" is the outline version, "done" the filled badge (colour = currentColor,
+// tick = --icon-tick) and "tick" the bare tick for a coloured dot such as a finished demo step.
 export function IconSprite() {
   return (
-    <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+    <svg
+      width="0"
+      height="0"
+      style={{ position: "absolute" }}
+      aria-hidden="true"
+    >
       <symbol id="scale" viewBox="0 0 24 24">
         <path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7zM19 7l-3 7a3.5 3.5 0 0 0 6 0l-3-7z" />
       </symbol>
@@ -52,7 +63,25 @@ export function IconSprite() {
       </symbol>
       <symbol id="check" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="9" />
-        <path d="M8 12.5l3 3 5-6" />
+        <path d="M8.2 12.2l2.5 2.5 5.3-5.65" />
+      </symbol>
+      <symbol id="tick" viewBox="0 0 24 24">
+        <path d="M7 12.3l3.35 3.35 6.95-7.55" style={{ strokeWidth: 2.2 }} />
+      </symbol>
+      <symbol id="done" viewBox="0 0 24 24">
+        <circle
+          cx="12"
+          cy="12"
+          r="12"
+          style={{ fill: "currentColor", stroke: "none" }}
+        />
+        <path
+          d="M7 12.3l3.35 3.35 6.95-7.55"
+          style={{ stroke: "var(--icon-tick, #fff)", strokeWidth: 2.2 }}
+        />
+      </symbol>
+      <symbol id="opened" viewBox="0 0 24 24">
+        <path d="M4 10.5l8-5.5 8 5.5V19H4zM4 10.5l8 5.5 8-5.5" />
       </symbol>
       <symbol id="arrow" viewBox="0 0 24 24">
         <path d="M5 12h14M13 6l6 6-6 6" />

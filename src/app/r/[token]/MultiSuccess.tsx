@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { AutoRefresh } from "@/components/AutoRefresh";
 import { Icon } from "@/components/Icon";
 import type { BuyerCase } from "@/lib/buyer";
 import { formatUsd } from "@/lib/policy";
-import { remedyCopy } from "./data";
+import { ConfirmStatus } from "./ConfirmStatus";
+import { groupByRecall, receiptHeadline, remedyCopy } from "./data";
 import styles from "./page.module.css";
-import { Blob, SectionTitle, TopBand } from "./parts";
+import { Blob, SectionTitle, SuccessSeal, TopBand } from "./parts";
 
 // One receipt for several recalls settled in a single PayPal sign-in.
 export function MultiSuccess({
@@ -18,43 +20,61 @@ export function MultiSuccess({
   cases: BuyerCase[];
   others: boolean; // are there recalls still waiting for a choice?
 }) {
-  const moneyCents = cases
-    .filter((c) => c.status === "REFUNDED" || c.status === "PAYOUT_SENT")
-    .reduce((sum, c) => sum + (c.amountCents ?? c.priceCents), 0);
-  const settledAll = cases.every((c) => c.settled || !["REFUNDED", "PAYOUT_SENT"].includes(c.status));
+  const isMoney = (c: BuyerCase) =>
+    c.status === "REFUNDED" || c.status === "PAYOUT_SENT";
+  const centsOf = (list: BuyerCase[]) =>
+    list
+      .filter(isMoney)
+      .reduce((sum, c) => sum + (c.amountCents ?? c.priceCents), 0);
+  const moneyCents = centsOf(cases);
+  const settledAll = cases.every((c) => c.settled || !isMoney(c));
+  const anyMoney = cases.some(isMoney);
+  // Several orders of one recall are one line here, as they were one card when choosing.
+  const groups = groupByRecall(cases);
+  const { title, covered } = receiptHeadline(cases);
 
-  const line = (c: BuyerCase) => {
-    switch (c.status) {
-      case "PAYOUT_SENT":
-        return `${formatUsd(c.amountCents ?? c.priceCents)} sent by PayPal Payouts`;
-      case "REFUNDED":
-        return `${formatUsd(c.amountCents ?? c.priceCents)} refunded to your PayPal account`;
-      case "REPLACEMENT_SHIPPED":
-        return "Free replacement on its way, tracking added to your order";
-      default:
-        return remedyCopy("repair").detail;
+  // One recall's line. Its orders share a remedy, but a refund for a recent order and a payout
+  // for one past 180 days can sit side by side.
+  const line = (list: BuyerCase[]) => {
+    const money = list.filter(isMoney);
+    if (money.length > 0) {
+      const total = formatUsd(centsOf(money));
+      const payouts = money.filter((c) => c.status === "PAYOUT_SENT").length;
+      if (payouts === 0) return `${total} refunded to your PayPal account`;
+      if (payouts === money.length) return `${total} sent by PayPal Payouts`;
+      return `${total} back to your PayPal account, by refund and PayPal Payouts`;
     }
+    return list[0].status === "REPLACEMENT_SHIPPED"
+      ? list.length > 1
+        ? "Free replacements on their way, tracking added to your orders"
+        : "Free replacement on its way, tracking added to your order"
+      : remedyCopy("repair").detail;
   };
+  const ordersNote = (list: BuyerCase[]) =>
+    list.length > 1 ? ` · ${list.length} orders` : "";
 
   return (
     <>
+      <AutoRefresh active={!settledAll} everyMs={3000} />
       <TopBand store={store}>
         <div>
-          <span className={styles.status}>
-            <Icon name="check" />
-            {settledAll ? "All done. Confirmed by PayPal" : "All done"}
-          </span>
-          {moneyCents > 0 && <p className={styles.big}>{formatUsd(moneyCents)}</p>}
+          <ConfirmStatus
+            label="All done"
+            state={!anyMoney ? "none" : settledAll ? "confirmed" : "waiting"}
+          />
+          {moneyCents > 0 && (
+            <p className={styles.big}>{formatUsd(moneyCents)}</p>
+          )}
           <h1 className={`${styles.h1} ${styles.h1Success}`}>
-            {cases.length} recalls settled with one sign-in
+            {title}
           </h1>
           <p className={styles.lede}>
-            <b>You only had to sign in with PayPal once.</b> You don&apos;t need to do anything
-            else for these.
+            <b>You only had to sign in with PayPal once.</b> You don&apos;t need
+            to do anything else for these.{covered && <> {covered}</>}
           </p>
         </div>
         <Blob>
-          <Icon name="check" />
+          <SuccessSeal />
         </Blob>
       </TopBand>
 
@@ -66,13 +86,14 @@ export function MultiSuccess({
                 What happens next
               </SectionTitle>
               <ul className={styles.nextList}>
-                {cases.map((c) => (
-                  <li key={c.caseId}>
+                {groups.map((g) => (
+                  <li key={g.recallNumber}>
                     <span className={styles.ico}>
                       <Icon name="check" />
                     </span>
                     <span>
-                      <b>{c.productName}:</b> {line(c)}
+                      <b>{g.cases[0].productName}:</b> {line(g.cases)}
+                      {ordersNote(g.cases)}
                     </span>
                   </li>
                 ))}
@@ -100,22 +121,35 @@ export function MultiSuccess({
             )}
           </main>
 
-          <aside className={`${styles.sum} ${styles.plain}`} aria-labelledby="rh">
+          <aside
+            className={`${styles.sum} ${styles.plain}`}
+            aria-labelledby="rh"
+          >
             <h2 className={styles.receiptTitle} id="rh">
               Your receipt
             </h2>
             <dl className={styles.rcpt}>
-              {cases.map((c) => (
-                <div key={c.caseId}>
-                  <dt>{c.productName}</dt>
-                  <dd>
-                    {c.amountCents && (c.status === "REFUNDED" || c.status === "PAYOUT_SENT")
-                      ? formatUsd(c.amountCents)
-                      : "Free"}
-                    {c.paypalRef && <span className={styles.mono}> · {c.paypalRef}</span>}
-                  </dd>
-                </div>
-              ))}
+              {groups.map((g) => {
+                const refs = g.cases.flatMap((c) =>
+                  c.paypalRef ? [c.paypalRef] : [],
+                );
+                return (
+                  <div key={g.recallNumber}>
+                    <dt>
+                      {g.cases[0].productName}
+                      {ordersNote(g.cases)}
+                    </dt>
+                    <dd>
+                      {g.cases.some(isMoney)
+                        ? formatUsd(centsOf(g.cases))
+                        : "Free"}
+                      {refs.length > 0 && (
+                        <span className={styles.mono}> · {refs.join(", ")}</span>
+                      )}
+                    </dd>
+                  </div>
+                );
+              })}
             </dl>
           </aside>
         </div>

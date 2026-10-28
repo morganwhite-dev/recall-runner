@@ -105,6 +105,24 @@
   max-width: 30em;
 }
 
+/* The one statistic that frames the product, in the accent colour; the source sits under it. */
+.heroStat {
+  margin-top: 16px;
+  max-width: 30em;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--accent);
+}
+
+.heroStat span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--on-ground-muted);
+}
+
 .cta {
   margin-top: 28px;
   display: flex;
@@ -216,15 +234,6 @@
 .settled {
   display: block;
   margin-bottom: 6px;
-}
-
-.code {
-  font: 500 12px var(--font-mono);
-  background: var(--surface-sunk);
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-  margin-top: 6px;
 }
 
 /* Light body: two-column rhythm */
@@ -410,62 +419,6 @@
   margin-top: 2px;
 }
 
-/* Surface 2: for judges. Declared after .section so these win. */
-.judges {
-  background: var(--surface-sunk);
-  border-top: 0;
-  border-radius: 12px;
-  padding: 32px;
-  margin-bottom: 56px;
-}
-
-.judgesHead {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.judges h2 {
-  font: 800 28px var(--font-display);
-  letter-spacing: -0.025em;
-}
-
-.when {
-  color: var(--ink-muted);
-  font-size: 15px;
-}
-
-.judgeList {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 24px;
-  counter-reset: j;
-}
-
-.judgeList li {
-  counter-increment: j;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.judgeList li::before {
-  content: counter(j);
-  display: block;
-  font: 800 40px/1 var(--font-display);
-  letter-spacing: -0.03em;
-  color: var(--brand);
-  margin-bottom: 6px;
-}
-
-.readme {
-  margin-top: 20px;
-  font-size: 15px;
-  color: var(--ink-muted);
-}
-
 .footer {
   border-top: 1px solid var(--line);
   padding-top: 20px;
@@ -554,14 +507,6 @@
 
   .ppItem:last-child {
     padding-bottom: 0;
-  }
-
-  .judges {
-    padding: 24px 20px;
-  }
-
-  .judgeList {
-    grid-template-columns: 1fr 1fr;
   }
 }
 

@@ -15,26 +15,26 @@ const CATALOG = [
   // Real recalled products (matched against recalls 27011, 26791 and 26794)
   [
     "BH-HW-2P",
-    "HotHands Rechargeable Hand Warmers, 2-pack",
+    "Kindlewarm Rechargeable Hand Warmers, 2-pack",
     "White and orange magnetic hand warmers with a USB-C charging cable and a built-in lithium-ion battery.",
     "Electric warmers",
-    "HotHands",
+    "Kindlewarm",
     3400,
   ],
   [
     "BH-RC-BP",
-    "The Blue Cactus Company 2500 mAh Battery Pack for Reclining Chairs",
+    "Juniper Ridge Power Co. 2500 mAh Battery Pack for Reclining Chairs",
     "Black rechargeable battery pack for power reclining chairs, model RWX-RBP02.",
     "Chair batteries",
-    "The Blue Cactus Company",
+    "Juniper Ridge Power Co.",
     10500,
   ],
   [
     "BH-DR-8",
-    "Aitjunz 8-Drawer Dresser",
+    "Oakhollow 8-Drawer Dresser",
     "Eight-drawer wooden dresser for bedrooms, available in black, white, brown, oak and cream.",
     "Dressers",
-    "Aitjunz",
+    "Oakhollow",
     24900,
   ],
   // Decoys: same kind of product, different brand, so they must NOT match those recalls

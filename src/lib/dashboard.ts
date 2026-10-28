@@ -32,6 +32,8 @@ import {
   type CampaignOption,
   type DemoGuideState,
   clip,
+  groupBuyerMoments,
+  type BuyerMoment,
   type ActivityEvent,
   type TimelineStep,
 } from "@/app/dashboard/data";
@@ -331,6 +333,7 @@ export async function loadDashboard(
 function buildActivity(input: {
   rows: {
     kase: typeof cases.$inferSelect;
+    buyer: typeof buyers.$inferSelect;
     notice: typeof notices.$inferSelect | null;
   }[];
   ledger: (typeof paypalActions.$inferSelect)[];
@@ -367,28 +370,28 @@ function buildActivity(input: {
       "You approved the campaign",
     );
 
-  for (const { kase, notice } of rows) {
+  // Notices, opens and sign-ins are grouped per buyer (see groupBuyerMoments); the money lines
+  // below stay one per case.
+  const moments: BuyerMoment[] = [];
+  for (const { kase, buyer, notice } of rows) {
     const c = out.find((o) => o.id === kase.id);
     if (!c) continue;
-    const first = c.name.split(" ")[0];
-    if (notice)
-      add(`sent-${kase.id}`, notice.sentAt, "sent", `Notice sent to ${c.name}`);
+    const moment = (id: string, at: Date, kind: BuyerMoment["kind"]) =>
+      moments.push({
+        id,
+        time: at.getTime(),
+        kind,
+        buyerId: buyer.id,
+        name: c.name,
+        caseId: kase.id,
+      });
+    if (notice) moment(`sent-${kase.id}`, notice.sentAt, "sent");
     if (notice?.openedAt)
-      add(
-        `opened-${kase.id}`,
-        notice.openedAt,
-        "opened",
-        `${c.name} opened the notice`,
-      );
+      moment(`opened-${kase.id}`, notice.openedAt, "opened");
     for (const d of caseDecisions.filter(
       (d) => d.caseId === kase.id && d.step === "CLAIM",
     )) {
-      add(
-        `signin-${d.id}`,
-        d.createdAt,
-        "signin",
-        `${first} signed in with PayPal`,
-      );
+      moment(`signin-${d.id}`, d.createdAt, "signin");
     }
     for (const a of ledger.filter(
       (a) => a.caseId === kase.id && a.status === "SUCCEEDED",
@@ -398,7 +401,7 @@ function buildActivity(input: {
           `track-${a.id}`,
           a.updatedAt,
           "settled",
-          `Tracking added for ${first}'s replacement`,
+          `Tracking added for ${c.name}'s replacement`,
         );
       } else {
         const what = a.op === "REFUND" ? "refund" : "payout";
@@ -406,7 +409,7 @@ function buildActivity(input: {
           `paid-${a.id}`,
           a.updatedAt,
           "paid",
-          `PayPal accepted ${first}'s ${what}`,
+          `PayPal accepted ${c.name}'s ${what}`,
           c.amountCents,
         );
       }
@@ -417,11 +420,13 @@ function buildActivity(input: {
         `settled-${kase.id}`,
         kase.settledAt,
         "settled",
-        `PayPal confirmed ${first}'s ${what}`,
+        `PayPal confirmed ${c.name}'s ${what}`,
         c.amountCents,
       );
     }
   }
+  for (const g of groupBuyerMoments(moments))
+    add(g.id, new Date(g.time), g.kind, g.text);
   return events
     .sort((a, b) => b.time - a.time)
     .slice(0, 20)
@@ -468,9 +473,15 @@ async function loadGuide(
     .from(buyerLinks)
     .where(eq(buyerLinks.buyerId, sandbox.id));
   const theirCases = await db
-    .select({ status: cases.status, settledAt: cases.settledAt })
+    .select({
+      campaignId: cases.campaignId,
+      status: cases.status,
+      settledAt: cases.settledAt,
+      openedAt: notices.openedAt,
+    })
     .from(cases)
     .innerJoin(orders, eq(cases.orderId, orders.id))
+    .leftJoin(notices, eq(notices.caseId, cases.id))
     .where(
       and(
         inArray(
@@ -494,6 +505,9 @@ async function loadGuide(
       (t) => t !== featured && t.campaign.status === "APPROVED",
     ).length,
     buyerPath: featuredApproved && link ? `/r/${link.token}` : null,
+    opened: theirCases.some(
+      (c) => c.campaignId === featured.campaign.id && c.openedAt !== null,
+    ),
     paid: theirCases.some((c) => PAID.includes(c.status)),
     settled: theirCases.some((c) => c.settledAt !== null),
   };

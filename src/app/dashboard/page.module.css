@@ -1,3 +1,5 @@
+/* Dashboard workspace: the case table, its toolbar, status pills and the detail panel's timeline.
+   The shell (sidebar, demo steps, recall header) is in shell.module.css. */
 .wrap {
   max-width: 1280px;
   margin: 0 auto;
@@ -8,317 +10,109 @@
   font-family: var(--font-mono);
 }
 
-.small {
-  font-size: 13px;
-}
-
 .num {
   font-variant-numeric: tabular-nums;
 }
 
-/* Top bar */
-.top {
-  background: var(--brand);
-  color: var(--on-ground);
-}
-
-.topBar {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  min-height: 72px;
-  flex-wrap: wrap;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  font: 800 19px var(--font-display);
-  text-decoration: none;
-}
-
-.mark {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--on-accent);
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-}
-
-.store {
-  font-size: 14px;
-  color: var(--on-ground-muted);
-  padding-left: 24px;
-  border-left: 1px solid rgba(255, 255, 255, 0.28);
-}
-
-.store b {
-  color: var(--on-ground);
+/* Shown instead of the grid when there is nothing to list yet. */
+.empty {
+  margin: 32px 0;
+  padding: 24px;
+  border: 1px dashed var(--ink-muted);
+  border-radius: 14px;
+  color: var(--ink-muted);
   font-weight: 600;
 }
 
-.topNav {
-  margin-left: auto;
-}
-
-.topNav a {
+/* Approve campaign */
+.btn {
   display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--on-ground-muted);
-  text-decoration: none;
-}
-
-.topNav a:hover {
-  color: var(--on-ground);
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-color: var(--accent);
-}
-
-.switch {
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 44px;
-  padding: 2px 40px 2px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 10px;
-  color: var(--on-ground);
-}
-
-.switch:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.switch:focus-within {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.switchLabel {
-  font-size: 12px;
-  line-height: 1.2;
-  color: var(--on-ground-muted);
-}
-
-.switch select {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  outline: 0;
-  color: inherit;
-  font: 500 14px/1.3 var(--font-body);
-  cursor: pointer;
-  padding: 0;
-}
-
-.switch select option {
-  color: var(--ink);
-}
-
-.switch :global(.icon) {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  margin-top: -0.5em;
-  pointer-events: none;
-}
-
-.approval {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: var(--on-ground-muted);
-}
-
-/* Recall header: a lavender band with the product drawing in a tile, like the buyer page. */
-.recall {
-  display: grid;
-  grid-template-columns: 112px 1fr;
-  gap: 24px;
-  margin: 24px 0 16px;
-  padding: 20px 26px;
-  align-items: center;
-  background: var(--lav);
-  border-radius: 20px;
-}
-
-.art {
-  width: 112px;
-  height: 112px;
-  padding: 14px;
-  color: var(--brand);
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 6px 16px -10px rgba(59, 31, 63, 0.5);
-}
-
-.meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--ink-muted);
-}
-
-.badge {
-  display: inline-block;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: var(--recall);
-  background: var(--recall-bg);
-  padding: 4px 10px;
-  border-radius: 999px;
-}
-
-.recall h1 {
-  font: 800 26px/1.15 var(--font-display);
-  letter-spacing: -0.025em;
-  margin: 8px 0 6px;
-  max-width: 34em;
-}
-
-.sub {
-  font-size: 14px;
-  color: var(--ink-muted);
-}
-
-.sub b {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-.kpis {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.kpis > div {
-  padding: 16px 18px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  display: grid;
-  align-content: start;
-  gap: 2px;
-}
-
-.kpis dt {
-  display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
-  color: var(--ink-muted);
-  font-weight: 600;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 700;
+  text-decoration: none;
 }
 
-.kico {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 9px;
-  background: var(--lav);
-  color: var(--brand);
+.btn:hover {
+  background: #4d2b52;
+}
+
+.btn :global(.icon) {
   font-size: 16px;
 }
 
-.kpis dd {
-  font: 800 38px/1.1 var(--font-display);
-  letter-spacing: -0.03em;
-  color: var(--brand);
-  margin-top: 6px;
-}
-
-.kpis p {
+/* Status pills: one box for every status (13px, 1px line, 15px icon), the same as the global
+   .pill that Settled and Approved use. Colours are the shared status tokens in globals.css. */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
   font-size: 13px;
-  color: var(--ink-muted);
+  line-height: 20px;
+  padding: 2px 8px 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
-.bar {
-  height: 6px;
-  border-radius: 3px;
-  background: var(--line);
-  margin-top: 6px;
-  overflow: hidden;
+.status :global(.icon) {
+  font-size: 15px;
 }
 
-.bar i {
-  display: block;
-  height: 100%;
-  background: var(--brand);
+.sent {
+  background: var(--sent-bg);
+  border-color: var(--sent-line);
+  color: var(--sent-ink);
 }
 
-/* Numbers count up, the bar fills, and timeline steps rise in order. All off for reduced motion. */
-@property --n {
-  syntax: "<integer>";
-  initial-value: 0;
-  inherits: false;
+.opened {
+  background: var(--opened-bg);
+  border-color: var(--opened-line);
+  color: var(--opened-ink);
 }
 
-.countUp {
-  --n: var(--v);
-  counter-reset: n var(--n);
+.waiting {
+  background: var(--wait-bg);
+  border: 1px dashed var(--wait-line);
+  color: var(--wait-ink);
 }
 
-.countUp::after {
-  content: counter(n) var(--unit, "");
+/* A case the rules refused or PayPal rejected: solid outline, so it never reads as "waiting". */
+.problem {
+  background: var(--surface);
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .countUp {
-    animation: countup 0.9s ease-out both;
-  }
-
-  .bar i {
-    animation: fill 0.9s ease-out both;
-  }
-
-  .steps li {
-    animation: rise 0.35s ease-out both;
-    animation-delay: calc(var(--i, 0) * 70ms);
+  .waiting :global(.icon) {
+    animation: rrBlink 1.6s infinite;
   }
 }
 
-@keyframes countup {
-  from {
-    --n: 0;
+@keyframes rrBlink {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
   }
 }
 
-@keyframes fill {
-  from {
-    width: 0;
-  }
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-}
-
-/* Master-detail split */
+/* Workspace: table card on the left, detail panel on the right. */
 .split {
   display: grid;
-  grid-template-columns: 62fr 38fr;
-  gap: 32px;
-  padding: 28px 0 8px;
+  grid-template-columns: minmax(0, 640px) minmax(300px, 1fr);
+  gap: 16px;
   align-items: start;
 }
 
@@ -372,12 +166,16 @@
   color: var(--ink-muted);
 }
 
-/* Surface 1: grid */
+/* The case table */
 .grid {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
+}
+
+.agWrap {
+  overflow-x: auto;
 }
 
 .agWrap :global(.ag-row-selected .ag-cell[col-id="buyer"]) {
@@ -403,15 +201,6 @@
   justify-content: flex-end;
 }
 
-.hiddenHeader :global(.ag-header-cell-text) {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
 .who {
   display: flex;
   align-items: center;
@@ -431,81 +220,37 @@
   flex: none;
 }
 
-.path {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+.whoText {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.2;
+  font-weight: 600;
 }
 
-.path :global(.icon) {
-  font-size: 16px;
-  color: var(--brand);
-}
-
-.status {
-  line-height: 20px;
+/* "You · sign in here": coral on dark, under the name. */
+.you {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--on-accent);
+  color: var(--accent);
+  font: 700 10.5px/1.4 var(--font-body);
   white-space: nowrap;
 }
 
-.sent {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 700;
-  font-size: 13px;
-  border: 1px solid #ddd3d8;
-  background: #f2edef;
-  color: #5a525c;
-  padding: 2px 8px 2px 6px;
-  border-radius: 999px;
+.pathTwo {
+  display: grid;
+  line-height: 1.25;
 }
 
-.opened {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 700;
-  font-size: 13px;
-  border: 1px solid #b9cbe6;
-  background: #e6edf7;
-  color: #2d4a7a;
-  padding: 2px 8px 2px 6px;
-  border-radius: 999px;
-}
-
-.waiting {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 700;
-  font-size: 13px;
-  border: 1px dashed #c27c00;
-  background: #fdf0d5;
-  color: #7a4b00;
-  padding: 2px 8px 2px 6px;
-  border-radius: 999px;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .waiting :global(.icon) {
-    animation: rrBlink 1.6s infinite;
-  }
-}
-
-.sent :global(.icon),
-.opened :global(.icon),
-.waiting :global(.icon) {
-  font-size: 15px;
-}
-
-.link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
+.pathTwo b {
   font-weight: 600;
-  color: var(--brand);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+}
+
+.pathTwo span {
+  font: 400 12px var(--font-mono);
+  color: var(--ink-muted);
 }
 
 .gridFoot {
@@ -518,550 +263,6 @@
   border-top: 1px solid var(--line);
   font-size: 13px;
   color: var(--ink-muted);
-}
-
-/* Surface 2: side panel */
-.panel {
-  position: sticky;
-  top: 16px;
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 20px 22px 22px;
-}
-
-.panelTitle {
-  font: 800 20px/1.2 var(--font-display);
-  letter-spacing: -0.02em;
-}
-
-.for {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--ink-muted);
-  margin: 6px 0 16px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-}
-
-/* The AI's background work, folded away so the timeline for one case stays short. */
-.more {
-  margin: -4px 0 16px;
-  border: 1px dashed var(--line);
-  border-radius: 10px;
-  padding: 0 12px;
-}
-
-.more summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  cursor: pointer;
-  list-style: none;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.more summary::-webkit-details-marker {
-  display: none;
-}
-
-.more summary > span {
-  margin-left: auto;
-  font-weight: 500;
-  color: var(--ink-muted);
-}
-
-.more summary :global(.icon) {
-  font-size: 16px;
-  transition: transform 0.15s;
-}
-
-.more[open] summary :global(.icon) {
-  transform: rotate(180deg);
-}
-
-.more[open] summary {
-  border-bottom: 1px solid var(--line);
-}
-
-.researchList {
-  list-style: none;
-  display: grid;
-  gap: 12px;
-  padding: 12px 0 14px;
-}
-
-.researchList li {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
-  align-items: start;
-}
-
-.researchList p {
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--ink-muted);
-}
-
-.steps {
-  list-style: none;
-  counter-reset: s;
-}
-
-.steps li {
-  counter-increment: s;
-  position: relative;
-  padding: 0 0 16px 38px;
-}
-
-.steps li::before {
-  content: counter(s);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--brand);
-  color: var(--on-brand);
-  font: 700 12px/24px var(--font-body);
-  text-align: center;
-}
-
-.steps li:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: 11px;
-  top: 28px;
-  bottom: 4px;
-  width: 2px;
-  background: var(--line);
-}
-
-.steps li:last-child {
-  padding-bottom: 0;
-}
-
-.steps p {
-  font-size: 14px;
-  line-height: 1.4;
-  margin-top: 6px;
-}
-
-.steps code {
-  font: 500 12px var(--font-mono);
-  background: var(--surface-sunk);
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-  margin-top: 6px;
-}
-
-.message {
-  display: grid;
-  grid-template-columns: 5fr 7fr;
-  gap: 28px;
-  margin-top: 24px;
-  padding-top: 22px;
-  border-top: 1px solid var(--line);
-}
-
-.messageMeta,
-.messageBody {
-  min-width: 0;
-}
-
-.messageBody .subject {
-  margin-top: 0;
-}
-
-.messageTitle {
-  font: 800 16px/1.2 var(--font-display);
-  letter-spacing: -0.015em;
-  margin-bottom: 10px;
-}
-
-.dl {
-  display: grid;
-  grid-template-columns: 72px 1fr;
-  gap: 4px 12px;
-  font-size: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-}
-
-.dl dt {
-  color: var(--ink-muted);
-}
-
-.subject {
-  font: 700 16px/1.3 var(--font-display);
-  margin: 14px 0 8px;
-}
-
-.body p {
-  font-size: 14px;
-  line-height: 1.55;
-  margin-bottom: 10px;
-}
-
-.body q {
-  display: block;
-  border-left: 3px solid var(--line);
-  padding-left: 12px;
-  color: var(--ink);
-  quotes: none;
-}
-
-.aiNote {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  font-size: 13px;
-  color: var(--ink-muted);
-  margin: 14px 0;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: 999px;
-  background: var(--brand);
-  color: var(--on-brand);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.btn:hover {
-  background: #4d2b52;
-}
-
-.btn :global(.icon) {
-  font-size: 16px;
-}
-
-/* How money moves */
-.money {
-  margin-top: 32px;
-  padding: 8px 0 24px;
-}
-
-.money header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.money h2 {
-  font: 800 20px var(--font-display);
-  letter-spacing: -0.02em;
-}
-
-.money header p {
-  color: var(--ink-muted);
-  font-size: 14px;
-}
-
-.paths {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.paths li {
-  padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-top: 3px solid var(--brand);
-  border-radius: 14px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 10px;
-  align-content: start;
-}
-
-.paths :global(.icon) {
-  font-size: 22px;
-  color: var(--brand);
-  margin-top: 1px;
-}
-
-.paths b {
-  display: block;
-  font: 700 16px/1.3 var(--font-display);
-}
-
-.paths span {
-  display: block;
-  font-size: 13px;
-  color: var(--ink-muted);
-  line-height: 1.4;
-  margin-top: 2px;
-}
-
-.paths .cnt {
-  font-weight: 700;
-  color: var(--ink);
-  margin-top: 8px;
-}
-
-.paths li.off {
-  border-top: 3px dashed var(--ink-muted);
-}
-
-.paths li.off :global(.icon),
-.paths li.off b {
-  color: var(--ink-muted);
-}
-
-.paths li.off .cnt {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--ink-muted);
-  font-weight: 600;
-}
-
-.paths li.off .cnt :global(.icon) {
-  font-size: 14px;
-  margin: 0;
-}
-
-footer .wrap {
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
-  padding-bottom: 32px;
-}
-
-.disclaimer {
-  font-size: 13px;
-  color: var(--ink-muted);
-}
-
-@media (max-width: 999px) {
-  .wrap {
-    padding: 0 20px;
-  }
-
-  .store {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .topNav {
-    margin-left: 0;
-  }
-
-  .recall {
-    grid-template-columns: 64px 1fr;
-  }
-
-  .art {
-    width: 64px;
-    height: 64px;
-  }
-
-  .recall h1 {
-    font-size: 22px;
-  }
-
-  .kpis {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .split {
-    grid-template-columns: 1fr;
-  }
-
-  .message {
-    grid-template-columns: 1fr;
-  }
-
-  .panel {
-    position: static;
-  }
-
-  .paths {
-    grid-template-columns: 1fr 1fr;
-    row-gap: 16px;
-  }
-
-  .paths li:nth-child(3) {
-    padding-left: 0;
-    border-left: 0;
-  }
-}
-
-@media (max-width: 560px) {
-  .paths {
-    grid-template-columns: 1fr;
-  }
-
-  .paths li {
-    padding-left: 0 !important;
-    border-left: 0 !important;
-  }
-}
-
-/* A case the rules refused or PayPal rejected: solid outline, so it never reads as "waiting". */
-.problem {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 700;
-  font-size: 13px;
-  border: 2px solid var(--ink);
-  color: var(--ink);
-  padding: 1px 8px 1px 6px;
-  border-radius: 999px;
-}
-
-.problem :global(.icon) {
-  font-size: 15px;
-}
-
-/* Shown instead of the grid when there is nothing to list yet. */
-.empty {
-  margin: 32px 0;
-  padding: 24px;
-  border: 1px dashed var(--ink-muted);
-  border-radius: 14px;
-  color: var(--ink-muted);
-  font-weight: 600;
-}
-
-/* Notice paragraphs keep the line breaks the notice was stored with. */
-.body p {
-  white-space: pre-line;
-}
-
-/* "Try the demo": four steps for a visitor, the current one highlighted. */
-.guide {
-  margin-top: 20px;
-  padding: 16px 20px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-}
-
-.guideTitle {
-  font: 800 16px/1.2 var(--font-display);
-  letter-spacing: -0.01em;
-  margin-bottom: 12px;
-}
-
-.guideTitle span {
-  margin-left: 8px;
-  font: 500 13px var(--font-body);
-  color: var(--ink-muted);
-}
-
-.guide ol {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.guide li {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
-  align-items: start;
-  padding: 12px;
-  border: 1.5px dashed var(--line);
-  border-radius: 12px;
-}
-
-.guide li div {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
-.guide li b {
-  font-size: 14px;
-}
-
-.guide li span:not(.guideNum) {
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--ink-muted);
-}
-
-.guideNum {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 2px solid var(--ink-muted);
-  font: 700 13px/1 var(--font-body);
-  color: var(--ink-muted);
-}
-
-.guideNow {
-  border: 2px solid var(--brand) !important;
-  background: var(--lav);
-}
-
-.guideNow .guideNum {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: var(--on-brand);
-}
-
-.guideDone .guideNum {
-  background: var(--ok-bg);
-  border-color: var(--ok-ink);
-  color: var(--ok-ink);
-}
-
-.guideDone {
-  border-style: solid !important;
-}
-
-.guideHint {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--brand) !important;
-}
-
-.guideLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--brand);
-}
-
-@media (max-width: 980px) {
-  .guide ol {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 600px) {
-  .guide ol {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Above the grid: search, status chips and CSV export. */
@@ -1148,65 +349,208 @@ footer .wrap {
   font-weight: 600;
 }
 
-/* Marks the one buyer who can really sign in with PayPal. */
-.you {
-  margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--brand);
-  color: var(--on-brand);
-  font: 700 11px/1.4 var(--font-body);
-  white-space: nowrap;
+.legend {
+  padding: 8px 14px 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--line);
 }
 
-/* The short pointer shown instead of the four steps on a campaign that is not the featured one. */
-.guideNote {
+.legend b {
+  color: var(--ink);
+}
+
+/* Detail panel: the AI's background work, folded away so the timeline for one case stays short. */
+.more {
+  margin: -4px 0 16px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+
+.more summary {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
-  margin-top: 20px;
-  padding: 12px 16px;
-  background: var(--lav);
-  border-radius: 14px;
-  font-size: 14px;
-}
-
-.guideNote p {
-  flex: 1 1 260px;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
   font-weight: 600;
 }
 
-/* Phones: nothing may be wider than the screen. The campaign switcher shrinks to fit and the case
-   table scrolls inside its own box instead of pushing the whole page sideways. */
-.switch {
-  max-width: 100%;
-  min-width: 0;
+.more summary::-webkit-details-marker {
+  display: none;
 }
 
-.switch select {
-  max-width: 100%;
-  min-width: 0;
-  text-overflow: ellipsis;
+.more summary > span {
+  margin-left: auto;
+  font-weight: 500;
+  color: var(--ink-muted);
 }
 
-.agWrap {
-  overflow-x: auto;
+.more summary :global(.icon) {
+  font-size: 16px;
+  transition: transform 0.15s;
 }
 
+.more[open] summary :global(.icon) {
+  transform: rotate(180deg);
+}
+
+.more[open] summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.researchList {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  padding: 12px 0 14px;
+}
+
+.researchList li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.researchList p {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
+/* The case timeline: numbered plum dots on a hairline, the same 24px dots as the home page. */
+.steps {
+  list-style: none;
+  counter-reset: s;
+}
+
+.steps li {
+  counter-increment: s;
+  position: relative;
+  padding: 0 0 16px 38px;
+}
+
+.steps li::before {
+  content: counter(s);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 700 12px/24px var(--font-body);
+  text-align: center;
+}
+
+.steps li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 28px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--line);
+}
+
+.steps li:last-child {
+  padding-bottom: 0;
+}
+
+.steps p {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-top: 6px;
+}
+
+.steps code {
+  font: 500 12px var(--font-mono);
+  background: var(--surface-sunk);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 6px;
+}
+
+/* Timeline steps rise in order. Off for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .steps li {
+    animation: rise 0.35s ease-out both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* The notice as stored */
+.dl {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 4px 12px;
+  font-size: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dl dt {
+  color: var(--ink-muted);
+}
+
+.subject {
+  font: 700 16px/1.3 var(--font-display);
+  margin: 14px 0 8px;
+}
+
+.body p {
+  font-size: 14px;
+  line-height: 1.55;
+  margin-bottom: 10px;
+  /* Notice paragraphs keep the line breaks the notice was stored with. */
+  white-space: pre-line;
+}
+
+.body q {
+  display: block;
+  border-left: 3px solid var(--line);
+  padding-left: 12px;
+  color: var(--ink);
+  quotes: none;
+}
+
+.aiNote {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin: 14px 0;
+}
+
+@media (max-width: 999px) {
+  .wrap {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 959px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Phones: the case table scrolls inside its own box instead of pushing the page sideways. */
 @media (max-width: 760px) {
-  .topBar {
-    flex-wrap: wrap;
-  }
-
-  .switch {
-    width: 100%;
-  }
-
-  .switch select {
-    width: 100%;
-  }
-
   .toolbar {
     padding: 10px;
   }
@@ -1222,71 +566,14 @@ footer .wrap {
   .exportBtn {
     margin-left: 0;
   }
-}
 
-.legend {
-  padding: 8px 14px 10px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--ink-muted);
-  border-bottom: 1px solid var(--line);
-}
-
-.legend b {
-  color: var(--ink);
-}
-
-.kpis p {
-  font-size: 14px;
-  color: var(--ink);
-  opacity: 0.75;
-}
-
-/* Workspace for the redesigned dashboard: table card on the left, detail panel on the right. */
-.split {
-  grid-template-columns: minmax(0, 640px) minmax(300px, 1fr);
-  gap: 16px;
-  padding: 0;
-  align-items: start;
-}
-
-.pathTwo {
-  display: grid;
-  line-height: 1.25;
-}
-
-.pathTwo b {
-  font-weight: 600;
-}
-
-.pathTwo span {
-  font: 400 12px var(--font-mono);
-  color: var(--ink-muted);
-}
-
-/* "You · sign in here": coral on dark, under the name. */
-.you {
-  background: #2a1530;
-  color: var(--accent);
-}
-
-@media (max-width: 959px) {
-  .split {
-    grid-template-columns: minmax(0, 1fr);
+  /* The table's three columns have to fit 358px: tighter cells, and no avatar beside the name. */
+  .agWrap :global(.ag-cell),
+  .agWrap :global(.ag-header-cell) {
+    padding-inline: 8px;
   }
-}
 
-.whoText {
-  display: grid;
-  justify-items: start;
-  gap: 2px;
-  min-width: 0;
-  line-height: 1.2;
-  font-weight: 600;
-}
-
-.whoText .you {
-  margin-left: 0;
-  padding: 1px 8px;
-  font-size: 10.5px;
+  .avatar {
+    display: none;
+  }
 }

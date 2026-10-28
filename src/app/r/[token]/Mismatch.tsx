@@ -1,6 +1,6 @@
 import { Icon } from "@/components/Icon";
 import styles from "./page.module.css";
-import { Blob, SectionTitle, TopBand } from "./parts";
+import { Blob, MismatchSeal, SectionTitle, TopBand } from "./parts";
 
 export function Mismatch({ token, store }: { token: string; store: string }) {
   return (
@@ -20,7 +20,7 @@ export function Mismatch({ token, store }: { token: string; store: string }) {
           </p>
         </div>
         <Blob>
-          <Icon name="info" />
+          <MismatchSeal />
         </Blob>
       </TopBand>
 
@@ -42,10 +42,10 @@ export function Mismatch({ token, store }: { token: string; store: string }) {
                 What you can do
               </SectionTitle>
               <p className={styles.order}>
-                Go back to your recalls and press Confirm with PayPal again, then
-                sign in with the PayPal account you used when you bought from {store}.
-                If you&apos;re trying the demo, use the sandbox buyer login shown on the store
-                dashboard.
+                Go back to your recalls and press Confirm with PayPal again,
+                then sign in with the PayPal account you used when you bought
+                from {store}. If you&apos;re trying the demo, use the sandbox
+                buyer login shown on the store dashboard.
               </p>
             </section>
           </main>

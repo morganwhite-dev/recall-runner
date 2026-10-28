@@ -4,6 +4,7 @@
 import { readFileSync } from "node:fs";
 import { sql } from "drizzle-orm";
 import { db, recalls } from "../src/db";
+import { renameRecall } from "../src/lib/brand-aliases";
 import { pool } from "../src/lib/db";
 import type { RecallRecord } from "../src/lib/cpsc";
 
@@ -18,7 +19,7 @@ async function main() {
   // "Upsert": insert, and if the recall number already exists, overwrite its fields instead.
   await db
     .insert(recalls)
-    .values(snapshot.recalls)
+    .values(snapshot.recalls.map(renameRecall)) // so an old snapshot ingests renamed too
     .onConflictDoUpdate({
       target: recalls.recallNumber,
       set: {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type CSSProperties } from "react";
+import { useCallback, useState, type CSSProperties } from "react";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
 import { amountLabel, remedyLabel, type BuyerCase } from "./data";
@@ -87,6 +87,31 @@ const TABS = [
 // The selected case: who it is, why it happened, the message they got, and one button.
 export function DetailPanel({ selected }: { selected: BuyerCase }) {
   const [tab, setTab] = useState<"why" | "msg">("why");
+  // A settled case opens scrolled to its last step (PayPal's confirmation), not the first. Only the
+  // panel's own scroller moves (never the page), and a step cut off by the top edge is pulled fully
+  // into view so no text peeks out under the tab bar.
+  const settled = selected.status === "Settled";
+  const toLastStep = useCallback(
+    (el: HTMLDivElement | null) => {
+      if (!el || !settled || tab !== "why") return;
+      el.scrollTop = el.scrollHeight;
+      const items = [...el.querySelectorAll<HTMLElement>("ol > li")];
+      const top = (li: HTMLElement) => li.offsetTop - el.offsetTop;
+      const at = el.scrollTop;
+      const cut = items.findIndex(
+        (li) => top(li) < at && top(li) + li.offsetHeight > at,
+      );
+      const first = items[cut + 1];
+      if (cut < 0 || !first) return;
+      // Put the first whole step under the tab bar (the body has 14px of top padding). If that
+      // needs more scroll room than there is, the body gets that much extra space at its end.
+      const next = top(first) - 14;
+      const spare = next + el.clientHeight - el.scrollHeight;
+      if (spare > 0) el.style.paddingBottom = `${22 + spare}px`;
+      el.scrollTop = next;
+    },
+    [settled, tab],
+  );
   return (
     <aside className={panel.panel} aria-label="Case detail">
       <div className={panel.head}>
@@ -119,6 +144,7 @@ export function DetailPanel({ selected }: { selected: BuyerCase }) {
       </div>
       <div
         className={panel.body}
+        ref={toLastStep}
         id="detail-body"
         role="tabpanel"
         aria-labelledby={`detail-tab-${tab}`}

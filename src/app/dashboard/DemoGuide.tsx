@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
-import { AutoRefresh } from "./AutoRefresh";
-import type { DemoGuideState } from "./data";
+import { AutoRefresh } from "@/components/AutoRefresh";
+import { StartFreshDemo } from "@/components/StartFreshDemo";
+import { formatMoney, type DemoGuideState } from "./data";
 import styles from "./shell.module.css";
 
 // "What do I do next?" for someone trying the demo, as one line across the top. Four steps, the
@@ -13,15 +14,19 @@ export function DemoGuide({
   guide,
   current,
   waiting,
+  settledCents,
 }: {
   guide: DemoGuideState;
   current: string;
   waiting: boolean; // a payment on this page is waiting for PayPal's confirmation
+  settledCents: number; // money PayPal has confirmed moving on this campaign
 }) {
   const f = guide.featured;
   const onFeatured = f.recallNumber === current;
+  // Polls from approval until PayPal confirms, and re-reads on return to this tab, which is how the
+  // dashboard sees the buyer pay in the other tab. The only AutoRefresh on the page with onFocus.
   const refresh = (
-    <AutoRefresh active={waiting || (guide.paid && !guide.settled)} />
+    <AutoRefresh active={waiting || (f.approved && !guide.settled)} onFocus />
   );
 
   if (!onFeatured) {
@@ -44,7 +49,14 @@ export function DemoGuide({
     );
   }
 
-  const done = [f.approved, guide.paid, guide.paid, guide.settled];
+  // Opening the buyer page is ticked from the notice's opened time. A judge who goes straight to
+  // a receipt (?case=) never marks it opened, so paying ticks it too and the steps stay in order.
+  const done = [
+    f.approved,
+    guide.opened || guide.paid,
+    guide.paid,
+    guide.settled,
+  ];
   const active = done.findIndex((d) => !d);
   const doneCount = done.filter(Boolean).length;
   const steps = [
@@ -53,11 +65,12 @@ export function DemoGuide({
     { title: "Confirm with PayPal", short: "Confirm with PayPal" },
     { title: "Watch it settle", short: "Watch it settle" },
   ];
+  // Kept short so the line fits beside the steps; the full text is also the tooltip.
   const hints = [
-    "Press Approve campaign in the recall header. It opens the cases and notifies the buyers.",
-    "You are the customer now: the sandbox buyer, marked “You · sign in here” in the table. Press Open buyer page.",
-    "On the buyer page, press Confirm with PayPal. “Show sandbox login” under it gives you the test account.",
-    "PayPal confirms the payment, usually in under a minute. This page updates by itself.",
+    "Press Approve campaign in the recall header.",
+    "You are the sandbox buyer now. Press Open buyer page.",
+    "Press “Confirm with PayPal”. “Show sandbox login” has the test account.",
+    "PayPal confirms in under a minute. This page updates itself.",
   ];
 
   return (
@@ -69,7 +82,7 @@ export function DemoGuide({
       <p className={styles.stepperTitle}>
         Try the demo <span>about 2 minutes</span>
       </p>
-      <ol className={styles.steps}>
+      <ol className={`${styles.steps} ${active < 0 ? styles.stepsDone : ""}`}>
         {steps.map((s, i) => (
           <li
             key={s.title}
@@ -78,14 +91,16 @@ export function DemoGuide({
             title={s.title}
           >
             <span className={styles.stepNum}>
-              {done[i] ? <Icon name="check" /> : i + 1}
+              {done[i] ? <Icon name="tick" /> : i + 1}
               <span className="sr-only">{done[i] ? " (done)" : ""}</span>
             </span>
-            {s.short}
+            <span className={styles.stepLabel}>{s.short}</span>
           </li>
         ))}
       </ol>
-      <div className={styles.stepperAct}>
+      <div
+        className={`${styles.stepperAct} ${active < 0 ? styles.stepperActDone : ""}`}
+      >
         {active === 1 && guide.buyerPath ? (
           <a
             className={styles.stepperLink}
@@ -96,9 +111,41 @@ export function DemoGuide({
             Open buyer page <Icon name="ext" />
           </a>
         ) : active >= 0 ? (
-          <span>{hints[active]}</span>
+          <>
+            <span className={styles.stepperHint} title={hints[active]}>
+              {hints[active]}
+            </span>
+            {/* For a judge who closed the buyer tab before confirming. */}
+            {active === 2 && guide.buyerPath && (
+              <a
+                className={styles.stepperSub}
+                href={guide.buyerPath}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open buyer page <Icon name="ext" />
+              </a>
+            )}
+          </>
         ) : (
-          <span>All four steps done.</span>
+          <>
+            <span className={styles.stepperHint}>
+              {settledCents > 0
+                ? `Done. The buyer signed in once and PayPal moved ${formatMoney(settledCents)}.`
+                : "Done. The buyer signed in once and PayPal confirmed it."}
+            </span>
+            <StartFreshDemo
+              look={{
+                label: "Replay demo",
+                pendingLabel: "Resetting… about 20 seconds",
+                icon: "loop",
+                className: styles.stepperLink,
+              }}
+            />
+            <Link className={styles.stepperSub} href="/#s2">
+              How it works
+            </Link>
+          </>
         )}
       </div>
       <i

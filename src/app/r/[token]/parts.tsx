@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
+import { Seal } from "@/components/Seal";
 import { Tag } from "@/components/Tag";
 import { ART_PATHS, type ArtKind } from "@/components/ProductArt";
 import styles from "./page.module.css";
@@ -14,7 +15,13 @@ export function Art({ kind, alt }: { kind: ArtKind; alt: string }) {
 }
 
 // Lavender top field: store bar plus the hero grid (copy left, blob right).
-export function TopBand({ store, children }: { store: string; children: ReactNode }) {
+export function TopBand({
+  store,
+  children,
+}: {
+  store: string;
+  children: ReactNode;
+}) {
   return (
     <div className={styles.top}>
       <nav aria-label="Store">
@@ -46,7 +53,24 @@ export function Blob({ children }: { children: ReactNode }) {
   return <div className={styles.blob}>{children}</div>;
 }
 
-export function SectionTitle({ id, icon, children }: { id: string; icon: IconName; children: ReactNode }) {
+// The receipt and wrong-account seals for the blob (the whole family is in components/Seal.tsx).
+export function SuccessSeal() {
+  return <Seal kind="success" />;
+}
+
+export function MismatchSeal() {
+  return <Seal kind="account" />;
+}
+
+export function SectionTitle({
+  id,
+  icon,
+  children,
+}: {
+  id: string;
+  icon: IconName;
+  children: ReactNode;
+}) {
   return (
     <h2 className={styles.sectionTitle} id={id}>
       <span className={styles.ico}>
@@ -73,7 +97,10 @@ export function Reassure({ className }: { className?: string }) {
   return (
     <p className={`${styles.reassure} ${className ?? ""}`}>
       <Icon name="lock" />
-      <span>You sign in with PayPal so only you can claim this. We never see your password.</span>
+      <span>
+        You sign in with PayPal so only you can claim this. We never see your
+        password.
+      </span>
     </p>
   );
 }

@@ -11,6 +11,7 @@
     "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "cpsc:fetch": "tsx scripts/fetch-cpsc.ts",
     "cpsc:ingest": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/ingest-recalls.ts",
+    "db:rename-brands": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/rename-brands.ts",
     "db:seed": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/seed-demo.ts",
     "test": "tsx --test tests/*.test.ts",
     "test:record": "tsx scripts/record-tests.ts",

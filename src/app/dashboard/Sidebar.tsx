@@ -16,30 +16,37 @@ export function Sidebar({
 }) {
   return (
     <aside className={styles.sidebar} aria-label="Dashboard menu">
-      <Link className={`${styles.logo} logo-turn`} href="/">
-        <span className={styles.mark}>
-          <Icon name="loop" />
-        </span>
-        Recall Runner
-      </Link>
-      <div className={styles.storeChip}>
-        <i aria-hidden="true">BH</i>
-        <div>
-          <span>Store</span>
-          <b>Brightnest Home</b>
+      {/* On desktop both wrappers vanish into the column; on phones they become two blocks, one
+          under the demo strip and one at the very bottom of the page. */}
+      <div className={styles.sideTop}>
+        <Link className={`${styles.logo} logo-turn`} href="/">
+          <span className={styles.mark}>
+            <Icon name="loop" />
+          </span>
+          Recall Runner
+        </Link>
+        <div className={styles.storeChip}>
+          <i aria-hidden="true">BH</i>
+          <div>
+            <span>Store</span>
+            <b>Brightnest Home</b>
+          </div>
         </div>
+        <CampaignSwitch options={campaigns} current={current} />
       </div>
-      <CampaignSwitch options={campaigns} current={current} />
-      <nav className={styles.links} aria-label="More">
-        <Link href="/evals">Test results</Link>
-        <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-          GitHub <Icon name="ext" />
-        </a>
-      </nav>
-      <p className={styles.disclaimer}>
-        Demo store. The merchant and order dates are made up; the recalls are
-        real CPSC data. Not affiliated with CPSC or PayPal.
-      </p>
+      <div className={styles.sideBottom}>
+        <nav className={styles.links} aria-label="More">
+          <Link href="/evals">Test results</Link>
+          <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+            GitHub <Icon name="ext" />
+          </a>
+        </nav>
+        <p className={styles.disclaimer}>
+          Demo store. The merchant and order dates are made up; the recalls are
+          real CPSC recalls, with brand names replaced. Not affiliated with CPSC
+          or PayPal.
+        </p>
+      </div>
     </aside>
   );
 }

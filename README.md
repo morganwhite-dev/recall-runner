@@ -4,7 +4,7 @@ An AI agent that watches the US product-recall feed (CPSC), finds the buyers of 
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
 
-**Status:** Phases 0–5 are complete; Phase 5 (dashboard on real data, approve campaign, demo reset) is done: the live check on Render passed on Oct 26 (refund, replacement and repair all settle). The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs. The failure path was proven live on Oct 26: a payout to an email with no PayPal account is recorded as unclaimed and never retried. The dashboard redesign is built and merged (sidebar, demo stepper, tabbed detail panel, the Sent / Opened / Waiting on PayPal / Settled statuses, an Activity feed, and a toast plus row flash when PayPal confirms a payment); it is waiting on its first full live check on Render. Tests re-run Oct 27: 43 tests pass (policy, buyer, dashboard and impact suites) and the 8 AI tests pass 24 of 24.
+**Status:** Phases 0–5 are complete; Phase 5 (dashboard on real data, approve campaign, demo reset) is done: the live check on Render passed on Oct 26 (refund, replacement and repair all settle). The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs. The failure path was proven live on Oct 26: a payout to an email with no PayPal account is recorded as unclaimed and never retried. The dashboard redesign is built and merged (sidebar, demo stepper, tabbed detail panel, the Sent / Opened / Waiting on PayPal / Settled statuses, an Activity feed, and a toast plus row flash when PayPal confirms a payment); it is waiting on its first full live check on Render. Tests re-run Oct 27: 46 tests pass (policy, buyer, dashboard and impact suites) and the 8 AI tests pass 24 of 24.
 
 **Where things stand (Oct 27 evening):** the redesign and the judge-polish fixes are live on Render (one "Open buyer page" button in the demo strip, the sandbox login shown only after "Show sandbox login", a dismissable 10-second settle toast that no longer sticks, a "slower than usual" note for unconfirmed payments, and the sandbox login now in this README). Still to do: one full live run on the new build (Start fresh demo, approve, open the buyer page, confirm with PayPal, watch it settle) and check whether Chrome still shows a "dangerous site" warning on the buyer page; the Devpost trademark clause; the video and Devpost write-up; the Render paid plan before Nov 10; phone-width, keyboard and screen-reader checks.
 
@@ -86,6 +86,7 @@ Database and data commands (all need `.env.local`):
 npm run db:migrate    # create or update the tables in Neon
 npm run cpsc:fetch    # refresh data/cpsc-snapshot.json from the CPSC API
 npm run cpsc:ingest   # load the snapshot into the recalls table
+npm run db:rename-brands # rename real brand names already stored in the database (mapping: src/lib/brand-aliases.ts)
 npm run db:seed       # rebuild the fictional demo store (safe to re-run)
 npm run paypal:attach # give every seeded order a real sandbox payment
 npm run demo:sandbox-orders # give the sandbox buyer one order of each recalled product
@@ -104,7 +105,7 @@ Next.js (App Router) and TypeScript, Neon Postgres, AG Grid, PayPal REST APIs, C
 
 ## Notes for judges
 
-The demo merchant is fictional, seeded order dates are simulated, and the recalls are real CPSC data. This project is not affiliated with the CPSC or PayPal.
+The demo merchant is fictional, seeded order dates are simulated, and the recalls are real CPSC recalls, with brand names replaced. This project is not affiliated with the CPSC or PayPal.
 
 ## License
 

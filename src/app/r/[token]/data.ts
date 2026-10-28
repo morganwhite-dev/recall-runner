@@ -17,7 +17,7 @@ export interface Remedy {
 }
 
 // Product names carry extras ("Hand Warmers, 2-pack", "Battery Pack for Reclining Chairs",
-// "The Blue Cactus ..."). Headlines use the core name: no leading "The", and nothing after the
+// "Juniper Ridge Power Co. ..."). Headlines use the core name: no leading "The", and nothing after the
 // first comma, bracket or " for ".
 export function shortName(productName: string): string {
   return productName
@@ -120,6 +120,23 @@ export function groupByRecall(cases: BuyerCase[]): RecallGroup[] {
   return [...groups.values()];
 }
 
+// The receipt headline for several settled cases. Orders of the same recall count once, so one
+// recall bought twice is "settled for 2 orders", not "2 recalls". `covered` is the extra lede
+// sentence when there are more orders than recalls (null when the headline already says it).
+export function receiptHeadline(cases: BuyerCase[]): { title: string; covered: string | null } {
+  const recalls = groupByRecall(cases).length;
+  const orders = cases.length;
+  if (recalls === 1)
+    return {
+      title: orders > 1 ? `Your recall is settled for ${orders} orders` : "Your recall is settled",
+      covered: null,
+    };
+  return {
+    title: `${recalls} recalls settled with one sign-in`,
+    covered: orders > recalls ? `That covered ${orders} orders.` : null,
+  };
+}
+
 // How one order will be paid for a remedy: refunds past PayPal's 180 days go by PayPal Payouts.
 // Only money remedies have anything to say; the others are already named "Free" once on the card.
 export function howPaid(c: BuyerCase, kind: RemedyKind): string | null {
@@ -138,4 +155,17 @@ export function groupAmount(cases: BuyerCase[], kind: RemedyKind): string {
   return kind === "refund"
     ? formatUsd(cases.reduce((sum, c) => sum + c.priceCents, 0))
     : "Free";
+}
+
+// The buyer page's headline promise, worked out from what is ready to settle: "$68.00 back and two
+// free fixes are waiting." Null when nothing is ready yet (a recall that still needs a choice).
+export function waitingLine(refundCents: number, fixes: number): string | null {
+  const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+  const count = (n: number) => words[n] ?? String(n);
+  const fixText = `${count(fixes)} free ${fixes === 1 ? "fix" : "fixes"}`;
+  if (refundCents > 0 && fixes > 0)
+    return `${formatUsd(refundCents)} back and ${fixText} ${fixes === 1 ? "is" : "are"} waiting.`;
+  if (refundCents > 0) return `${formatUsd(refundCents)} back is waiting.`;
+  if (fixes > 0) return `${fixText[0].toUpperCase()}${fixText.slice(1)} ${fixes === 1 ? "is" : "are"} waiting.`;
+  return null;
 }

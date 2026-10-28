@@ -1,4 +1,5 @@
 import { Icon } from "@/components/Icon";
+import { Seal } from "@/components/Seal";
 import type { BuyerCase } from "@/lib/buyer";
 import styles from "./page.module.css";
 import { Blob, SectionTitle, TopBand } from "./parts";
@@ -18,12 +19,12 @@ export function Problem({ store, c }: { store: string; c: BuyerCase }) {
             We couldn&apos;t settle your {c.productName} recall
           </h1>
           <p className={styles.lede}>
-            <b>Nothing was sent, and we&apos;re sorry about the hassle.</b> The store&apos;s rules
-            didn&apos;t allow this choice.
+            <b>Nothing was sent, and we&apos;re sorry about the hassle.</b> The
+            store&apos;s rules didn&apos;t allow this choice.
           </p>
         </div>
         <Blob>
-          <Icon name="info" />
+          <Seal kind="info" />
         </Blob>
       </TopBand>
 
@@ -43,8 +44,8 @@ export function Problem({ store, c }: { store: string; c: BuyerCase }) {
                 What you can do
               </SectionTitle>
               <p className={styles.order}>
-                Please stop using the {c.productName} and ask {store} about it. The store
-                can see exactly why on its dashboard.
+                Please stop using the {c.productName} and ask {store} about it.
+                The store can see exactly why on its dashboard.
               </p>
             </section>
           </main>

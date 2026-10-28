@@ -1,10 +1,6 @@
-/* Buyer page, "Soft" design: lavender top field, cream body, rounded white cards. */
+/* Buyer page, "Soft" design: lavender top field, cream body, rounded white cards.
+   The lilac and cream tokens (--lav, --lav-2, --cream, --ctl, --card-shadow) live in globals.css. */
 .page {
-  --lav: #f1e7f2;
-  --lav-2: #e6d3ea;
-  --cream: #fff8f0;
-  --ctl: #8a808c;
-
   background: var(--cream);
   color: var(--ink);
   min-height: 100vh;
@@ -34,6 +30,8 @@
   stroke-linejoin: round;
 }
 
+/* The hero chip. A 1px line (transparent unless waiting) keeps its size the same when it turns
+   from "PayPal is confirming" to "Confirmed by PayPal". */
 .status {
   display: inline-flex;
   align-items: center;
@@ -42,7 +40,8 @@
   font-size: 16px;
   color: var(--ok-ink);
   background: var(--ok-bg);
-  padding: 8px 16px 8px 12px;
+  border: 1px solid transparent;
+  padding: 7px 15px 7px 11px;
   border-radius: 999px;
 }
 
@@ -178,7 +177,6 @@
   font-size: 15px;
   color: var(--brand);
   margin-bottom: 16px;
-  font-size: 15px;
 }
 
 .eyebrow svg {
@@ -223,6 +221,7 @@
   color: var(--ink);
 }
 
+/* The blob holds the product drawing on a notice, or a state seal (components/Seal.tsx). */
 .blob {
   position: relative;
   justify-self: center;
@@ -262,12 +261,6 @@
   height: 72%;
 }
 
-.blob > svg:not(.art) {
-  width: 46%;
-  height: 46%;
-  stroke-width: 1.4;
-}
-
 .big {
   font: 800 clamp(48px, 6vw, 72px) / 1 var(--font-display);
   letter-spacing: -0.04em;
@@ -288,9 +281,7 @@
   background: var(--surface);
   border-radius: 24px;
   padding: 44px 48px;
-  box-shadow:
-    0 2px 0 var(--lav-2),
-    0 28px 48px -36px rgba(59, 31, 63, 0.5);
+  box-shadow: var(--card-shadow);
   display: grid;
   gap: 40px;
 }
@@ -409,73 +400,6 @@
   color: var(--ink);
 }
 
-.opts {
-  border: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  min-width: 0;
-}
-
-.opt {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 8px;
-  min-height: 200px;
-  padding: 20px 10px 16px;
-  border: 2px solid var(--lav-2);
-  border-radius: 20px;
-  background: var(--surface);
-  cursor: pointer;
-}
-
-.opt input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.opt:focus-within {
-  outline: 3px solid var(--brand);
-  outline-offset: 3px;
-}
-
-.opt:has(input:checked) {
-  border-color: var(--brand);
-  background: var(--lav);
-}
-
-.chk {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: none;
-  color: var(--brand);
-  font-size: 22px;
-}
-
-.opt:has(input:checked) .chk {
-  display: block;
-}
-
-.opt b {
-  font: 700 17px/1.2 var(--font-display);
-}
-
-.opt .amt {
-  font-size: 26px;
-}
-
-.opt .d {
-  font-size: 14px;
-}
-
 .nextList {
   display: grid;
   gap: 18px;
@@ -549,11 +473,6 @@
   }
 }
 
-/* With the pager above, the card no longer needs to overlap the curve. */
-.pager + .layout {
-  margin-top: 0;
-}
-
 /* Summary: sticky panel on laptop, pinned bar on phone. */
 .sum {
   position: sticky;
@@ -561,9 +480,7 @@
   background: var(--surface);
   border-radius: 24px;
   padding: 32px;
-  box-shadow:
-    0 2px 0 var(--lav-2),
-    0 28px 48px -36px rgba(59, 31, 63, 0.5);
+  box-shadow: var(--card-shadow);
 }
 
 .lab {
@@ -623,67 +540,6 @@
   font: 500 14px var(--font-mono);
 }
 
-.pager {
-  display: flex;
-  align-items: center;
-  gap: 12px 16px;
-  flex-wrap: wrap;
-  padding: 36px 0 28px;
-}
-
-.pos {
-  font: 700 20px var(--font-display);
-}
-
-.segs {
-  display: flex;
-  gap: 6px;
-  list-style: none;
-  flex: 1;
-  min-width: 100px;
-  max-width: 240px;
-}
-
-.segs li {
-  flex: 1;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--lav-2);
-}
-
-.segs li.on {
-  background: var(--brand);
-}
-
-.pg {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.pager button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 48px;
-  padding: 0 20px;
-  border-radius: 999px;
-  border: 2px solid var(--brand);
-  background: var(--surface);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 17px;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.pager button:disabled {
-  color: var(--ink-muted);
-  border-color: var(--lav-2);
-  background: var(--lav);
-  cursor: not-allowed;
-}
-
 .page footer .wrap {
   padding-top: 8px;
   padding-bottom: 40px;
@@ -708,8 +564,43 @@
     height: 64px;
   }
 
+  /* Brand on one line, smaller; the chip becomes an icon whose words stay for screen readers. */
+  .navRow {
+    gap: 8px;
+  }
+
+  .store {
+    gap: 8px;
+    min-width: 0;
+    font-size: 17px;
+    white-space: nowrap;
+  }
+
+  .store .mark {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+
+  .navRight {
+    flex: none;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .navBack {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
   .navRow p span {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .navRow p {
@@ -762,19 +653,6 @@
 
   .fact .amt {
     grid-column: 2;
-  }
-
-  .opts {
-    gap: 8px;
-  }
-
-  .opt {
-    padding: 16px 6px 12px;
-    border-radius: 16px;
-  }
-
-  .opt .amt {
-    font-size: 22px;
   }
 
   .fixable {
@@ -838,24 +716,6 @@
     padding: 24px 4px 0;
     border-radius: 0;
   }
-
-  .pager {
-    padding-top: 28px;
-  }
-
-  .pager + .layout {
-    margin-top: 0;
-  }
-
-  .pg {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .pg button {
-    flex: 1;
-    justify-content: center;
-  }
 }
 
 /* A short message above the recall when a sign-in ran out or PayPal had a problem. */
@@ -868,7 +728,7 @@
   font-weight: 600;
 }
 
-/* The settled chip pops in when the buyer lands on the receipt. Off for reduced motion. */
+/* The hero chip pops in when the buyer lands on a page. Off for reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
   .status {
     animation: settle 0.6s ease-out both;
@@ -888,56 +748,6 @@
     transform: scale(1);
     box-shadow: 0 0 0 0 transparent;
   }
-}
-
-/* The big check on the receipt draws itself: circle first, then the tick. Without motion it is
-   simply drawn. The dash pattern leaves a gap at the start so no stray dot shows before it draws. */
-@media (prefers-reduced-motion: no-preference) {
-  .draw circle,
-  .draw path {
-    stroke-dasharray: 1 2;
-    animation: draw 0.7s ease-out 0.25s both;
-  }
-
-  .draw path {
-    animation-duration: 0.4s;
-    animation-delay: 0.85s;
-  }
-}
-
-@keyframes draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* Small hover and press touches. Transitions are switched off for reduced motion in globals.css. */
-.opt {
-  transition:
-    transform 0.15s,
-    border-color 0.15s;
-}
-
-.opt:hover {
-  transform: translateY(-2px);
-  border-color: var(--brand);
-}
-
-.pager button:not(:disabled) {
-  transition:
-    transform 0.15s,
-    background 0.15s;
-}
-
-.pager button:not(:disabled):hover {
-  background: var(--lav);
-}
-
-.pager button:not(:disabled):active {
-  transform: translateY(2px);
 }
 
 /* The buyer's orders of this recalled product, each with how it will be paid. */
@@ -981,4 +791,12 @@
   color: var(--brand);
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+/* The receipt chip while PayPal has not confirmed yet: amber with a dashed line, like the
+   dashboard's "Waiting on PayPal" pill, turning green once it has. */
+.statusPending {
+  color: var(--wait-ink);
+  background: var(--wait-bg);
+  border: 1px dashed var(--wait-line);
 }

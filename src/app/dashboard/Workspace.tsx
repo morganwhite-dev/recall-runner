@@ -34,16 +34,19 @@ export function Workspace({
   approved: boolean;
 }) {
   const [tab, setTab] = useState<GridKind>("cases");
-  // Start on the buyer who can really sign in, so the panel shows the case a judge will act on.
-  const [selectedId, setSelectedId] = useState(
-    (CASES.find((c) => c.canSignIn) ?? CASES[0])?.id ?? "",
-  );
+  const [selectedId, setSelectedId] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<CaseStatus | "All">("All");
   const [api, setApi] = useState<GridApi<BuyerCase> | null>(null);
   const [shown, setShown] = useState(CASES.length);
   const [flashIds, setFlashIds] = useState<string[]>([]);
-  const selected = CASES.find((c) => c.id === selectedId) ?? CASES[0];
+  // Until a row is picked, show the buyer who can really sign in, so the panel shows the case a
+  // judge will act on. Worked out on every render: the cases only exist once the campaign is
+  // approved, after this component first mounted.
+  const effectiveId = CASES.some((c) => c.id === selectedId)
+    ? selectedId
+    : ((CASES.find((c) => c.canSignIn) ?? CASES[0])?.id ?? "");
+  const selected = CASES.find((c) => c.id === effectiveId);
 
   if (!selected) {
     return (
@@ -162,7 +165,7 @@ export function Workspace({
             key={tab}
             kind={tab}
             rows={CASES}
-            selectedId={selectedId}
+            selectedId={effectiveId}
             onSelect={setSelectedId}
             search={search}
             status={status}

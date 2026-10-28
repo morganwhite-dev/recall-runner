@@ -115,6 +115,11 @@ export default async function Home() {
               affected buyers in its PayPal orders, and lets each buyer settle
               in one sign-in.
             </p>
+            <p className={styles.heroStat}>
+              Only about 6% of buyers act on a recall announced by press
+              release. About 50% act when notified directly.
+              <span>CPSC data, FY2013–16</span>
+            </p>
             <div className={styles.cta}>
               <StartFreshDemo />
               <p className={styles.note}>
@@ -161,12 +166,12 @@ export default async function Home() {
               <div className={styles.metric}>
                 <dt>Status</dt>
                 <dd className={styles.metricStatus}>
-                  <Icon name="check" />
+                  <Icon name="done" />
                   Approved
                 </dd>
               </div>
               <div className={styles.metric}>
-                <dt>Buyers affected</dt>
+                <dt>Orders affected</dt>
                 <dd>6</dd>
               </div>
               <div className={styles.metric}>
@@ -175,7 +180,7 @@ export default async function Home() {
               </div>
               <div className={styles.metric}>
                 <dt>Settled</dt>
-                <dd>3</dd>
+                <dd>2</dd>
               </div>
             </dl>
             <div className={styles.ruleline}>
@@ -185,7 +190,7 @@ export default async function Home() {
                   <StatusPill>Settled</StatusPill>
                 </span>
                 <p>
-                  Morgan Demo paid 200 days ago, past PayPal’s 180-day refund
+                  Morgan Demo paid 202 days ago, past PayPal’s 180-day refund
                   window, so the buyer is paid by PayPal Payouts instead:
                   $34.00.
                 </p>
@@ -199,43 +204,8 @@ export default async function Home() {
       </header>
 
       <main className={styles.wrap}>
-        {impact && (
-          <section
-            className={`${styles.section} ${styles.first}`}
-            aria-labelledby="s0"
-          >
-            <div className={styles.row}>
-              <div>
-                <h2 className={styles.title} id="s0">
-                  Why order records
-                </h2>
-                <p className={styles.sub}>
-                  A store’s own orders reach buyers fastest. Matching product
-                  text covers what barcodes don’t.
-                </p>
-              </div>
-              <div>
-                <dl className={styles.impact}>
-                  {impactFigures(impact).map((f) => (
-                    <div className={styles.fig} key={f.label}>
-                      <dt>
-                        <Count className={styles.countUp} value={f.n} />
-                      </dt>
-                      <dd>{f.label}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className={styles.cite}>
-                  Source: CPSC recalls since {sinceLabel(impact.since)}, counted
-                  from the recalls in this app’s database.
-                </p>
-              </div>
-            </div>
-          </section>
-        )}
-
         <section
-          className={`${styles.section} ${impact ? "" : styles.first}`}
+          className={`${styles.section} ${styles.first}`}
           aria-labelledby="s1"
         >
           <div className={styles.row}>
@@ -272,6 +242,38 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        {impact && (
+          <section className={styles.section} aria-labelledby="s0">
+            <div className={styles.row}>
+              <div>
+                <h2 className={styles.title} id="s0">
+                  Why order records
+                </h2>
+                <p className={styles.sub}>
+                  A store’s own orders reach buyers fastest. Matching product
+                  text covers what barcodes don’t.
+                </p>
+              </div>
+              <div>
+                <dl className={styles.impact}>
+                  {impactFigures(impact).map((f) => (
+                    <div className={styles.fig} key={f.label}>
+                      <dt>
+                        <Count className={styles.countUp} value={f.n} />
+                      </dt>
+                      <dd>{f.label}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className={styles.cite}>
+                  Source: CPSC recalls since {sinceLabel(impact.since)}, counted
+                  from the recalls in this app’s database.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className={styles.section} aria-labelledby="s2">
           <div className={styles.row}>
@@ -328,7 +330,7 @@ export default async function Home() {
       <footer>
         <div className={`${styles.wrap} ${styles.footer}`}>
           Demo store. The merchant and order dates are made up; the recalls are
-          real CPSC data. Not affiliated with CPSC or PayPal.
+          real CPSC recalls, with brand names replaced. Not affiliated with CPSC or PayPal.
         </div>
       </footer>
     </>

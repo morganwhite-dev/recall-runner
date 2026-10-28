@@ -1,0 +1,196 @@
+/* The state-page seal (Seal.tsx). About a quarter of its container wide: about 104px in the buyer
+   page blob on a laptop, 76px on a phone. --seal-face and --seal-cut let a page on white
+   (404, loading) tint the badge and the chip's cut-out to its own background. */
+.seal {
+  width: var(--seal-size, clamp(76px, 24%, 104px));
+  height: auto;
+  aspect-ratio: 1;
+  flex: none;
+  overflow: visible;
+  filter: drop-shadow(0 10px 14px rgba(59, 31, 63, 0.22));
+}
+
+.ring {
+  fill: none;
+  stroke: var(--surface);
+  stroke-width: 2.5;
+}
+
+.badge {
+  fill: var(--brand);
+}
+
+.mark {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 6.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.spark {
+  fill: var(--surface);
+}
+
+.sparkCoral {
+  fill: var(--accent);
+}
+
+/* Calm badges: white face, plum mark, dashed plum ring. */
+.soft .ring {
+  stroke: var(--brand);
+  stroke-opacity: 0.35;
+  stroke-dasharray: 3 6;
+  stroke-linecap: round;
+}
+
+.soft .badge {
+  fill: var(--seal-face, var(--surface));
+}
+
+.soft .mark {
+  stroke: var(--brand);
+}
+
+/* The small coral chip at the lower right (try again, map pin). */
+.chip > circle:first-child {
+  fill: var(--accent);
+  stroke: var(--seal-cut, var(--lav-2));
+  stroke-width: 4;
+}
+
+.chip path,
+.chip > circle + circle {
+  fill: none;
+  stroke: var(--on-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The try-again arrow is drawn on a 24 grid scaled to 0.75, so it needs a wider local stroke. */
+.chip g path {
+  stroke-width: 4;
+}
+
+/* Arrival, once: the receipt badge pops, its ring settles, the tick draws and the sparkles twinkle.
+   Calm badges rise in and their chip spins into place. The loading clock's minute hand keeps
+   turning. Without motion everything is simply drawn. The tick's dash pattern leaves a gap at the
+   start so no stray dot shows before it draws. */
+@media (prefers-reduced-motion: no-preference) {
+  .ring,
+  .badge,
+  .spark,
+  .body,
+  .chip {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .badge {
+    animation: pop 0.55s var(--ease-spring) 0.15s both;
+  }
+
+  .ring {
+    animation: ring 0.8s ease-out 0.35s both;
+  }
+
+  .tick {
+    stroke-dasharray: 1 2;
+    animation: draw 0.4s ease-out 0.55s both;
+  }
+
+  .spark {
+    animation: twinkle 0.6s var(--ease-spring) 0.8s both;
+  }
+
+  .sparkCoral {
+    animation-delay: 0.95s;
+  }
+
+  .soft .badge {
+    animation: none;
+  }
+
+  .body {
+    animation: rise 0.5s ease-out 0.1s both;
+  }
+
+  .chip {
+    animation: chip 0.55s var(--ease-spring) 0.45s both;
+  }
+
+  .hand {
+    transform-box: view-box;
+    transform-origin: 60px 60px;
+    animation: turn 4s linear infinite;
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ring {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes twinkle {
+  from {
+    transform: scale(0) rotate(-60deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(8px) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes chip {
+  from {
+    transform: scale(0) rotate(-140deg);
+  }
+  to {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes turn {
+  to {
+    transform: rotate(360deg);
+  }
+}

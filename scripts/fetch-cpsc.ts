@@ -2,6 +2,7 @@
 // Run: npm run cpsc:fetch            (recalls since 2026-07-01)
 //      npm run cpsc:fetch -- 2026-09-01   (a different start date)
 import { mkdirSync, writeFileSync } from "node:fs";
+import { renameRecall } from "../src/lib/brand-aliases";
 import { CPSC_API, normalizeRecall } from "../src/lib/cpsc";
 
 async function main() {
@@ -16,6 +17,7 @@ async function main() {
   const raw = (await res.json()) as Record<string, unknown>[];
   const recalls = raw
     .map(normalizeRecall)
+    .map(renameRecall) // brand names replaced, see src/lib/brand-aliases.ts
     .sort((a, b) => b.recallDate.localeCompare(a.recallDate));
 
   mkdirSync("data", { recursive: true });

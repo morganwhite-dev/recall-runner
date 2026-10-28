@@ -42,6 +42,54 @@ export interface ActivityEvent {
   amountCents?: number;
 }
 
+// A buyer's notice, open or sign-in, one per case. One request touches all of a buyer's cases at
+// once (approval sends every notice, one page view opens them all, one sign-in claims them all),
+// so the feed shows one line per buyer per request rather than one per order.
+export type BuyerMomentKind = "sent" | "opened" | "signin";
+export interface BuyerMoment {
+  id: string;
+  time: number; // ms
+  kind: BuyerMomentKind;
+  buyerId: string;
+  name: string; // the buyer's full name
+  caseId: string;
+}
+
+export const SAME_REQUEST_MS = 5000;
+
+// Moments of the same kind, for the same buyer, each within SAME_REQUEST_MS of the one before,
+// become one line. The group keeps its earliest moment's id and time, so the line's id does not
+// change when the feed refreshes.
+export function groupBuyerMoments(
+  moments: BuyerMoment[],
+): { id: string; time: number; kind: BuyerMomentKind; text: string }[] {
+  const groups: { first: BuyerMoment; last: number; caseIds: Set<string> }[] =
+    [];
+  const open = new Map<string, (typeof groups)[number]>();
+  for (const m of [...moments].sort((a, b) => a.time - b.time)) {
+    const key = `${m.kind}:${m.buyerId}`;
+    const g = open.get(key);
+    if (g && m.time - g.last <= SAME_REQUEST_MS) {
+      g.last = m.time;
+      g.caseIds.add(m.caseId);
+      continue;
+    }
+    const fresh = { first: m, last: m.time, caseIds: new Set([m.caseId]) };
+    groups.push(fresh);
+    open.set(key, fresh);
+  }
+  return groups.map(({ first, caseIds }) => {
+    const orders = caseIds.size > 1 ? ` · ${caseIds.size} orders` : "";
+    const text =
+      first.kind === "sent"
+        ? `Notice sent to ${first.name}`
+        : first.kind === "opened"
+          ? `${first.name} opened the notice`
+          : `${first.name} signed in with PayPal`;
+    return { id: first.id, time: first.time, kind: first.kind, text: text + orders };
+  });
+}
+
 export interface TimelineStep {
   tag: TagKind;
   text: string;
@@ -75,6 +123,7 @@ export interface DemoGuideState {
   featured: { recallNumber: string; label: string; approved: boolean };
   preApprovedCount: number;
   buyerPath: string | null; // the sandbox buyer's page, once the featured recall is approved
+  opened: boolean; // the sandbox buyer opened the featured recall's notice
   paid: boolean; // PayPal has accepted a refund or payout
   settled: boolean; // a verified webhook confirmed it
 }

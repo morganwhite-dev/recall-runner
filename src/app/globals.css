@@ -21,6 +21,32 @@
   --ok-bg: #ddf1e5;
   --ok-ink: #14633a;
 
+  /* Soft lilac and cream from the buyer page, shared so every page (404, loading, dashboard
+     hovers, the home example tag) can use them. */
+  --lav: #f1e7f2;
+  --lav-2: #e6d3ea;
+  --cream: #fff8f0;
+  --ctl: #8a808c;
+  --card-shadow: 0 2px 0 var(--lav-2), 0 28px 48px -36px rgba(59, 31, 63, 0.5);
+
+  /* Case status colours, one set for the dashboard pills, the activity dots, the progress bar and
+     the buyer's receipt chip. Status always pairs the colour with an icon and a word. */
+  --sent-bg: #f2edef;
+  --sent-ink: #5a525c;
+  --sent-line: #ddd3d8;
+  --opened-bg: #e6edf7;
+  --opened-ink: #2d4a7a;
+  --opened-line: #b9cbe6;
+  --wait-bg: #fdf0d5;
+  --wait-ink: #7a4b00;
+  --wait-line: #c27c00;
+  --ok-line: #a9d8bb;
+  --ok-solid: #2f8a57; /* bars, dots and the live light */
+
+  /* Motion: springy for things that arrive, smooth for things that move. */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
   --font-display: var(--font-bricolage), sans-serif;
   --font-body: var(--font-dm-sans), system-ui, sans-serif;
   --font-mono: var(--font-dm-mono), monospace;
@@ -115,17 +141,20 @@ a {
   color: var(--ink-muted);
 }
 
-/* Pill: status, always icon plus word. */
+/* Pill: status, always icon plus word. Same box as the dashboard's status pills (1px line). */
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   font-weight: 700;
   font-size: 13px;
+  line-height: 20px;
   color: var(--ok-ink);
   background: var(--ok-bg);
-  padding: 3px 9px 3px 7px;
+  border: 1px solid var(--ok-line);
+  padding: 2px 8px 2px 6px;
   border-radius: 999px;
+  white-space: nowrap;
 }
 
 .pill .icon {
@@ -169,7 +198,7 @@ a {
 
 /* Easter egg: the loop icon in the logo takes a playful half turn when you hover or focus it. */
 .logo-turn .icon {
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.5s var(--ease-spring);
 }
 
 .logo-turn:hover .icon,

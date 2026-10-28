@@ -1,10 +1,12 @@
 import Link from "next/link";
 import type { BuyerCase } from "@/lib/buyer";
+import { AutoRefresh } from "@/components/AutoRefresh";
 import { Icon } from "@/components/Icon";
 import { formatUsd } from "@/lib/policy";
+import { ConfirmStatus } from "./ConfirmStatus";
 import { pronounFor, remedyCopy } from "./data";
 import styles from "./page.module.css";
-import { Blob, RuleLine, SectionTitle, TopBand } from "./parts";
+import { Blob, RuleLine, SectionTitle, SuccessSeal, TopBand } from "./parts";
 
 // What the buyer reads once their choice has been carried out. The wording depends on what
 // actually happened (refund, payout past the 180-day window, replacement or repair kit).
@@ -69,14 +71,18 @@ export function Success({
   const o = outcome(c);
   const remedy = remedyCopy(o.kind);
   const pronoun = pronounFor(c.productName);
+  // Only refunds and payouts get a confirmation from PayPal (its webhook).
+  const money = c.status === "REFUNDED" || c.status === "PAYOUT_SENT";
+  const settledAll = !money || c.settled;
   return (
     <>
+      <AutoRefresh active={!settledAll} everyMs={3000} />
       <TopBand store={store}>
         <div>
-          <span className={styles.status}>
-            <Icon name="check" />
-            {c.settled ? `${o.label}. Confirmed by PayPal` : o.label}
-          </span>
+          <ConfirmStatus
+            label={o.label}
+            state={!money ? "none" : c.settled ? "confirmed" : "waiting"}
+          />
           {o.big && <p className={styles.big}>{o.big}</p>}
           <h1 className={`${styles.h1} ${styles.h1Success}`}>{o.title}</h1>
           <p className={styles.lede}>
@@ -84,15 +90,7 @@ export function Success({
           </p>
         </div>
         <Blob>
-          {/* Same circle and tick as the check icon, drawn inline so the stroke can draw itself. */}
-          <svg
-            className={`icon ${styles.draw}`}
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="9" pathLength="1" />
-            <path d="M8 12.5l3 3 5-6" pathLength="1" />
-          </svg>
+          <SuccessSeal />
         </Blob>
       </TopBand>
 

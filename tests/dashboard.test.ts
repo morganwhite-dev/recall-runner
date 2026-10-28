@@ -6,13 +6,14 @@ import {
   campaignStats,
   clip,
   caseStatus,
+  groupBuyerMoments,
   maskEmail,
   relativeTime,
   remedyPath,
   type BuyerCase,
 } from "../src/app/dashboard/data";
 import type { BuyerCase as BuyerRow } from "../src/lib/buyer";
-import { groupAmount, groupByRecall, howPaid } from "../src/app/r/[token]/data";
+import { groupAmount, groupByRecall, howPaid, receiptHeadline } from "../src/app/r/[token]/data";
 
 const T = new Date("2026-10-25T12:00:00Z");
 
@@ -106,4 +107,53 @@ test("the amount for several orders adds the prices; remedies with no money say 
   const two = [order("A", 200, "1"), order("A", 45, "2")];
   assert.equal(groupAmount(two, "refund"), "$68.00");
   assert.equal(groupAmount(two, "replace"), "Free");
+});
+
+test("the receipt counts recalls, not orders, and says how many orders it covered", () => {
+  assert.deepEqual(receiptHeadline([order("A", 200, "1"), order("A", 45, "2")]), {
+    title: "Your recall is settled for 2 orders",
+    covered: null,
+  });
+  assert.deepEqual(receiptHeadline([order("A", 200, "1"), order("B", 5, "2"), order("A", 45, "3")]), {
+    title: "2 recalls settled with one sign-in",
+    covered: "That covered 3 orders.",
+  });
+  assert.deepEqual(receiptHeadline([order("A", 5, "1"), order("B", 5, "2")]), {
+    title: "2 recalls settled with one sign-in",
+    covered: null,
+  });
+});
+
+// The Activity feed's per-buyer lines.
+const moment = (id: string, secs: number, caseId: string, buyerId = "morgan", kind: "sent" | "opened" | "signin" = "signin") => ({
+  id,
+  time: T.getTime() + secs * 1000,
+  kind,
+  buyerId,
+  name: buyerId === "morgan" ? "Morgan Demo" : "Priya Shah",
+  caseId,
+});
+
+test("one sign-in that claims two orders is one Activity line, keeping the earliest id", () => {
+  const lines = groupBuyerMoments([moment("b", 1, "2"), moment("a", 0, "1"), moment("c", 0, "3", "priya")]);
+  assert.deepEqual(
+    lines.map((l) => [l.id, l.text]),
+    [
+      ["a", "Morgan Demo signed in with PayPal · 2 orders"],
+      ["c", "Priya Shah signed in with PayPal"],
+    ],
+  );
+});
+
+test("moments far apart, or of different kinds, stay separate lines", () => {
+  const lines = groupBuyerMoments([
+    moment("a", 0, "1", "morgan", "sent"),
+    moment("b", 0, "2", "morgan", "sent"),
+    moment("c", 60, "1", "morgan", "opened"),
+    moment("d", 600, "2", "morgan", "opened"),
+  ]);
+  assert.deepEqual(
+    lines.map((l) => l.text),
+    ["Notice sent to Morgan Demo · 2 orders", "Morgan Demo opened the notice", "Morgan Demo opened the notice"],
+  );
 });

@@ -15,6 +15,7 @@ import {
   isDone,
   loginHref,
   remedyCopy,
+  waitingLine,
   shortName,
   type RecallGroup,
   type RemedyKind,
@@ -51,6 +52,8 @@ export function SeveralFlow({
     window.scrollTo(0, 0);
   }
 
+  const pickedFor = (g: RecallGroup) => picked[GROUPS.indexOf(g)];
+
   function pick(k: number, kind: RemedyKind) {
     setPicked((prev) => prev.map((p, i) => (i === k ? kind : p)));
   }
@@ -77,6 +80,10 @@ export function SeveralFlow({
     );
   const totalLabel =
     refundCents > 0 ? `${formatUsd(refundCents)} back` : "No cost to you";
+  const heroLine = waitingLine(
+    refundCents,
+    readyGroups.filter((g) => pickedFor(g) !== "refund").length,
+  );
 
   return (
     <div className={styles.root}>
@@ -109,6 +116,7 @@ export function SeveralFlow({
             <h1 className={styles.h1}>
               {TOTAL === 1 ? "You have a recall" : `You have ${TOTAL} recalls`}
             </h1>
+            {heroLine && <p className={styles.heroMoney}>{heroLine}</p>}
             <p className={styles.lede}>
               <b>Please stop using these items.</b>{" "}
               {TOTAL === 1
@@ -184,9 +192,13 @@ export function SeveralFlow({
                         alt={`Line drawing of ${recall.productName}`}
                       />
                     </span>
-                    <span className={styles.stat}>
+                    {/* Same colours as everywhere else: lilac while it waits on the buyer, green
+                        once settled, the quiet outline of a problem when it couldn't complete. */}
+                    <span
+                      className={`${styles.stat} ${claimable ? "" : allDone ? styles.statDone : styles.statProblem}`}
+                    >
                       <Icon
-                        name={claimable ? "info" : allDone ? "check" : "pause"}
+                        name={claimable ? "info" : allDone ? "done" : "pause"}
                       />
                       {claimable
                         ? open.some((c) => c.status === "FAILED")
@@ -244,7 +256,7 @@ export function SeveralFlow({
                     <div className={styles.opts}>
                       <div className={`${styles.copt} ${styles.fixedOpt}`}>
                         <span className={styles.rad}>
-                          <Icon name="check" />
+                          <Icon name="tick" />
                         </span>
                         <span>
                           <b>{remedyCopy(recall.offers[0]).short}</b>
@@ -273,7 +285,7 @@ export function SeveralFlow({
                             onChange={() => pick(k, kind)}
                           />
                           <span className={styles.rad}>
-                            <Icon name="check" />
+                            <Icon name="tick" />
                           </span>
                           <span>
                             <b>{remedyCopy(kind).short}</b>

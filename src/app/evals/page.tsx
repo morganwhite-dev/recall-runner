@@ -298,7 +298,7 @@ async function Results() {
 
       <footer className={styles.wrap}>
         <p className={styles.disclaimer}>
-          Demo store. The merchant and order dates are made up; the recalls are real CPSC data. Not affiliated with CPSC or PayPal.
+          Demo store. The merchant and order dates are made up; the recalls are real CPSC recalls, with brand names replaced. Not affiliated with CPSC or PayPal.
         </p>
       </footer>
     </>

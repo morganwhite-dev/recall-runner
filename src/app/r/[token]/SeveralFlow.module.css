@@ -1,9 +1,5 @@
 /* Several recalls, "Three-up" design: three cards on shared row lines (laptop), one card at a time (phone).
-   Colour tokens (--lav, --lav-2, --cream, --ctl) come from .page in page.module.css. */
-.root {
-  --card-shadow: 0 2px 0 var(--lav-2), 0 28px 48px -36px rgba(59, 31, 63, 0.5);
-}
-
+   Colour tokens (--lav, --lav-2, --cream, --ctl, --card-shadow) come from globals.css. */
 .wrap {
   max-width: 1160px;
   margin: 0 auto;
@@ -81,6 +77,14 @@
   letter-spacing: -0.035em;
   color: var(--ink);
   overflow-wrap: anywhere;
+}
+
+/* The promise under the headline: what is waiting for the buyer, in money. */
+.heroMoney {
+  margin-top: 14px;
+  font: 700 clamp(20px, 2.4vw, 26px) / 1.25 var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--brand);
 }
 
 .lede {
@@ -251,6 +255,7 @@
   height: 66%;
 }
 
+/* A recall's status chip. The 1px line is only drawn for Done and Couldn't complete. */
 .stat {
   display: inline-flex;
   align-items: center;
@@ -258,7 +263,8 @@
   font-weight: 700;
   font-size: 14px;
   line-height: 1.2;
-  padding: 5px 12px 5px 8px;
+  padding: 4px 11px 4px 7px;
+  border: 1px solid transparent;
   border-radius: 999px;
   background: var(--lav);
   color: var(--ink);
@@ -266,6 +272,17 @@
 
 .stat svg {
   font-size: 18px;
+}
+
+.statDone {
+  background: var(--ok-bg);
+  border-color: var(--ok-line);
+  color: var(--ok-ink);
+}
+
+.statProblem {
+  background: var(--surface);
+  border-color: var(--ink);
 }
 
 .r2 {
@@ -296,13 +313,6 @@
 .r2 h2 {
   font: 800 22px/1.2 var(--font-display);
   letter-spacing: -0.02em;
-}
-
-.sub {
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--ink-muted);
-  margin-top: 6px;
 }
 
 .r3 {
@@ -372,25 +382,26 @@
   background: var(--lav);
 }
 
+/* The radio: an empty ring, then a plum dot with the seal's tick once chosen. */
 .rad {
   width: 22px;
   height: 22px;
   border-radius: 50%;
   border: 2px solid var(--ctl);
   background: var(--surface);
+  color: var(--on-brand);
   display: grid;
   place-items: center;
 }
 
 .rad svg {
-  font-size: 22px;
+  font-size: 18px;
   display: none;
-  stroke: var(--on-brand);
-  fill: var(--brand);
 }
 
 .copt:has(input:checked) .rad {
   border-color: var(--brand);
+  background: var(--brand);
 }
 
 .copt:has(input:checked) .rad svg {
@@ -624,8 +635,43 @@
     height: 64px;
   }
 
+  /* Brand on one line, smaller; the chip becomes an icon whose words stay for screen readers. */
+  .navRow {
+    gap: 8px;
+  }
+
+  .store {
+    gap: 8px;
+    min-width: 0;
+    font-size: 17px;
+    white-space: nowrap;
+  }
+
+  .store .mark {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+
+  .navRight {
+    flex: none;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .navBack {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
   .navRow p span {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .navRow p {
@@ -737,12 +783,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .btn {
-    transition: none;
-  }
-}
-
 /* Orders of the same recall, listed inside the one card. */
 .orders {
   list-style: none;
@@ -753,7 +793,8 @@
   color: var(--ink-muted);
 }
 
-/* A remedy that is already chosen because the recall offers only that one: a fixed, filled row. */
+/* A remedy that is already chosen because the recall offers only that one: a fixed, filled row.
+   It shows the same ticked dot as a chosen radio, but it is not a control. */
 .fixedOpt {
   cursor: default;
   border-color: var(--brand);
@@ -761,7 +802,11 @@
 
 .fixedOpt .rad {
   background: var(--brand);
-  color: var(--on-brand);
+  border-color: var(--brand);
+}
+
+.fixedOpt .rad svg {
+  display: block;
 }
 
 /* A way back to the store from the customer view (this is a demo, so judges move between both). */
@@ -788,13 +833,4 @@
    line is dropped for it (the row stays so the cards keep their shared alignment). */
 .mineQuiet > span {
   visibility: hidden;
-}
-
-/* The fixed option shows the same ticked circle as a chosen radio, but it is not a control. */
-.fixedOpt .rad {
-  border-color: var(--brand);
-}
-
-.fixedOpt .rad svg {
-  display: block;
 }

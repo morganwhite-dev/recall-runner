@@ -23,8 +23,8 @@ export function CampaignSwitch({
               aria-current={o.recallNumber === current ? "page" : undefined}
             >
               <span className={styles.campaignTop}>
-                {o.name}
-                <span>
+                <span className={styles.campaignName}>{o.name}</span>
+                <span className={styles.campaignCount}>
                   {o.closed}/{o.total}
                 </span>
               </span>

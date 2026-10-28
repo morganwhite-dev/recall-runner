@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import {
   CellStyleModule,
   ClientSideRowModelModule,
@@ -163,6 +163,34 @@ const OUTBOX_COLUMNS: ColDef<BuyerCase>[] = [
   { ...STATUS_COLUMN, flex: 1.1, minWidth: 120 },
 ];
 
+// Phones get fewer columns so the table fits the screen without sideways scrolling: Buyer and
+// Status always, plus Amount (cases) or Sent (outbox).
+const PHONE_QUERY = "(max-width: 759px)";
+
+const CASE_COLUMNS_PHONE: ColDef<BuyerCase>[] = [
+  { ...BUYER_COLUMN, flex: 1, minWidth: 100 },
+  { ...CASE_COLUMNS[2], flex: 0, width: 72, minWidth: 72 },
+  { ...STATUS_COLUMN, flex: 0, width: 140, minWidth: 140 },
+];
+
+const OUTBOX_COLUMNS_PHONE: ColDef<BuyerCase>[] = [
+  { ...BUYER_COLUMN, flex: 1, minWidth: 100 },
+  { ...OUTBOX_COLUMNS[2], flex: 0, width: 72, minWidth: 72 },
+  { ...STATUS_COLUMN, flex: 0, width: 140, minWidth: 140 },
+];
+
+function usePhone() {
+  return useSyncExternalStore(
+    (notify) => {
+      const mq = window.matchMedia(PHONE_QUERY);
+      mq.addEventListener("change", notify);
+      return () => mq.removeEventListener("change", notify);
+    },
+    () => window.matchMedia(PHONE_QUERY).matches,
+    () => false,
+  );
+}
+
 export type GridKind = "cases" | "outbox";
 
 interface CaseGridProps {
@@ -192,9 +220,17 @@ export function CaseGrid({
   onApi,
   onShown,
 }: CaseGridProps) {
+  const phone = usePhone();
   const columnDefs = useMemo(
-    () => (kind === "cases" ? CASE_COLUMNS : OUTBOX_COLUMNS),
-    [kind],
+    () =>
+      kind === "cases"
+        ? phone
+          ? CASE_COLUMNS_PHONE
+          : CASE_COLUMNS
+        : phone
+          ? OUTBOX_COLUMNS_PHONE
+          : OUTBOX_COLUMNS,
+    [kind, phone],
   );
   const apiRef = useRef<GridApi<BuyerCase> | null>(null);
 

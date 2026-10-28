@@ -7,7 +7,12 @@
   color: var(--ink);
 }
 
+/* The seal sits on white here, so its badge takes the lilac face and the chip cuts out to white. */
 .card {
+  --seal-size: 96px;
+  --seal-face: var(--lav);
+  --seal-cut: var(--surface);
+
   display: grid;
   justify-items: center;
   gap: 12px;
@@ -19,6 +24,10 @@
   box-shadow: var(--card-shadow);
 }
 
+.card > svg {
+  margin-bottom: 8px;
+}
+
 .card h1 {
   font: 800 26px/1.15 var(--font-display);
   letter-spacing: -0.02em;
@@ -26,11 +35,6 @@
 
 .card p {
   color: var(--ink-muted);
-}
-
-.card :global(.spinner) {
-  font-size: 28px;
-  color: var(--brand);
 }
 
 .actions {
@@ -49,4 +53,10 @@
   color: var(--brand);
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+@media (max-width: 480px) {
+  .card {
+    --seal-size: 80px;
+  }
 }

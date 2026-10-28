@@ -1,15 +1,21 @@
 /* Small touches for the dashboard. Every animation is wrapped for reduced motion, and
    transitions are switched off for reduced motion in globals.css. */
 
+/* The Settled pill is the global .pill plus the dashboard's .status box; keep the pill's green line
+   (.status sets a transparent one for the other statuses). */
+.settled:global(.pill) {
+  border-color: var(--ok-line);
+}
+
 /* A case that shows as Settled gives a quick pop and a soft ring, then the tick settles.
-   The pill still reads "check icon + Settled" with or without the motion. */
+   The pill still reads "tick + Settled" with or without the motion. */
 @media (prefers-reduced-motion: no-preference) {
   .settled {
     animation: settledPop 0.7s ease-out both;
   }
 
   .settled :global(.icon) {
-    animation: tickIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+    animation: tickIn 0.5s var(--ease-spring) 0.15s both;
   }
 }
 
@@ -34,7 +40,7 @@
   }
 }
 
-/* Tabs and the open-buyer-page button respond to hover and press. */
+/* The grid tabs respond to hover and press. */
 button.tab {
   transition:
     background 0.15s,
@@ -47,18 +53,4 @@ button.tab:hover {
 
 button.tab:active {
   transform: translateY(1px);
-}
-
-.lift {
-  transition:
-    transform 0.15s,
-    background 0.15s;
-}
-
-.lift:hover {
-  transform: translateY(-2px);
-}
-
-.lift:active {
-  transform: translateY(0);
 }

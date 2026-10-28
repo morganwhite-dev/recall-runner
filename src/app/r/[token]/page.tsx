@@ -159,7 +159,7 @@ export default function BuyerPage(props: PageProps<"/r/[token]">) {
       <footer>
         <div className={styles.wrap}>
           Demo store. The merchant and order dates are made up; the recalls are
-          real CPSC data. Not affiliated with CPSC or PayPal.
+          real CPSC recalls, with brand names replaced. Not affiliated with CPSC or PayPal.
         </div>
       </footer>
     </div>
