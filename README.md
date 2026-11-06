@@ -14,18 +14,18 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 
 ## Phase tracker
 
-| #   | Phase                                    | Target                       | Status                                    |
-| --- | ---------------------------------------- | ---------------------------- | ----------------------------------------- |
-| 0   | Setup and PayPal spikes                  | Sat Oct 24                   | Done Oct 22                               |
-| 1   | Data and CPSC ingest                     | Sun Oct 25                   | Done Oct 23                               |
-| 2   | Money core and policy tests              | Tue Oct 27                   | Done Oct 23                               |
-| D   | UI design pass (plum, Claude Design tab) | Wed Oct 28                   | Done Oct 24                               |
-| 3   | AI agent                                 | Sat Oct 31                   | Done Oct 25                               |
-| 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                    | Done Oct 25                               |
-| 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)   | Done Oct 26                               |
-| 6   | UI redesign of the pages (Claude Design) | Nov 3–5 (to confirm)         | Done Oct 28 (live check passed)           |
-| 7   | Harden and package                       | Fri Nov 6                    | In progress                               |
-| 8   | Video and Devpost write-up               | Mon Nov 9, submit by Nov 12  | Not started                               |
+| #   | Phase                                    | Target                      | Status                          |
+| --- | ---------------------------------------- | --------------------------- | ------------------------------- |
+| 0   | Setup and PayPal spikes                  | Sat Oct 24                  | Done Oct 22                     |
+| 1   | Data and CPSC ingest                     | Sun Oct 25                  | Done Oct 23                     |
+| 2   | Money core and policy tests              | Tue Oct 27                  | Done Oct 23                     |
+| D   | UI design pass (plum, Claude Design tab) | Wed Oct 28                  | Done Oct 24                     |
+| 3   | AI agent                                 | Sat Oct 31                  | Done Oct 25                     |
+| 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                   | Done Oct 25                     |
+| 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)  | Done Oct 26                     |
+| 6   | UI redesign of the pages (Claude Design) | Nov 3–5 (to confirm)        | Done Oct 28 (live check passed) |
+| 7   | Harden and package                       | Fri Nov 6                   | In progress                     |
+| 8   | Video and Devpost write-up               | Mon Nov 9, submit by Nov 12 | Not started                     |
 
 ## Phase 0 checklist
 
@@ -47,6 +47,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 - **Log In with PayPal code exchange:** send only `grant_type` and `code`, as PayPal's docs show. Adding `redirect_uri` is kept only as a fallback. Keep the "allow unconfirmed emails" option off.
 - **Neon needs TLS.** The pool asks for it in code, because the connection string's `sslmode` can be lost when pasted into Render.
 - **Render deploys:** the service builds from this GitHub repo and auto-deploys on each push. The free plan sleeps after 15 minutes, so the first visit can take about a minute. The plan moves to a paid instance from Nov 10 through Dec 15.
+- **Keep-awake and live recall pull** (Nov 5): `.github/workflows/keep-awake.yml` pings `/api/health` every 10 minutes (so the free plan never sleeps) and calls `/api/cron/sync-recalls` hourly, which re-pulls the last 30 days from the CPSC API into the `recalls` table (same brand renames as the snapshot path, no AI calls). Needs repo variable `SITE_URL` and secret `CRON_SECRET` (same value on Render).
 - **Spike scripts** (`scripts/spike-*.mjs`) re-run each check against the sandbox: `node --env-file=.env.local scripts/spike-paypal.mjs`.
 
 ## Hackathon requirements
