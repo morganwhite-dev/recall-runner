@@ -1,0 +1,148 @@
+/* The agent funnel card: three stages in a row, then the matched and refused recalls. */
+
+.funnel {
+  margin-bottom: 16px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.head h2 {
+  font: 700 15px var(--font-display);
+}
+
+.head p {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.stages li {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  padding: 8px 14px 8px 0;
+}
+
+.stages li + li {
+  padding-left: 22px;
+}
+
+/* A thin arrow between stages. */
+.stages li + li::before {
+  content: "→";
+  position: absolute;
+  left: 2px;
+  top: 10px;
+  color: var(--ink-muted);
+}
+
+.stages b {
+  font: 700 26px/1.1 var(--font-display);
+  color: var(--brand);
+}
+
+.stages span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stages small {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.lists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lists h3 {
+  margin-bottom: 6px;
+  font: 500 11px var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.lists ul {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+}
+
+.chip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1px 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.chip b {
+  font: 500 12px var(--font-mono);
+}
+
+.chip small,
+.chip em {
+  grid-column: 2;
+  font-size: 12px;
+}
+
+.chip em {
+  font-style: normal;
+  font-weight: 700;
+}
+
+.chipMatched {
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+}
+
+.chipRefused {
+  background: var(--surface-sunk);
+  color: var(--ink-muted);
+}
+
+.chipRefused small {
+  color: var(--ink);
+}
+
+@media (max-width: 759px) {
+  .stages {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stages li + li {
+    padding-left: 0;
+  }
+
+  .stages li + li::before {
+    display: none;
+  }
+
+  .lists {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

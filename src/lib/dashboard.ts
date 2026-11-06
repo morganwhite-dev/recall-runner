@@ -20,6 +20,7 @@ import {
 import type { TagKind } from "@/components/Tag";
 import { FEATURED_RECALL, PRE_APPROVED_BY } from "@/lib/demo-config";
 import { artFor } from "@/components/ProductArt";
+import { loadFunnel, type Funnel } from "@/lib/funnel";
 import {
   caseStatus,
   formatMoney,
@@ -55,6 +56,7 @@ export type DashboardData = {
   cases: BuyerCase[];
   activity: ActivityEvent[]; // newest first
   affected: number; // orders that contain a matched product, found in PayPal order records
+  funnel: Funnel | null; // how the agent narrowed the recall feed down to these campaigns
 };
 
 // The orders (lines) that contain this campaign's matched products. Approval opens one case
@@ -324,6 +326,7 @@ export async function loadDashboard(
     cases: out,
     activity,
     affected: lines.length,
+    funnel: await loadFunnel(campaign.merchantId),
     guide: await loadGuide(all, nameOf),
   };
 }

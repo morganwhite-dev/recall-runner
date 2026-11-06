@@ -9,6 +9,7 @@ import { TweenMoney } from "@/components/TweenMoney";
 import { shortName } from "@/app/r/[token]/data";
 import { ApproveButton } from "./ApproveButton";
 import { DemoGuide } from "./DemoGuide";
+import { Funnel } from "./Funnel";
 import { ResetNotice } from "./ResetNotice";
 import { campaignStats, formatDate, formatMoney } from "./data";
 import styles from "./page.module.css";
@@ -182,6 +183,9 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
         </section>
 
         <div className={`${shell.content} ${shell.band}`}>
+          {data.funnel && (
+            <Funnel funnel={data.funnel} current={header.recallNumber} />
+          )}
           <Workspace
             cases={CASES}
             activity={data.activity}
