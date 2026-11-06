@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { ART_PATHS } from "@/components/ProductArt";
 import { StatusPill } from "@/components/StatusPill";
@@ -22,6 +23,9 @@ export const metadata: Metadata = {
 };
 
 async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
+  // Everything below depends on the clock and the database, so render at request time. Without
+  // this, Next.js tries to prerender the page and stops at the Date.now() in resetNoticeFrom.
+  await connection();
   const { campaign, reset, since } = await searchParams;
   // After "Start fresh demo" ran into the cooldown or an error (see demo/actions.ts).
   const notice = resetNoticeFrom(reset, since);
