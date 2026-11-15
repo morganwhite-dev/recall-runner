@@ -1,8 +1,7 @@
 name: ci
 
-# Runs on every push and pull request. No secrets are used: the unit tests are pure.
-# TODO(phase 1): add `npm run build` once the Home page build no longer needs a reachable database
-# (prerendering "/" fails with ECONNREFUSED when DATABASE_URL is empty).
+# Runs on every push and pull request. No secrets are used: the unit tests are pure, and the build
+# skips the database when DATABASE_URL is unset (the Home page hides its impact strip).
 on:
   push:
     branches: [main]
@@ -33,3 +32,4 @@ jobs:
       - run: npx next typegen
       - run: npx tsc --noEmit
       - run: npm test
+      - run: npm run build

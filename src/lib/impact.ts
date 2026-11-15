@@ -38,7 +38,13 @@ const BARCODE_NUMBER =
 
 export function summarizeImpact(rows: ImpactRow[], since: string): Impact {
   const text = (r: ImpactRow) =>
-    [r.title, r.description, r.hazards, r.remedyText, JSON.stringify(r.products ?? "")].join("\n");
+    [
+      r.title,
+      r.description,
+      r.hazards,
+      r.remedyText,
+      JSON.stringify(r.products ?? ""),
+    ].join("\n");
 
   return {
     since,
@@ -69,6 +75,9 @@ async function readRows(): Promise<ImpactRow[]> {
 
 // Returns null when the query fails or finds nothing, and the Home page then hides the strip.
 export async function loadImpact(): Promise<Impact | null> {
+  // No database configured (CI builds): skip the read. A throw inside a "use cache" function
+  // fails the prerender of "/" even though it is caught below.
+  if (!process.env.DATABASE_URL) return null;
   try {
     const impact = summarizeImpact(await readRows(), IMPACT_SINCE);
     return impact.total > 0 ? impact : null;

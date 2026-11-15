@@ -176,7 +176,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
                 <b>{stats.notified}</b>Sent
               </div>
               <div title="Buyers who opened the notice, including those since settled">
-                <b>{opened}</b>Read
+                <b>{opened}</b>Read so far
               </div>
               <div>
                 <b>{stats.settled}</b>

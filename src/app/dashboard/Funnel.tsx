@@ -38,7 +38,7 @@ export function Funnel({
     {
       n: funnel.checked,
       label: "CPSC recalls checked",
-      note: "every recall in the feed snapshot",
+      note: "every recall in the feed at the last scan",
     },
     {
       n: funnel.candidates,
@@ -65,6 +65,8 @@ export function Funnel({
               })
             : ""}
           . Read from saved decisions, no new AI calls.
+          {funnel.newSince > 0 &&
+            ` ${funnel.newSince} newer ${funnel.newSince === 1 ? "recall has" : "recalls have"} arrived since and ${funnel.newSince === 1 ? "is" : "are"} not checked yet.`}
         </p>
       </div>
       <ol className={styles.stages}>

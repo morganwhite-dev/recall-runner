@@ -3,8 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { JudgeLogin } from "@/components/JudgeLogin";
-import { loadBuyerPage, markOpened } from "@/lib/buyer";
+import { loadBuyerPage } from "@/lib/buyer";
 import { groupByRecall, isClaimable, isDone } from "./data";
+import { MarkOpened } from "./MarkOpened";
 import { Mismatch } from "./Mismatch";
 import { MultiSuccess } from "./MultiSuccess";
 import styles from "./page.module.css";
@@ -69,6 +70,8 @@ async function BuyerView({ params, searchParams }: PageProps<"/r/[token]">) {
   const judgeLogin = page.fictional ? null : <JudgeLogin compact />;
 
   let view;
+  // Notices shown as unread offers; the browser marks them opened after the page loads.
+  let openedIds: string[] = [];
   if (result === "mismatch") {
     view = <Mismatch token={token} store={store} />;
   } else if (justDone.length > 1) {
@@ -106,7 +109,7 @@ async function BuyerView({ params, searchParams }: PageProps<"/r/[token]">) {
     groups[0].cases[0].offers.length === 1
   ) {
     // One recall with a single remedy: nothing to choose, just confirm. Several orders still count as one.
-    if (!caseParam) await markOpened(groups[0].cases.map((c) => c.caseId));
+    if (!caseParam) openedIds = groups[0].cases.map((c) => c.caseId);
     view = (
       <RecallFlow
         token={token}
@@ -116,7 +119,7 @@ async function BuyerView({ params, searchParams }: PageProps<"/r/[token]">) {
       />
     );
   } else {
-    if (!caseParam) await markOpened(cases.map((c) => c.caseId));
+    if (!caseParam) openedIds = cases.map((c) => c.caseId);
     view = (
       <SeveralFlow
         token={token}
@@ -150,6 +153,7 @@ async function BuyerView({ params, searchParams }: PageProps<"/r/[token]">) {
         </div>
       )}
       {view}
+      {openedIds.length > 0 && <MarkOpened token={token} caseIds={openedIds} />}
     </>
   );
 }
@@ -164,7 +168,8 @@ export default function BuyerPage(props: PageProps<"/r/[token]">) {
       <footer>
         <div className={styles.wrap}>
           Demo store. The merchant and order dates are made up; the recalls are
-          real CPSC recalls, with brand names replaced. Not affiliated with CPSC or PayPal.
+          real CPSC recalls, with brand names replaced. Not affiliated with CPSC
+          or PayPal.
         </div>
       </footer>
     </div>

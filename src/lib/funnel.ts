@@ -13,12 +13,23 @@ export type FunnelRecall = {
 };
 
 export type Funnel = {
-  checked: number; // CPSC recalls the agent looked at
+  checked: number; // CPSC recalls the agent looked at in its last scan
   candidates: number; // recalls that shared enough words with a product to review
   matched: FunnelRecall[]; // recalls that became campaigns
   refused: FunnelRecall[]; // recalls the AI or the rules turned down
   scannedAt: Date | null;
+  newSince: number; // recalls the hourly sync added after that scan, not yet checked
 };
+
+// How many recalls the scan checked. Newer scans save the number; older ones only have it in the
+// summary ("Checked 189 CPSC recalls against ..."). Counting the table instead would include
+// recalls the sync added after the scan, which the agent never looked at.
+export function scanChecked(detail: unknown, summary: string): number | null {
+  const saved = (detail as { checked?: unknown } | null)?.checked;
+  if (typeof saved === "number") return saved;
+  const m = /^Checked (\d+) CPSC recalls/.exec(summary);
+  return m ? Number(m[1]) : null;
+}
 
 // The funnel names products, never companies. Only three recalls have invented brand names
 // (src/lib/brand-aliases.ts); the others keep their real ones, and Devpost forbids third-party
@@ -51,17 +62,18 @@ export function refusedLabel(title: string): string {
   );
 }
 
-// "Brand differs: recall is Gobi Heat, listing is Emberly" out of the stored rule verdict.
-function refusalReason(ruleSummaries: string[]): string | undefined {
+// A plain reason from the stored verdict. The disqualifiers after "disqualified:" are the AI's own
+// words and often name the real brand ("recall is <brand>, listing is <brand>"), which must not
+// reach the screen, so the text is mapped to a fixed phrase and never shown as written.
+export function refusalReason(ruleSummaries: string[]): string | undefined {
   const first = ruleSummaries.find((s) => s.includes("disqualified:"));
-  if (first) {
-    const part = first.split("disqualified:")[1] ?? "";
-    return part
-      .split(";")[0]
-      .replace(/\)\.?$/, "")
-      .trim();
-  }
-  return undefined;
+  if (!first) return undefined;
+  const part = first.split("disqualified:")[1] ?? "";
+  if (/brand|maker|manufacturer/i.test(part))
+    return "A different brand from the store's product";
+  if (/model|size|variant|version/i.test(part))
+    return "A different model from the store's product";
+  return "Not the same product the store sells";
 }
 
 export async function loadFunnel(merchantId: string): Promise<Funnel | null> {
@@ -101,7 +113,11 @@ export async function loadFunnel(merchantId: string): Promise<Funnel | null> {
   const matchedNumbers = new Set(rows.map((r) => r.recallNumber));
 
   const allRecalls = await db
-    .select({ recallNumber: recalls.recallNumber, title: recalls.title })
+    .select({
+      recallNumber: recalls.recallNumber,
+      title: recalls.title,
+      createdAt: recalls.createdAt,
+    })
     .from(recalls);
   const titleOf = new Map(allRecalls.map((r) => [r.recallNumber, r.title]));
 
@@ -120,10 +136,11 @@ export async function loadFunnel(merchantId: string): Promise<Funnel | null> {
     }));
 
   return {
-    checked: allRecalls.length,
+    checked: scanChecked(detect.detail, detect.summary) ?? allRecalls.length,
     candidates: candidateNumbers.length,
     matched,
     refused,
     scannedAt: detect.createdAt,
+    newSince: allRecalls.filter((r) => r.createdAt > detect.createdAt).length,
   };
 }

@@ -104,6 +104,7 @@ export async function runScan(
     actor: "RULE",
     summary: `Checked ${allRecalls.length} CPSC recalls against ${catalog.length} products; ${candidates.length} share enough words to review${skipped.length ? `, ${skipped.length} more skipped by the call limit` : ""}.`,
     detail: {
+      checked: allRecalls.length,
       candidates: candidates.map((c) => ({
         recall: c.recall.recallNumber,
         shared: c.shared,
