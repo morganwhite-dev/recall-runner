@@ -6,7 +6,7 @@ import { formatUsd } from "@/lib/policy";
 import { ConfirmStatus } from "./ConfirmStatus";
 import { groupByRecall, receiptHeadline, remedyCopy } from "./data";
 import styles from "./page.module.css";
-import { Blob, SectionTitle, SuccessSeal, TopBand } from "./parts";
+import { ReceiptHead, SectionTitle, SettledStamp, TopBand } from "./parts";
 
 // One receipt for several recalls settled in a single PayPal sign-in.
 export function MultiSuccess({
@@ -56,26 +56,16 @@ export function MultiSuccess({
   return (
     <>
       <AutoRefresh active={!settledAll} everyMs={3000} />
-      <TopBand store={store}>
-        <div>
-          <ConfirmStatus
-            label="All done"
-            state={!anyMoney ? "none" : settledAll ? "confirmed" : "waiting"}
-          />
-          {moneyCents > 0 && (
-            <p className={styles.big}>{formatUsd(moneyCents)}</p>
-          )}
-          <h1 className={`${styles.h1} ${styles.h1Success}`}>
-            {title}
-          </h1>
-          <p className={styles.lede}>
-            <b>You only had to sign in with PayPal once.</b> You don&apos;t need
-            to do anything else for these.{covered && <> {covered}</>}
-          </p>
-        </div>
-        <Blob>
-          <SuccessSeal />
-        </Blob>
+      <TopBand>
+        <ConfirmStatus
+          label="All done"
+          state={!anyMoney ? "none" : settledAll ? "confirmed" : "waiting"}
+        />
+        <h1 className={`${styles.h1} ${styles.h1Success}`}>{title}</h1>
+        <p className={styles.lede}>
+          <b>You only had to sign in with PayPal once.</b> You don&apos;t need
+          to do anything else for these.{covered && <> {covered}</>}
+        </p>
       </TopBand>
 
       <div className={styles.wrap}>
@@ -105,29 +95,26 @@ export function MultiSuccess({
                 </li>
               </ul>
             </section>
-            <section>
+            <section className={styles.links}>
               <Link className={styles.link} href="/dashboard">
                 <Icon name="ext" />
                 See this on the store&apos;s dashboard
               </Link>
-            </section>
-            {others && (
-              <section>
+              {others && (
                 <Link className={styles.link} href={`/r/${token}`}>
                   <Icon name="left" />
                   Back to your other recalls
                 </Link>
-              </section>
-            )}
+              )}
+            </section>
           </main>
 
-          <aside
-            className={`${styles.sum} ${styles.plain}`}
-            aria-labelledby="rh"
-          >
-            <h2 className={styles.receiptTitle} id="rh">
+          {/* One printed receipt for every recall settled in this sign-in. */}
+          <aside className={styles.receipt} aria-labelledby="rh">
+            <h2 className="sr-only" id="rh">
               Your receipt
             </h2>
+            <ReceiptHead store={store} />
             <dl className={styles.rcpt}>
               {groups.map((g) => {
                 const refs = g.cases.flatMap((c) =>
@@ -143,14 +130,21 @@ export function MultiSuccess({
                       {g.cases.some(isMoney)
                         ? formatUsd(centsOf(g.cases))
                         : "Free"}
-                      {refs.length > 0 && (
-                        <span className={styles.mono}> · {refs.join(", ")}</span>
-                      )}
                     </dd>
+                    {refs.length > 0 && (
+                      <dd className={styles.ref}>{refs.join(", ")}</dd>
+                    )}
                   </div>
                 );
               })}
             </dl>
+            <div className={styles.rTotal}>
+              <span className={styles.rTotalLab}>All done</span>
+              <p className={styles.big}>
+                {moneyCents > 0 ? formatUsd(moneyCents) : "Free"}
+              </p>
+              <SettledStamp settled={settledAll} />
+            </div>
           </aside>
         </div>
       </div>

@@ -30,12 +30,11 @@ import styles from "./SeveralFlow.module.css";
 // settles every recall that is ready.
 export function SeveralFlow({
   token,
-  store: STORE,
   groups: GROUPS,
   judgeLogin,
 }: {
   token: string;
-  store: string;
+  store: string; // shown in the store bar above (page.tsx)
   groups: RecallGroup[];
   judgeLogin?: ReactNode; // the sandbox login, shown under the confirm bar for the sandbox buyer
 }) {
@@ -87,54 +86,22 @@ export function SeveralFlow({
 
   return (
     <div className={styles.root}>
-      <div className={styles.top}>
-        <nav aria-label="Store">
-          <div className={`${styles.wrap} ${styles.navRow}`}>
-            <div className={styles.store}>
-              <span className={styles.mark}>
-                <Icon name="store" />
-              </span>
-              {STORE}
-            </div>
-            <div className={styles.navRight}>
-              <Link className={styles.navBack} href="/dashboard">
-                Store dashboard
-              </Link>
-              <p>
-                <Icon name="info" />
-                <span>Safety recall notice</span>
-              </p>
-            </div>
-          </div>
-        </nav>
-        <header className={`${styles.wrap} ${styles.hero}`}>
-          <div>
-            <p className={styles.eyebrow}>
-              <Icon name="info" />
-              Safety recall notices
-            </p>
-            <h1 className={styles.h1}>
-              {TOTAL === 1 ? "You have a recall" : `You have ${TOTAL} recalls`}
-            </h1>
-            {heroLine && <p className={styles.heroMoney}>{heroLine}</p>}
-            <p className={styles.lede}>
-              <b>Please stop using these items.</b>{" "}
-              {TOTAL === 1
-                ? "Confirm below to settle it."
-                : "Where the recall offers a choice, pick one. Then confirm everything with one PayPal sign-in."}
-            </p>
-          </div>
-          <div className={styles.blob} aria-hidden="true">
-            {GROUPS.map((g) => (
-              <Art
-                key={g.recallNumber}
-                kind={artFor(g.cases[0].sku)}
-                alt={`Line drawing of ${g.cases[0].productName}`}
-              />
-            ))}
-          </div>
-        </header>
-      </div>
+      <header className={`${styles.wrap} ${styles.hero}`}>
+        <p className={styles.eyebrow}>
+          <Icon name="info" />
+          Safety recall notices
+        </p>
+        <h1 className={styles.h1}>
+          {TOTAL === 1 ? "You have a recall" : `You have ${TOTAL} recalls`}
+        </h1>
+        {heroLine && <p className={styles.heroMoney}>{heroLine}</p>}
+        <p className={styles.lede}>
+          <b>Please stop using these items.</b>{" "}
+          {TOTAL === 1
+            ? "Confirm below to settle it."
+            : "Where the recall offers a choice, pick one. Then confirm everything with one PayPal sign-in."}
+        </p>
+      </header>
 
       <main className={styles.wrap}>
         <nav className={styles.pager} aria-label="Your recalls">
@@ -317,6 +284,7 @@ export function SeveralFlow({
                     className={`${styles.mine} ${claimable && single ? styles.mineQuiet : ""}`}
                   >
                     <span className={styles.mineLab}>Your remedy</span>
+                    <span className={styles.mineDots} aria-hidden="true" />
                     <span className={styles.mineAmt}>
                       {/* Money remedies show the amount; the others name the remedy, since "Free" is already on the option above. */}
                       {!claimable

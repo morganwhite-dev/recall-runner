@@ -1,34 +1,26 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
-import { Seal } from "@/components/Seal";
 import styles from "./page.module.css";
-import { Blob, SectionTitle, TopBand } from "./parts";
+import { SectionTitle, StateMark, StoreBar, TopBand } from "./parts";
 
 // Shown when a buyer link has no active recalls: the notice hasn't been sent yet, or the demo was reset.
 export default function BuyerLinkInactive() {
   return (
     <div className={styles.page}>
-      <TopBand store="Brightnest Home">
-        <div>
-          <span className={`${styles.status} ${styles.warn}`}>
-            <Icon name="info" />
-            Link not active
-          </span>
-          <h1 className={`${styles.h1} ${styles.h1Mismatch}`}>
-            This recall link isn&apos;t active right now
-          </h1>
-          <p className={styles.lede}>
-            <b>Nothing was charged and nothing was sent.</b> The notice may not
-            have been sent yet, or it was replaced by a newer one.
-          </p>
-        </div>
-        <Blob>
-          <Seal kind="lost" />
-        </Blob>
+      <StoreBar store="Brightnest Home" />
+      <TopBand>
+        <StateMark icon="info">Link not active</StateMark>
+        <h1 className={`${styles.h1} ${styles.h1Mismatch}`}>
+          This recall link isn&apos;t active right now
+        </h1>
+        <p className={styles.lede}>
+          <b>Nothing was charged and nothing was sent.</b> The notice may not
+          have been sent yet, or it was replaced by a newer one.
+        </p>
       </TopBand>
 
       <div className={styles.wrap}>
-        <div className={styles.layout}>
+        <div className={`${styles.layout} ${styles.solo}`}>
           <main className={styles.card}>
             <section aria-labelledby="s1">
               <SectionTitle id="s1" icon="help">
@@ -50,7 +42,7 @@ export default function BuyerLinkInactive() {
           </main>
         </div>
       </div>
-      <footer>
+      <footer className={styles.footer}>
         <div className={styles.wrap}>
           Demo store. The merchant and order dates are made up; the recalls are
           real CPSC recalls, with brand names replaced. Not affiliated with CPSC or PayPal.

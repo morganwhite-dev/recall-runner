@@ -9,6 +9,7 @@ import { MarkOpened } from "./MarkOpened";
 import { Mismatch } from "./Mismatch";
 import { MultiSuccess } from "./MultiSuccess";
 import styles from "./page.module.css";
+import { StoreBar } from "./parts";
 import { Problem } from "./Problem";
 import { RecallFlow } from "./RecallFlow";
 import { SeveralFlow } from "./SeveralFlow";
@@ -132,9 +133,10 @@ async function BuyerView({ params, searchParams }: PageProps<"/r/[token]">) {
 
   return (
     <>
+      <StoreBar store={store} />
       {page.fictional && (
         <div className={styles.wrap}>
-          <p className={styles.alert} role="note">
+          <p className={`${styles.alert} ${styles.alertNote}`} role="note">
             This is a demo buyer, so nobody can sign in as them and no payment
             can finish here.{" "}
             {sandboxPath && (
@@ -165,7 +167,7 @@ export default function BuyerPage(props: PageProps<"/r/[token]">) {
       <Suspense fallback={null}>
         <BuyerView {...props} />
       </Suspense>
-      <footer>
+      <footer className={styles.footer}>
         <div className={styles.wrap}>
           Demo store. The merchant and order dates are made up; the recalls are
           real CPSC recalls, with brand names replaced. Not affiliated with CPSC

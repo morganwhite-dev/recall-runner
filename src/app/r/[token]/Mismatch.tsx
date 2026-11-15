@@ -1,27 +1,19 @@
 import { Icon } from "@/components/Icon";
 import styles from "./page.module.css";
-import { Blob, MismatchSeal, SectionTitle, TopBand } from "./parts";
+import { SectionTitle, StateMark, TopBand } from "./parts";
 
 export function Mismatch({ token, store }: { token: string; store: string }) {
   return (
     <>
-      <TopBand store={store}>
-        <div>
-          <span className={`${styles.status} ${styles.warn}`}>
-            <Icon name="info" />
-            Account doesn&apos;t match
-          </span>
-          <h1 className={`${styles.h1} ${styles.h1Mismatch}`}>
-            Hmm, that PayPal account isn&apos;t the one used for this order
-          </h1>
-          <p className={styles.lede}>
-            <b>No harm done: nothing was charged and nothing was sent.</b> Your
-            recall is still waiting for you.
-          </p>
-        </div>
-        <Blob>
-          <MismatchSeal />
-        </Blob>
+      <TopBand>
+        <StateMark icon="info">Account doesn&apos;t match</StateMark>
+        <h1 className={`${styles.h1} ${styles.h1Mismatch}`}>
+          Hmm, that PayPal account isn&apos;t the one used for this order
+        </h1>
+        <p className={styles.lede}>
+          <b>No harm done: nothing was charged and nothing was sent.</b> Your
+          recall is still waiting for you.
+        </p>
       </TopBand>
 
       <div className={styles.wrap}>
@@ -51,7 +43,7 @@ export function Mismatch({ token, store }: { token: string; store: string }) {
           </main>
 
           <aside
-            className={`${styles.sum} ${styles.fixable} ${styles.stack}`}
+            className={`${styles.sum} ${styles.fixable} ${styles.stack} ${styles.nextStep}`}
             aria-label="Next step"
           >
             <div className={styles.sumMeta}>
@@ -59,7 +51,7 @@ export function Mismatch({ token, store }: { token: string; store: string }) {
               <p className={styles.nm}>Try again with the right account</p>
             </div>
             <div className={styles.sumAct}>
-              <a className={styles.btn} href={`/r/${token}`}>
+              <a className={`${styles.btn} ${styles.btnDark}`} href={`/r/${token}`}>
                 Back to my recalls
               </a>
               <p className={styles.helpRow}>

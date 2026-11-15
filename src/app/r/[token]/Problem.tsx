@@ -1,35 +1,25 @@
-import { Icon } from "@/components/Icon";
-import { Seal } from "@/components/Seal";
 import type { BuyerCase } from "@/lib/buyer";
 import styles from "./page.module.css";
-import { Blob, SectionTitle, TopBand } from "./parts";
+import { SectionTitle, StateMark, TopBand } from "./parts";
 
 // A case the store's rules refused: nothing was sent and it is final. (A case PayPal could not
 // complete is offered again instead, see isClaimable.)
 export function Problem({ store, c }: { store: string; c: BuyerCase }) {
   return (
     <>
-      <TopBand store={store}>
-        <div>
-          <span className={`${styles.status} ${styles.warn}`}>
-            <Icon name="info" />
-            Couldn&apos;t complete
-          </span>
-          <h1 className={`${styles.h1} ${styles.h1Mismatch}`}>
-            We couldn&apos;t settle your {c.productName} recall
-          </h1>
-          <p className={styles.lede}>
-            <b>Nothing was sent, and we&apos;re sorry about the hassle.</b> The
-            store&apos;s rules didn&apos;t allow this choice.
-          </p>
-        </div>
-        <Blob>
-          <Seal kind="info" />
-        </Blob>
+      <TopBand>
+        <StateMark icon="info">Couldn&apos;t complete</StateMark>
+        <h1 className={`${styles.h1} ${styles.h1Mismatch}`}>
+          We couldn&apos;t settle your {c.productName} recall
+        </h1>
+        <p className={styles.lede}>
+          <b>Nothing was sent, and we&apos;re sorry about the hassle.</b> The
+          store&apos;s rules didn&apos;t allow this choice.
+        </p>
       </TopBand>
 
       <div className={styles.wrap}>
-        <div className={styles.layout}>
+        <div className={`${styles.layout} ${styles.solo}`}>
           <main className={styles.card}>
             <section aria-labelledby="s1">
               <SectionTitle id="s1" icon="info">

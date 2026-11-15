@@ -6,7 +6,13 @@ import { formatUsd } from "@/lib/policy";
 import { ConfirmStatus } from "./ConfirmStatus";
 import { pronounFor, remedyCopy } from "./data";
 import styles from "./page.module.css";
-import { Blob, RuleLine, SectionTitle, SuccessSeal, TopBand } from "./parts";
+import {
+  ReceiptHead,
+  RuleLine,
+  SectionTitle,
+  SettledStamp,
+  TopBand,
+} from "./parts";
 
 // What the buyer reads once their choice has been carried out. The wording depends on what
 // actually happened (refund, payout past the 180-day window, replacement or repair kit).
@@ -77,21 +83,15 @@ export function Success({
   return (
     <>
       <AutoRefresh active={!settledAll} everyMs={3000} />
-      <TopBand store={store}>
-        <div>
-          <ConfirmStatus
-            label={o.label}
-            state={!money ? "none" : c.settled ? "confirmed" : "waiting"}
-          />
-          {o.big && <p className={styles.big}>{o.big}</p>}
-          <h1 className={`${styles.h1} ${styles.h1Success}`}>{o.title}</h1>
-          <p className={styles.lede}>
-            <b>{o.lede}</b> You don&apos;t need to do anything else.
-          </p>
-        </div>
-        <Blob>
-          <SuccessSeal />
-        </Blob>
+      <TopBand>
+        <ConfirmStatus
+          label={o.label}
+          state={!money ? "none" : c.settled ? "confirmed" : "waiting"}
+        />
+        <h1 className={`${styles.h1} ${styles.h1Success}`}>{o.title}</h1>
+        <p className={styles.lede}>
+          <b>{o.lede}</b> You don&apos;t need to do anything else.
+        </p>
       </TopBand>
 
       <div className={styles.wrap}>
@@ -127,29 +127,26 @@ export function Success({
               </ul>
               <RuleLine>{c.rationale ?? remedy.rule}</RuleLine>
             </section>
-            <section>
+            <section className={styles.links}>
               <Link className={styles.link} href="/dashboard">
                 <Icon name="ext" />
                 See this on the store&apos;s dashboard
               </Link>
-            </section>
-            {others && (
-              <section>
+              {others && (
                 <Link className={styles.link} href={`/r/${token}`}>
                   <Icon name="left" />
                   Back to your recalls
                 </Link>
-              </section>
-            )}
+              )}
+            </section>
           </main>
 
-          <aside
-            className={`${styles.sum} ${styles.plain}`}
-            aria-labelledby="rh"
-          >
-            <h2 className={styles.receiptTitle} id="rh">
+          {/* The printed receipt: dotted leaders, the amount as the total, a stamp. */}
+          <aside className={styles.receipt} aria-labelledby="rh">
+            <h2 className="sr-only" id="rh">
               Your receipt
             </h2>
+            <ReceiptHead store={store} />
             <dl className={styles.rcpt}>
               {c.orderRef && (
                 <div>
@@ -172,6 +169,11 @@ export function Success({
                 </div>
               )}
             </dl>
+            <div className={styles.rTotal}>
+              <span className={styles.rTotalLab}>{o.label}</span>
+              <p className={styles.big}>{o.big ?? "Free"}</p>
+              <SettledStamp settled={settledAll} />
+            </div>
           </aside>
         </div>
       </div>
