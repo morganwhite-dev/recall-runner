@@ -7,6 +7,7 @@ import { StatusPill } from "@/components/StatusPill";
 import { Tag, type TagKind } from "@/components/Tag";
 import { DEMO_STEPS } from "@/lib/demo-config";
 import { loadImpact, type Impact } from "@/lib/impact";
+import { REFUND_WINDOW_DAYS } from "@/lib/policy";
 import styles from "./page.module.css";
 
 const GITHUB_URL = "https://github.com/morganwhite-dev/recall-runner";
@@ -24,6 +25,34 @@ const STEPS: { tag: TagKind; title: string; cap?: string }[] = [
     title: "PayPal refunds, pays out, or tracks a replacement",
     cap: "Rules decide which",
   },
+];
+
+// What each mark means, in the words the legend has always used.
+const LEGEND: { tag: TagKind; means: string }[] = [
+  { tag: "model", means: "the AI" },
+  { tag: "rule", means: "fixed code" },
+  { tag: "tool", means: "a lookup or PayPal call" },
+  { tag: "you", means: "a person" },
+];
+
+// The four paths in src/lib/policy.ts (decideRemedy). The window comes from the same constant.
+const ROUTES: { name: string; when: string; money: string }[] = [
+  {
+    name: "Refund",
+    when: `Paid within ${REFUND_WINDOW_DAYS} days`,
+    money: "Back to the PayPal payment",
+  },
+  {
+    name: "Payout",
+    when: `Paid more than ${REFUND_WINDOW_DAYS} days ago`,
+    money: "Sent by PayPal Payouts",
+  },
+  {
+    name: "Replacement",
+    when: "Remedy is a new unit",
+    money: "Tracking added to the order",
+  },
+  { name: "Repair kit", when: "Remedy is a repair", money: "No money moves" },
 ];
 
 const PAYPAL: { icon: IconName; title: string; text: string }[] = [
@@ -85,36 +114,36 @@ export default async function Home() {
 
   return (
     <>
-      <header className={`${styles.field} on-plum`}>
-        <nav aria-label="Primary">
-          <div className={styles.wrap}>
-            <Link className={`${styles.logo} logo-turn`} href="/">
-              <span className={styles.mark}>
-                <Icon name="loop" />
-              </span>
-              Recall Runner
-            </Link>
-            <ul className={styles.navList}>
-              <li>
-                <Link href="/dashboard">Dashboard</Link>
-              </li>
-              <li>
-                <Link href="/evals">Test results</Link>
-              </li>
-              <li>
-                <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-                  GitHub
-                </a>
-              </li>
-            </ul>
-          </div>
+      <header className={`${styles.bar} on-plum`}>
+        <nav aria-label="Primary" className={styles.wrap}>
+          <Link className={`${styles.logo} logo-turn`} href="/">
+            <span className={styles.mark} aria-hidden="true">
+              <Icon name="loop" />
+            </span>
+            Recall Runner
+          </Link>
+          <ul className={styles.navList}>
+            <li>
+              <Link href="/dashboard">Dashboard</Link>
+            </li>
+            <li>
+              <Link href="/evals">Test results</Link>
+            </li>
+            <li>
+              <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+                GitHub
+              </a>
+            </li>
+          </ul>
         </nav>
+      </header>
 
-        <div className={`${styles.wrap} ${styles.hero}`}>
-          <div>
+      <main className={styles.wrap}>
+        <section className={styles.hero} aria-labelledby="title">
+          <div className={styles.heroMain}>
             <p className={styles.eyebrow}>PayPal hackathon demo</p>
-            <h1 className={styles.h1}>
-              Recalled products, <span>refunded</span> through PayPal
+            <h1 className={styles.h1} id="title">
+              Recalled products, refunded through PayPal
             </h1>
             <p className={styles.lede}>
               An AI agent watches the US government recall feed, finds a store’s
@@ -123,224 +152,263 @@ export default async function Home() {
             </p>
             <p className={styles.heroStat}>
               Only about 6% of buyers act on a recall announced by press
-              release. About 50% act when notified directly.
+              release. About 50% act when notified directly.{" "}
               <span>CPSC data, FY2013–16</span>
             </p>
             <div className={styles.cta}>
               <StartFreshDemo />
-              <p className={styles.note}>
+              <p>
                 Resets the demo store: real recalls waiting for your approval
                 and sandbox PayPal orders. About 20 seconds.
               </p>
-              <ol className={styles.tryIt} aria-label="How to try the demo">
-                {DEMO_STEPS.map((step) => (
-                  <li key={step.title}>
-                    <span>
-                      <b>{step.title}</b> {step.text}
-                    </span>
-                  </li>
-                ))}
-              </ol>
             </div>
           </div>
 
-          <aside className={styles.case} aria-label="Example case">
-            <p className={styles.exampleTag}>Example</p>
-            <div className={styles.caseHead}>
-              <svg
-                viewBox="0 0 96 96"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                {ART_PATHS.warmer}
-              </svg>
-              <div>
-                <span className={styles.badge}>CPSC #27011</span>
-                <h2 className={styles.caseTitle}>
-                  Rechargeable hand warmers recall
-                </h2>
-                <p className={styles.remedy}>
-                  Remedy: <b>refund · $34.00 each</b>
-                </p>
+          <aside className={styles.board} aria-label="Example case">
+            <p className={styles.boardHead}>
+              <span>Example</span>
+              <span className={styles.mono}>CPSC #27011</span>
+            </p>
+            <div className={styles.boardBody}>
+              <div className={styles.caseHead}>
+                <svg
+                  className={styles.art}
+                  viewBox="0 0 96 96"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  {ART_PATHS.warmer}
+                </svg>
+                <div>
+                  <h2 className={styles.caseTitle}>
+                    Rechargeable hand warmers recall
+                  </h2>
+                  <p className={styles.remedy}>
+                    Remedy: <b>refund · $34.00 each</b>
+                  </p>
+                </div>
               </div>
-            </div>
-            <dl className={styles.metrics}>
-              <div className={styles.metric}>
-                <dt>Status</dt>
-                <dd className={styles.metricStatus}>
-                  <Icon name="done" />
-                  Approved
-                </dd>
+
+              <dl className={styles.metrics}>
+                <div>
+                  <dt>Status</dt>
+                  <dd className={styles.metricStatus}>
+                    <Icon name="tick" />
+                    Approved
+                  </dd>
+                </div>
+                <div>
+                  <dt>Orders affected</dt>
+                  <dd>6</dd>
+                </div>
+                <div>
+                  <dt>Notified</dt>
+                  <dd>6</dd>
+                </div>
+                <div>
+                  <dt>Settled</dt>
+                  <dd>2</dd>
+                </div>
+              </dl>
+
+              {/* The money moment: one settled case printed as a receipt. */}
+              <div className={styles.receipt}>
+                <dl className={styles.leaders}>
+                  <div>
+                    <dt>Buyer</dt>
+                    <dd>Morgan Demo</dd>
+                  </div>
+                  <div>
+                    <dt>Paid</dt>
+                    <dd>202 days ago</dd>
+                  </div>
+                  <div>
+                    <dt>Refund window</dt>
+                    <dd>{REFUND_WINDOW_DAYS} days</dd>
+                  </div>
+                  <div>
+                    <dt>Path</dt>
+                    <dd>PayPal Payouts</dd>
+                  </div>
+                </dl>
+                <div className={styles.total}>
+                  <span className={styles.totalAmt}>$34.00</span>
+                  <span className={styles.stamp}>
+                    <StatusPill>Settled</StatusPill>
+                  </span>
+                </div>
               </div>
-              <div className={styles.metric}>
-                <dt>Orders affected</dt>
-                <dd>6</dd>
-              </div>
-              <div className={styles.metric}>
-                <dt>Notified</dt>
-                <dd>6</dd>
-              </div>
-              <div className={styles.metric}>
-                <dt>Settled</dt>
-                <dd>2</dd>
-              </div>
-            </dl>
-            <div className={styles.ruleline}>
-              <Tag kind="rule" />
-              <div>
-                <span className={styles.settled}>
-                  <StatusPill>Settled</StatusPill>
-                </span>
-                <p>
-                  Morgan Demo paid 202 days ago, past PayPal’s 180-day refund
-                  window, so the buyer is paid by PayPal Payouts instead:
-                  $34.00.
-                </p>
-                <p className={styles.codeNote}>
-                  Rule that applied: paid past the 180-day refund window
-                </p>
+
+              <div className={styles.ruleline}>
+                <Tag kind="rule" />
+                <div>
+                  <p>
+                    Morgan Demo paid 202 days ago, past PayPal’s 180-day refund
+                    window, so the buyer is paid by PayPal Payouts instead:
+                    $34.00.
+                  </p>
+                  <p className={styles.codeNote}>
+                    Rule that applied: paid past the 180-day refund window
+                  </p>
+                </div>
               </div>
             </div>
           </aside>
-        </div>
-      </header>
+        </section>
 
-      <main className={styles.wrap}>
-        <section
-          className={`${styles.section} ${styles.first}`}
-          aria-labelledby="s1"
-        >
-          <div className={styles.row}>
-            <div>
-              <h2 className={styles.title} id="s1">
-                Why notify directly
-              </h2>
-            </div>
+        <section className={styles.section} aria-labelledby="s-try">
+          <h2 className={styles.h2} id="s-try">
+            How to try the demo
+          </h2>
+          <ol className={styles.tryIt}>
+            {DEMO_STEPS.map((step, i) => (
+              <li key={step.title}>
+                <span className={styles.tryN} aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <b>{step.title}</b>
+                <span>{step.text}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <div className={impact ? styles.split : undefined}>
+          <section className={styles.section} aria-labelledby="s1">
+            <h2 className={styles.h2} id="s1">
+              Why notify directly
+            </h2>
             <div className={styles.stats}>
-              <div className={styles.stat}>
-                <div className={styles.n}>6%</div>
-                <span className={styles.bar} aria-hidden="true" />
+              <div>
+                <p className={styles.big}>6%</p>
                 <p>
                   Press release only<span>act on the recall</span>
                 </p>
               </div>
-              <div className={`${styles.stat} ${styles.hi}`}>
-                <div className={styles.n}>
-                  <span className={styles.tilde} aria-hidden="true">
-                    ~
-                  </span>
+              <div className={styles.statHi}>
+                <p className={styles.big}>
+                  <span aria-hidden="true">~</span>
                   <span className="sr-only">About </span>50%
-                </div>
-                <span className={styles.bar} aria-hidden="true" />
+                </p>
                 <p>
                   Notified directly<span>act on the recall</span>
                 </p>
               </div>
-              <p className={styles.cite}>
-                About 6% of buyers act on a recall announced only by press
-                release; about 50% act when notified directly. (CPSC data,
-                FY2013–16, as cited by consumer groups)
-              </p>
             </div>
-          </div>
-        </section>
-
-        {impact && (
-          <section className={styles.section} aria-labelledby="s0">
-            <div className={styles.row}>
-              <div>
-                <h2 className={styles.title} id="s0">
-                  Why order records
-                </h2>
-                <p className={styles.sub}>
-                  A store’s own orders reach buyers fastest. Matching product
-                  text covers what barcodes don’t.
-                </p>
-              </div>
-              <div>
-                <dl className={styles.impact}>
-                  {impactFigures(impact).map((f) => (
-                    <div className={styles.fig} key={f.label}>
-                      <dt>
-                        {f.n === 0 && f.zero ? (
-                          f.zero
-                        ) : (
-                          <Count className={styles.countUp} value={f.n} />
-                        )}
-                      </dt>
-                      <dd>{f.label}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className={styles.cite}>
-                  Source: CPSC recalls since {sinceLabel(impact.since)}, counted
-                  from the recalls in this app’s database.
-                </p>
-              </div>
-            </div>
+            <p className={styles.cite}>
+              About 6% of buyers act on a recall announced only by press
+              release; about 50% act when notified directly. (CPSC data,
+              FY2013–16, as cited by consumer groups)
+            </p>
           </section>
-        )}
 
-        <section className={styles.section} aria-labelledby="s2">
-          <div className={styles.row}>
-            <div>
-              <h2 className={styles.title} id="s2">
-                How it works
+          {impact && (
+            <section className={styles.section} aria-labelledby="s0">
+              <h2 className={styles.h2} id="s0">
+                Why order records
               </h2>
               <p className={styles.sub}>
-                AI suggests, you approve, fixed rules move the money.
+                A store’s own orders reach buyers fastest. Matching product text
+                covers what barcodes don’t.
               </p>
-              <p className={styles.legend}>
-                Model = the AI · Rule = fixed code · Tool = a lookup or PayPal
-                call · You = a person
+              <dl className={styles.impact}>
+                {impactFigures(impact).map((f) => (
+                  <div key={f.label}>
+                    <dt>
+                      {f.n === 0 && f.zero ? (
+                        f.zero
+                      ) : (
+                        <Count className={styles.countUp} value={f.n} />
+                      )}
+                    </dt>
+                    <dd>{f.label}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className={styles.cite}>
+                Source: CPSC recalls since {sinceLabel(impact.since)}, counted
+                from the recalls in this app’s database.
               </p>
-            </div>
-            <ol className={styles.timeline}>
-              {STEPS.map((step, i) => (
-                <li className={styles.step} key={step.title}>
-                  <span className={styles.node} aria-hidden="true">
-                    {i + 1}
-                  </span>
-                  <Tag kind={step.tag} />
-                  <h3 className={styles.stepTitle}>{step.title}</h3>
-                  {step.cap && <p className={styles.cap}>{step.cap}</p>}
-                </li>
-              ))}
-            </ol>
-          </div>
+            </section>
+          )}
+        </div>
+
+        <section className={styles.section} aria-labelledby="s2">
+          <h2 className={styles.h2} id="s2">
+            How it works
+          </h2>
+          <p className={styles.sub}>
+            AI suggests, you approve, fixed rules move the money.
+          </p>
+          <ol className={styles.line}>
+            {STEPS.map((step, i) => (
+              <li key={step.title}>
+                <span className={styles.stop} aria-hidden="true">
+                  {i + 1}
+                </span>
+                <Tag kind={step.tag} />
+                <h3>{step.title}</h3>
+                {step.cap && <p>{step.cap}</p>}
+              </li>
+            ))}
+          </ol>
+          <p className={styles.legend}>
+            {LEGEND.map((l) => (
+              <span key={l.tag}>
+                <Tag kind={l.tag} /> = {l.means}
+              </span>
+            ))}
+          </p>
+        </section>
+
+        <section className={styles.section} aria-labelledby="s4">
+          <h2 className={styles.h2} id="s4">
+            Where the money goes
+          </h2>
+          <ul className={styles.routes}>
+            {ROUTES.map((r) => (
+              <li key={r.name}>
+                <b>{r.name}</b>
+                <span>{r.when}</span>
+                <span className={styles.routeMoney}>{r.money}</span>
+              </li>
+            ))}
+          </ul>
+          <p className={styles.legend}>
+            <span>
+              <Tag kind="rule" /> Fixed code picks the path. The AI never does.
+            </span>
+          </p>
         </section>
 
         <section className={styles.section} aria-labelledby="s3">
-          <div className={styles.row}>
-            <div>
-              <h2 className={styles.title} id="s3">
-                What PayPal does here
-              </h2>
-              <p className={styles.sub}>All calls run in the PayPal sandbox.</p>
-            </div>
-            <ul className={styles.pp}>
-              {PAYPAL.map((item) => (
-                <li className={styles.ppItem} key={item.title}>
-                  <Icon name={item.icon} />
-                  <div>
-                    <b>{item.title}</b>
-                    <span>{item.text}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <h2 className={styles.h2} id="s3">
+            What PayPal does here
+          </h2>
+          <p className={styles.sub}>All calls run in the PayPal sandbox.</p>
+          <ul className={styles.pp}>
+            {PAYPAL.map((item) => (
+              <li key={item.title}>
+                <Icon name={item.icon} />
+                <div>
+                  <b>{item.title}</b>
+                  <span>{item.text}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
         </section>
       </main>
 
-      <footer>
-        <div className={`${styles.wrap} ${styles.footer}`}>
+      <footer className={styles.footer}>
+        <div className={styles.wrap}>
           Demo store. The merchant and order dates are made up; the recalls are
-          real CPSC recalls, with brand names replaced. Not affiliated with CPSC or PayPal.
+          real CPSC recalls, with brand names replaced. Not affiliated with CPSC
+          or PayPal.
         </div>
       </footer>
     </>

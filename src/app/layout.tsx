@@ -1,23 +1,19 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
+import { Archivo, Red_Hat_Mono } from "next/font/google";
 import { IconSprite } from "@/components/Icon";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+// Archivo carries the width axis so headlines can run condensed (font-stretch) from one file.
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
-  axes: ["opsz"],
+  axes: ["wdth"],
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+// Labels, case numbers and the MODEL / RULE / TOOL / YOU marks.
+const redHatMono = Red_Hat_Mono({
+  variable: "--font-red-hat-mono",
   subsets: ["latin"],
-});
-
-const dmMono = DM_Mono({
-  variable: "--font-dm-mono",
-  subsets: ["latin"],
-  weight: "500",
 });
 
 export const metadata: Metadata = {
@@ -28,10 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${bricolage.variable} ${dmSans.variable} ${dmMono.variable}`}
-    >
+    <html lang="en" className={`${archivo.variable} ${redHatMono.variable}`}>
       <body>
         <IconSprite />
         {children}

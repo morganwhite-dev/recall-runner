@@ -35,7 +35,7 @@ ModuleRegistry.registerModules([
 
 // Plum look through the AG Grid theming API: 40px header, 44px rows.
 const gridTheme = themeQuartz.withParams({
-  fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+  fontFamily: "var(--font-body)",
   fontSize: 14,
   foregroundColor: "#1f1a21",
   backgroundColor: "#ffffff",

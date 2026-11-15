@@ -1,55 +1,62 @@
-/* Design tokens, resets and shared primitives (tag, pill, button). */
+/* Design tokens, resets and shared primitives (tag, pill, button).
+   Look: "bold utility". Near-black ink on warm light paper, plain rectangles, one burnt orange
+   kept for the primary button and a single feature per page. Token names are the old ones so
+   every page picks up the new values. */
 :root {
-  --ground: #fbf9f7;
+  --ground: #f3f1ec; /* warm light page */
   --surface: #ffffff;
-  --surface-sunk: #f2edef;
-  --ink: #1f1a21;
-  --ink-muted: #5a525c;
-  --line: #e0d9dd;
-  --brand: #3b1f3f;
+  --surface-sunk: #e9e6df;
+  --paper: #f7f1e3; /* receipt paper, money moments only */
+  --ink: #0f0f0f;
+  --ink-muted: #4d4b47; /* 7.7:1 on --ground */
+  --line: #d6d2c9;
+  --brand: #0f0f0f; /* dark bars and panels (was plum) */
   --on-brand: #ffffff;
-  --accent: #ff9e7a;
-  --on-accent: #2a1530;
-  --on-ground: #ffffff;
-  --on-ground-muted: #dccbdd;
-  --recall: #9a4a12;
-  --recall-bg: #fbe9da;
-  --rule-bg: #1f1a21;
+  /* Burnt orange, deeper than a signal orange so a safety product does not read as an alarm.
+     Always carries --on-accent (near-black) text: 4.9:1. Never used as text on light. */
+  --accent: #d65a26;
+  --accent-hover: #e2774a;
+  --on-accent: #0f0f0f;
+  --on-ground: #ffffff; /* text on --brand */
+  --on-ground-muted: #b8b5ae; /* 9.4:1 on --brand */
+  --recall: #0f0f0f;
+  --recall-bg: #f3dccd;
+  --rule-bg: #0f0f0f;
   --rule-ink: #ffffff;
-  --model-bg: #f1e7f2;
-  --model-ink: #5b2a66;
-  --ok-bg: #ddf1e5;
-  --ok-ink: #14633a;
+  --model-bg: #ffffff;
+  --model-ink: #0f0f0f;
+  --ok-bg: #e3efe6;
+  --ok-ink: #1d6b3f;
 
-  /* Soft lilac and cream from the buyer page, shared so every page (404, loading, dashboard
-     hovers, the home example tag) can use them. */
-  --lav: #f1e7f2;
-  --lav-2: #e6d3ea;
-  --cream: #fff8f0;
-  --ctl: #8a808c;
-  --card-shadow: 0 2px 0 var(--lav-2), 0 28px 48px -36px rgba(59, 31, 63, 0.5);
+  /* Older soft tints, now neutral greys so nothing reads as lilac. */
+  --lav: #ebe8e1;
+  --lav-2: #d6d2c9;
+  --cream: #f3f1ec;
+  --ctl: #77736b; /* control borders: 4.2:1 on --ground */
+  --card-shadow: 0 0 0 1px var(--line); /* a hairline, not a soft shadow */
 
   /* Case status colours, one set for the dashboard pills, the activity dots, the progress bar and
      the buyer's receipt chip. Status always pairs the colour with an icon and a word. */
-  --sent-bg: #f2edef;
-  --sent-ink: #5a525c;
-  --sent-line: #ddd3d8;
-  --opened-bg: #e6edf7;
-  --opened-ink: #2d4a7a;
-  --opened-line: #b9cbe6;
-  --wait-bg: #fdf0d5;
-  --wait-ink: #7a4b00;
-  --wait-line: #c27c00;
-  --ok-line: #a9d8bb;
-  --ok-solid: #2f8a57; /* bars, dots and the live light */
+  --sent-bg: #ebe8e1;
+  --sent-ink: #4d4b47;
+  --sent-line: #c9c4ba;
+  --opened-bg: #e4eaf2;
+  --opened-ink: #2b466f;
+  --opened-line: #b3c3da;
+  --wait-bg: #fbeed3;
+  --wait-ink: #6e4300;
+  --wait-line: #b87400;
+  --ok-line: #9fcbaf;
+  --ok-solid: #2f7a4f; /* bars, dots and the live light */
 
-  /* Motion: springy for things that arrive, smooth for things that move. */
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Motion: short and settled, never springy. --ease-spring keeps its name for older code but no
+     longer overshoots. */
+  --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-  --font-display: var(--font-bricolage), sans-serif;
-  --font-body: var(--font-dm-sans), system-ui, sans-serif;
-  --font-mono: var(--font-dm-mono), monospace;
+  --font-display: var(--font-archivo), system-ui, sans-serif;
+  --font-body: var(--font-archivo), system-ui, sans-serif;
+  --font-mono: var(--font-red-hat-mono), ui-monospace, monospace;
 }
 
 *,
@@ -72,11 +79,11 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--brand);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
 
-/* Wrap plum areas in .on-plum so focus rings use the accent colour. */
+/* Wrap dark areas in .on-plum (old name) so focus rings switch to the orange: 4.9:1 on ink. */
 .on-plum :focus-visible {
   outline-color: var(--accent);
 }
@@ -101,59 +108,72 @@ a {
   white-space: nowrap;
 }
 
-/* Tag: who or what did a step (MODEL / RULE / TOOL / YOU). */
+/* Tag: who or what did a step. Each kind has its own box and glyph, so it never relies on colour:
+   MODEL hollow dashed + diamond, RULE solid black + square, TOOL outline + triangle,
+   YOU underline + dot. */
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font: 700 11px/1 var(--font-body);
-  letter-spacing: 0.09em;
+  gap: 6px;
+  font: 700 12px/1.2 var(--font-mono);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 5px 9px;
-  border-radius: 999px;
+  padding: 3px 8px;
+  border: 2px solid var(--ink);
+  color: var(--ink);
   white-space: nowrap;
+  vertical-align: middle;
+  flex: none;
 }
 
-.tag .icon {
-  font-size: 13px;
+.tag-glyph {
+  width: 10px;
+  height: 10px;
+  fill: currentColor;
+  flex: none;
+}
+
+.tag-model {
+  border-style: dashed;
+  background: var(--model-bg);
+  color: var(--model-ink);
 }
 
 .tag-rule {
   background: var(--rule-bg);
+  border-color: var(--rule-bg);
   color: var(--rule-ink);
 }
 
-.tag-model {
-  background: var(--model-bg);
-  color: var(--model-ink);
-  border: 1.5px dashed var(--model-ink);
-  padding: 3.5px 8px;
-}
-
 .tag-tool {
-  color: var(--ink);
-  border: 1px solid var(--ink-muted);
-  padding: 4.5px 8px;
+  background: transparent;
 }
 
 .tag-you {
-  background: var(--surface-sunk);
-  color: var(--ink-muted);
+  border-color: transparent;
+  border-bottom-color: currentColor;
+  background: transparent;
 }
 
-/* Pill: status, always icon plus word. Same box as the dashboard's status pills (1px line). */
+/* On a dark panel, RULE flips to white so it stays a solid block. */
+.on-plum .tag-rule {
+  background: var(--on-brand);
+  border-color: var(--on-brand);
+  color: var(--ink);
+}
+
+/* Pill (status): a rectangle with a check and a word, never colour alone. */
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-weight: 700;
   font-size: 13px;
   line-height: 20px;
   color: var(--ok-ink);
   background: var(--ok-bg);
-  border: 1px solid var(--ok-line);
-  padding: 2px 8px 2px 6px;
-  border-radius: 999px;
+  border: 2px solid var(--ok-ink);
+  padding: 1px 8px 1px 6px;
   white-space: nowrap;
 }
 
@@ -161,7 +181,7 @@ a {
   font-size: 15px;
 }
 
-/* Button: primary action on plum. */
+/* Button: the primary action. Burnt orange with near-black text (4.9:1), square corners. */
 .button {
   display: inline-flex;
   align-items: center;
@@ -169,36 +189,35 @@ a {
   min-height: 44px;
   background: var(--accent);
   color: var(--on-accent);
-  font: 700 17px/1 var(--font-body);
-  padding: 18px 28px;
-  border-radius: 999px;
+  font: 700 18px/1 var(--font-body);
+  padding: 17px 24px;
+  border: 0;
+  border-radius: 0;
   text-decoration: none;
-  transition:
-    transform 0.15s,
-    background 0.15s;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
 .button:hover {
-  background: #ffb394;
-  transform: translateY(-2px);
+  background: var(--accent-hover);
 }
 
-.button:active {
-  transform: translateY(1px);
+.button:disabled {
+  cursor: progress;
 }
 
 .button .icon {
   font-size: 21px;
-  transition: transform 0.15s;
+  transition: transform 0.15s var(--ease-out);
 }
 
 .button:hover .icon {
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
 
-/* Easter egg: the loop icon in the logo takes a playful half turn when you hover or focus it. */
+/* Easter egg: the loop icon in the logo takes a half turn when you hover or focus it. */
 .logo-turn .icon {
-  transition: transform 0.5s var(--ease-spring);
+  transition: transform 0.4s var(--ease-out);
 }
 
 .logo-turn:hover .icon,
@@ -232,7 +251,7 @@ a {
   }
 }
 
-/* Product art (src/components/ProductArt.tsx). The peach shapes are fills; they sit still by
+/* Product art (src/components/ProductArt.tsx). The accent shapes are fills; they sit still by
    default and move only when the device allows motion. */
 .art-fill {
   fill: var(--accent);
@@ -352,10 +371,10 @@ a {
 
 @keyframes rrRing {
   0% {
-    box-shadow: 0 0 0 0 rgba(59, 31, 63, 0.4);
+    box-shadow: 0 0 0 0 rgba(15, 15, 15, 0.35);
   }
   100% {
-    box-shadow: 0 0 0 8px rgba(59, 31, 63, 0);
+    box-shadow: 0 0 0 8px rgba(15, 15, 15, 0);
   }
 }
 
