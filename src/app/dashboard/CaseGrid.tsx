@@ -33,26 +33,34 @@ ModuleRegistry.registerModules([
   RowStyleModule,
 ]);
 
-// Plum look through the AG Grid theming API: 40px header, 44px rows.
+// Departures-board look through the AG Grid theming API: a square near-black header row with mono
+// labels, hairline row borders, no column lines. The selected row's mark (a 4px ink bar on its first
+// cell) and the white sort icons are in page.module.css.
 const gridTheme = themeQuartz.withParams({
   fontFamily: "var(--font-body)",
   fontSize: 14,
-  foregroundColor: "#1f1a21",
+  foregroundColor: "#0f0f0f",
   backgroundColor: "#ffffff",
-  accentColor: "#3b1f3f",
-  borderColor: "#e0d9dd",
+  accentColor: "#0f0f0f",
+  borderColor: "#d6d2c9",
+  borderRadius: 0,
   wrapperBorder: false,
   wrapperBorderRadius: 0,
   columnBorder: false,
+  rowBorder: { width: 1, color: "#d6d2c9" },
+  headerRowBorder: false,
   headerHeight: 40,
-  headerBackgroundColor: "#f2edef",
-  headerTextColor: "#5a525c",
+  headerBackgroundColor: "#0f0f0f",
+  headerTextColor: "#ffffff",
+  headerFontFamily: "var(--font-mono)",
   headerFontSize: 12,
-  headerFontWeight: 600,
-  rowHeight: 50,
-  cellHorizontalPadding: 12,
-  rowHoverColor: "#fbf7f9",
-  selectedRowBackgroundColor: "#f8f2f5",
+  headerFontWeight: 700,
+  headerCellHoverBackgroundColor: "#262523",
+  rowHeight: 52,
+  cellHorizontalPadding: 14,
+  rowHoverColor: "#f7f5f0",
+  selectedRowBackgroundColor: "#efeadf",
+  focusShadow: "none",
 });
 
 function BuyerCell({ data }: ICellRendererParams<BuyerCase>) {
@@ -65,7 +73,12 @@ function BuyerCell({ data }: ICellRendererParams<BuyerCase>) {
       <span className={styles.whoText}>
         {data.name}
         {data.canSignIn && (
-          <span className={styles.you}>You · sign in here</span>
+          <span className={styles.you}>
+            <svg viewBox="0 0 10 10" aria-hidden="true">
+              <circle cx="5" cy="5" r="4" />
+            </svg>
+            You · sign in here
+          </span>
         )}
       </span>
     </span>
@@ -116,7 +129,7 @@ const CASE_COLUMNS: ColDef<BuyerCase>[] = [
     type: "rightAligned",
     flex: 0.7,
     minWidth: 76,
-    cellClass: [cell, styles.cellRight, styles.num],
+    cellClass: [cell, styles.cellRight, styles.num, styles.mono],
   },
   {
     colId: "status",
@@ -257,7 +270,7 @@ export function CaseGrid({
         }
         domLayout="autoHeight"
         headerHeight={40}
-        rowHeight={50}
+        rowHeight={52}
         suppressMovableColumns
         defaultColDef={{
           sortable: true,

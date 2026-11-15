@@ -3,41 +3,39 @@
   position: fixed;
   right: 24px;
   bottom: 24px;
+  left: auto;
   z-index: 50;
   pointer-events: none;
 }
 
 .toast {
   margin: 0;
-  padding: 12px 16px 12px 12px;
-  max-width: 340px;
-  border-radius: 12px;
+  padding: 12px 12px 12px 14px;
+  max-width: 360px;
   background: var(--ink);
   color: #fff;
-  font-size: 13.5px;
-  box-shadow: 0 8px 24px rgb(31 26 33 / 0.25);
+  font-size: 14px;
+  border-left: 6px solid var(--ok-solid);
   display: flex;
   align-items: center;
   gap: 12px;
   pointer-events: auto;
 }
 
-/* The receipt seal in miniature: a coral badge with a dark tick. */
 .toast > :global(.icon) {
   --icon-tick: var(--ink);
   font-size: 22px;
-  color: var(--accent);
+  color: #ffffff;
 }
 
 .toast button {
   flex: none;
-  min-height: 32px;
+  min-height: 36px;
   padding: 0 12px;
-  border: 1px solid rgb(255 255 255 / 0.35);
-  border-radius: 999px;
+  border: 2px solid rgb(255 255 255 / 0.6);
   background: transparent;
   color: #fff;
-  font: 600 12.5px var(--font-body);
+  font: 700 12.5px var(--font-body);
   cursor: pointer;
 }
 
@@ -45,13 +43,25 @@
   background: rgb(255 255 255 / 0.12);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .toast {
-    animation: toastIn 0.45s var(--ease-out) both;
+.toast button:focus-visible {
+  outline-color: var(--accent);
+}
+
+@media (max-width: 520px) {
+  .region {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
   }
 
-  .toast > :global(.icon) {
-    animation: tickIn 0.5s var(--ease-spring) 0.15s both;
+  .toast {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toast {
+    animation: toastIn 0.3s var(--ease-out) both;
   }
 }
 
@@ -78,12 +88,6 @@
 @keyframes toastIn {
   from {
     opacity: 0;
-    transform: translateY(12px);
-  }
-}
-
-@keyframes tickIn {
-  from {
-    transform: scale(0) rotate(-40deg);
+    transform: translateY(8px);
   }
 }

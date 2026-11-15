@@ -328,6 +328,13 @@
   gap: 2px;
 }
 
+/* In a stretched card the links sit at its foot, level with the receipt's total. */
+.card > .links:last-child {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 2px dotted var(--line);
+}
+
 /* The primary action: burnt orange, square, near-black text (4.9:1). Flat, no lift. */
 .btn {
   display: inline-flex;
@@ -444,6 +451,14 @@
 .stopSection {
   padding: 16px 18px;
   border: 2px solid var(--ink);
+}
+
+/* Laptop: when the stub is the taller half, the stop box grows to the foot of the ticket so the
+   notice has no hole under it; its words stay at the top of the box. */
+@media (min-width: 861px) {
+  .stopSection {
+    flex: 1 0 auto;
+  }
 }
 
 .stopSection .sectionTitle {
@@ -605,7 +620,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 440px;
   gap: 32px;
-  align-items: start;
+  /* Both columns end together: the shorter one stretches to the taller one's height. */
+  align-items: stretch;
   padding-bottom: 56px;
 }
 
@@ -614,8 +630,8 @@
 }
 
 .card {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 28px;
   padding: 28px 32px 32px;
   background: var(--surface);
@@ -660,6 +676,8 @@
 /* The printed receipt: thermal paper with torn top and bottom edges. */
 .receipt {
   position: relative;
+  display: flex;
+  flex-direction: column;
   margin: 8px 0;
   padding: 24px 28px 26px;
   background: var(--paper);
@@ -768,6 +786,7 @@
   display: grid;
   justify-items: start;
   gap: 6px;
+  margin-top: auto; /* the total sits at the foot of a stretched receipt */
   padding-top: 14px;
   border-top: 2px dashed var(--ink);
 }

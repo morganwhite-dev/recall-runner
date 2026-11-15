@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useState, type KeyboardEvent, type ReactNode } from "react";
 import type { GridApi } from "ag-grid-community";
 import { CaseGrid, type GridKind } from "./CaseGrid";
 import { Activity } from "./Activity";
@@ -28,10 +28,12 @@ export function Workspace({
   cases: CASES,
   activity,
   approved,
+  funnel,
 }: {
   cases: BuyerCase[];
   activity: ActivityEvent[];
   approved: boolean;
+  funnel?: ReactNode; // how the agent found the recalls; sits beside the activity feed
 }) {
   const [tab, setTab] = useState<GridKind>("cases");
   const [selectedId, setSelectedId] = useState("");
@@ -50,11 +52,14 @@ export function Workspace({
 
   if (!selected) {
     return (
+      <div className={styles.emptyWrap}>
       <p className={styles.empty}>
         {approved
           ? "This campaign has no affected orders, so there's nobody to notify."
           : "Nothing here yet. Approve the campaign and we'll open a case for each affected order and notify the buyers. Nothing is sent or paid until you do."}
       </p>
+      {funnel}
+      </div>
     );
   }
 
@@ -78,9 +83,11 @@ export function Workspace({
   }
 
   return (
-    <div className={styles.split}>
+    // A strict two-column grid: the case table beside the detail panel (the panel takes the table's
+    // height and scrolls inside), then the funnel beside the activity feed (the feed takes the funnel's height).
+    <div className={`${styles.split} ${funnel ? "" : styles.noFunnel}`}>
       <LiveSettle cases={CASES} onSettled={setFlashIds} />
-      <section aria-label="Cases and outbox">
+      <section className={styles.casesCol} aria-label="Cases and outbox">
         <div className={styles.tabs} role="tablist" aria-label="Campaign views">
           {TABS.map((t, i) => (
             <button
@@ -188,11 +195,12 @@ export function Workspace({
             )}
           </div>
         </div>
-
-        <Activity events={activity} />
       </section>
 
       <DetailPanel selected={selected} />
+
+      {funnel}
+      <Activity events={activity} />
     </div>
   );
 }

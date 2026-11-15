@@ -1,89 +1,149 @@
-/* The detail panel: header, two tabs with a sliding underline, a scrolling body and a pinned button. */
+/* The detail panel: a black departures-board header for the selected case, two square tabs, a
+   scrolling body and an optional pinned link.
+   Desktop: the panel takes exactly the case table's height (contain: size keeps its own content
+   from growing the row) and scrolls inside, so both columns end together. A long table caps it at
+   the viewport and it stays in view. Stacked: a fixed-height scrolling panel under the table. */
 
 .panel {
-  position: sticky;
-  top: 0;
-  align-self: start;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 32px);
-  min-height: 420px;
+  min-width: 0;
+  height: min(640px, 85vh);
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  border: 2px solid var(--ink);
   overflow: hidden;
 }
 
+@media (min-width: 1024px) {
+  .panel {
+    contain: size;
+    height: auto;
+    min-height: 520px;
+    max-height: calc(100vh - 32px);
+    position: sticky;
+    top: 16px;
+  }
+}
+
 .head {
+  flex: none;
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.headTop {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 14px 16px 12px;
 }
 
 .head h2 {
-  font: 700 16px/1.2 var(--font-display);
-}
-
-.headSub {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-top: 3px;
-  font-size: 13px;
-  color: var(--ink-muted);
+  min-width: 0;
+  font: 800 24px/1.05 var(--font-display);
+  font-stretch: 80%;
+  letter-spacing: -0.01em;
 }
 
 .avatarBig {
   flex: none;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
   display: grid;
   place-items: center;
+  background: var(--on-brand);
+  color: var(--ink);
+  font: 700 13px var(--font-mono);
+}
+
+/* Path, amount and status as labelled cells split by thin lines, like a departures board. */
+.headRow {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 1.3fr;
+  gap: 1px;
+  background: #3a3936;
+  border-top: 1px solid #3a3936;
+}
+
+.headRow div {
+  min-width: 0;
+  padding: 8px 12px 10px 16px;
   background: var(--brand);
-  color: var(--on-brand);
-  font: 700 13px var(--font-body);
+}
+
+.headRow div + div {
+  padding-left: 12px;
+}
+
+.headRow dt {
+  margin-bottom: 4px;
+  font: 700 10.5px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-ground-muted);
+}
+
+.headRow dd {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.headAmt {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .tabs {
   position: relative;
+  flex: none;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: 42px;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  height: 44px;
+  border-bottom: 2px solid var(--ink);
 }
 
 .tabs button {
-  font: 700 13.5px var(--font-body);
+  font: 700 14px var(--font-body);
   color: var(--ink-muted);
   background: none;
   border: 0;
   cursor: pointer;
 }
 
+.tabs button + button {
+  border-left: 1px solid var(--line);
+}
+
+.tabs button:hover {
+  color: var(--ink);
+  background: var(--ground);
+}
+
 .tabs button[aria-selected="true"] {
   color: var(--ink);
 }
 
-/* One 2px coral bar under the selected tab; it slides because only its transform changes. */
+.tabs button:focus-visible {
+  outline-offset: -3px;
+}
+
+/* One 4px ink bar under the selected tab; it slides because only its transform changes. */
 .slider {
   position: absolute;
   left: 0;
-  bottom: -1px;
+  bottom: -2px;
   width: 50%;
-  height: 2px;
-  background: var(--accent);
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  height: 4px;
+  background: var(--ink);
+  transition: transform 0.25s var(--ease-out);
 }
 
 .slider[data-tab="msg"] {
   transform: translateX(100%);
 }
 
-/* The body scrolls and fades out at the bottom, so the pinned button never hides text. */
+/* The body scrolls and fades out at the bottom, so the pinned link never hides text. */
 .body {
   flex: 1 1 auto;
   min-height: 0;
@@ -91,15 +151,16 @@
   padding: 14px 16px 22px;
   -webkit-mask-image: linear-gradient(
     to bottom,
-    #000 calc(100% - 28px),
+    #000 calc(100% - 24px),
     transparent
   );
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
 }
 
 .cta {
   flex: none;
   padding: 10px 16px 14px;
+  border-top: 1px solid var(--line);
 }
 
 .cta a {
@@ -108,26 +169,17 @@
   justify-content: center;
   gap: 8px;
   min-height: 44px;
-  border-radius: 999px;
   font: 700 14px var(--font-body);
   text-decoration: none;
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s;
-}
-
-.cta a:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 158, 122, 0.35);
-}
-
-.ctaYou {
-  background: #2a1530;
-  color: var(--accent);
+  transition: background 0.15s;
 }
 
 .ctaOther {
   background: var(--surface);
   color: var(--ink);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
+}
+
+.ctaOther:hover {
+  background: var(--ground);
 }

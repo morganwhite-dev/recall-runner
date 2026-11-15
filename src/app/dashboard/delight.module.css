@@ -1,56 +1,25 @@
 /* Small touches for the dashboard. Every animation is wrapped for reduced motion, and
-   transitions are switched off for reduced motion in globals.css. */
+   transitions are switched off for reduced motion in globals.css. Nothing overshoots or bounces. */
 
-/* The Settled pill is the global .pill plus the dashboard's .status box; keep the pill's green line
-   (.status sets a transparent one for the other statuses). */
-.settled:global(.pill) {
-  border-color: var(--ok-line);
-}
-
-/* A case that shows as Settled gives a quick pop and a soft ring, then the tick settles.
-   The pill still reads "tick + Settled" with or without the motion. */
+/* A case that shows as Settled: its tick fades in once. The status still reads "tick + Settled"
+   with or without the motion. */
 @media (prefers-reduced-motion: no-preference) {
-  .settled {
-    animation: settledPop 0.7s ease-out both;
-  }
-
   .settled :global(.icon) {
-    animation: tickIn 0.5s var(--ease-spring) 0.15s both;
-  }
-}
-
-@keyframes settledPop {
-  0% {
-    transform: scale(0.9);
-    box-shadow: 0 0 0 0 var(--ok-bg);
-  }
-  55% {
-    transform: scale(1.08);
-    box-shadow: 0 0 0 8px transparent;
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 transparent;
+    animation: tickIn 0.4s var(--ease-out) 0.1s both;
   }
 }
 
 @keyframes tickIn {
   from {
-    transform: scale(0) rotate(-40deg);
+    opacity: 0;
   }
 }
 
-/* The grid tabs respond to hover and press. */
+/* The grid tabs respond to hover. */
 button.tab {
-  transition:
-    background 0.15s,
-    transform 0.15s;
+  transition: background 0.15s;
 }
 
 button.tab:hover {
   background: var(--surface-sunk);
-}
-
-button.tab:active {
-  transform: translateY(1px);
 }

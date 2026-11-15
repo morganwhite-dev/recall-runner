@@ -1,203 +1,57 @@
-/* The dashboard shell: plum sidebar, demo stepper and recall header (direction 2a).
-   Phone widths stack the sidebar on top and let the page scroll normally. */
+/* The dashboard shell in the bold-utility look: the demo strip, a dark top bar, the campaigns as
+   tabs, the recall header with its progress, and the footer. No sidebar: the page scrolls as one
+   column and the workspace gets the full width. */
 
 .root {
-  display: grid;
-  grid-template-columns: clamp(216px, 18vw, 264px) minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: var(--ground);
-}
-
-/* Sidebar */
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  padding: 26px 18px;
-  background: var(--brand);
-  color: var(--on-ground);
-}
-
-.sideTop,
-.sideBottom {
-  display: contents;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font: 800 19px var(--font-display);
-  text-decoration: none;
-}
-
-.mark {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--on-accent);
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-}
-
-.storeChip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.storeChip i {
-  flex: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: rgba(255, 255, 255, 0.14);
-  font: 700 12px var(--font-body);
-  font-style: normal;
-}
-
-.storeChip span {
-  display: block;
-  font-size: 12px;
-  color: var(--on-ground-muted);
-}
-
-.storeChip b {
-  display: block;
-  font: 700 15px/1.2 var(--font-display);
-}
-
-.label {
-  margin-bottom: 8px;
-  font: 500 11px var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--on-ground-muted);
-}
-
-.campaigns {
-  display: grid;
-  gap: 4px;
-  list-style: none;
-  padding: 0;
-}
-
-.campaign {
-  display: grid;
-  gap: 2px;
-  padding: 10px 12px;
-  border-left: 3px solid transparent;
-  border-radius: 10px;
-  color: var(--on-ground);
-  text-decoration: none;
-  transition: background 0.15s;
-}
-
-.campaign:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.campaign[aria-current="page"] {
-  background: rgba(255, 255, 255, 0.1);
-  border-left-color: var(--accent);
-}
-
-.campaignTop {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font: 700 15px/1.25 var(--font-display);
-}
-
-.campaignTop .campaignCount {
-  flex: none;
-  font: 500 12px var(--font-mono);
-  color: var(--on-ground-muted);
-}
-
-.campaign small {
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--on-ground-muted);
-}
-
-.links {
-  display: grid;
-  gap: 2px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.links a {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 9px 12px;
-  border-radius: 10px;
-  color: var(--on-ground);
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.links a:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.disclaimer {
-  margin-top: auto;
-  font-size: 11.5px;
-  line-height: 1.5;
-  color: var(--on-ground-muted);
-}
-
-/* Main column */
-.main {
-  height: 100vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+  /* The right-hand column (progress card, detail panel, funnel) is one width everywhere, so the
+     header and the workspace share a grid. */
+  --side: clamp(340px, 30vw, 400px);
+  --gap: 24px;
 }
 
 /* Every band uses the same side padding, so content stays centered and at most 1240px wide. */
 .band {
-  padding-left: max(24px, calc((100% - 1240px) / 2));
-  padding-right: max(24px, calc((100% - 1240px) / 2));
+  padding-left: max(16px, calc((100% - 1240px) / 2));
+  padding-right: max(16px, calc((100% - 1240px) / 2));
 }
 
-/* Demo stepper */
+@media (min-width: 720px) {
+  .band {
+    padding-left: max(32px, calc((100% - 1240px) / 2));
+    padding-right: max(32px, calc((100% - 1240px) / 2));
+  }
+}
+
+/* ---------- Demo strip ---------- */
 .stepper {
   position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
   min-height: 60px;
-  flex-shrink: 0; /* its parent is a flex column; when the strip wraps it must grow, not squash */
   background: var(--surface);
-  border-bottom: 1px solid var(--line);
-  /* Lets the steps react to the strip's own width (it is the page minus the sidebar). */
+  border-bottom: 2px solid var(--ink);
+  /* Lets the steps react to the strip's own width. */
   container: stepper / inline-size;
 }
 
 .stepperTitle {
-  font: 700 14px var(--font-display);
+  font: 800 15px/1 var(--font-display);
+  font-stretch: 80%;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .stepperTitle span {
-  margin-left: 6px;
-  font: 400 12px var(--font-body);
+  margin-left: 8px;
+  font: 500 12px var(--font-mono);
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--ink-muted);
 }
 
@@ -206,9 +60,7 @@
   flex: 1 0 auto;
   display: flex;
   align-items: center;
-  gap: 0;
   list-style: none;
-  padding: 0;
   min-width: 0;
 }
 
@@ -216,8 +68,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 12px 5px 5px;
-  border-radius: 999px;
+  padding: 4px 10px 4px 0;
   font-size: 13px;
   color: var(--ink-muted);
   white-space: nowrap;
@@ -227,49 +78,52 @@
   content: "";
   width: clamp(6px, 2vw, 28px);
   height: 2px;
-  margin-left: -4px;
-  margin-right: 4px;
-  background: var(--line);
+  margin-right: 2px;
+  background: var(--ctl);
 }
 
+/* Square step numbers in mono, like the numbered route on Home. */
 .stepNum {
   flex: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
-  background: var(--surface-sunk);
-  font: 700 12px var(--font-body);
+  border: 2px solid var(--ctl);
+  background: var(--surface);
+  font: 700 12px/1 var(--font-mono);
   color: var(--ink-muted);
 }
 
-/* A finished step: the receipt seal in miniature, a solid green dot with the seal's white tick. */
+/* A finished step: a solid green square with a white tick. */
 .stepDone .stepNum {
+  border-color: var(--ok-ink);
   background: var(--ok-ink);
   color: #fff;
-  font-size: 22px;
+  font-size: 16px;
 }
 
 .stepNow {
-  background: var(--surface-sunk);
   color: var(--ink);
   font-weight: 700;
 }
 
 .stepNow .stepNum {
-  background: var(--brand);
+  border-color: var(--ink);
+  background: var(--ink);
   color: var(--on-brand);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .stepNow .stepNum {
-    animation: rrRing 1.8s infinite;
-  }
+.stepNow .stepLabel {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
 
-  /* The tick pops in once, when the step turns done. */
+@media (prefers-reduced-motion: no-preference) {
+  /* The tick fades in once, when the step turns done. */
   .stepDone .stepNum :global(.icon) {
-    animation: tickIn 0.5s var(--ease-spring) both;
+    animation: tickIn 0.4s var(--ease-out) both;
   }
 }
 
@@ -279,14 +133,14 @@
   max-width: 36%;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-size: 13px;
   color: var(--ink-muted);
 }
 
 /* When the strip is tight, only the current step keeps its label; finished and upcoming steps
-   shrink to their dot or tick (the label stays for screen readers, and the step's title attribute
-   is the tooltip). Once every step is ticked no step is current, so all labels step aside and the
+   shrink to their square (the label stays for screen readers, and the step's title attribute is
+   the tooltip). Once every step is ticked no step is current, so all labels step aside and the
    closing sentence says it all. */
 @media (min-width: 760px) {
   @container stepper (max-width: 1240px) {
@@ -300,7 +154,7 @@
     }
 
     .step:not(.stepNow) {
-      padding-right: 5px;
+      padding-right: 4px;
     }
   }
 }
@@ -316,7 +170,7 @@
   }
 
   .stepperAct,
-  .stepperActDone {
+  .stepperAct.stepperActDone {
     flex: 1 0 100%;
     max-width: none;
   }
@@ -332,7 +186,7 @@
 }
 
 .stepsDone .step {
-  padding-right: 5px;
+  padding-right: 4px;
 }
 
 /* The finished demo has a sentence and two actions to fit, so it gets more of the strip. The
@@ -356,40 +210,44 @@
   overflow: hidden;
 }
 
-/* The closing sentence has a long and a short version; phones get the short one (see the 759px
-   block below), and it wraps rather than ellipsizes. */
+/* The closing sentence has a long and a short version; phones get the short one. */
 .hintShort {
   display: none;
 }
 
-/* The quieter "Open buyer page" beside the step 3 hint. */
+/* The quieter link beside the primary one: ink, underlined. */
 .stepperSub {
   flex: none;
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-height: 36px;
   font-weight: 700;
-  color: var(--brand);
+  color: var(--ink);
   white-space: nowrap;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
 }
 
+/* The primary action in the strip (Open buyer page, Replay demo): burnt orange, square, flat. */
 .stepperLink {
   border: 0;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 36px;
+  gap: 8px;
+  min-height: 40px;
   padding: 0 18px;
-  border-radius: 999px;
   background: var(--accent);
   color: var(--on-accent);
   font: 700 14px var(--font-body);
   text-decoration: none;
   white-space: nowrap;
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s;
+  transition: background 0.15s;
+}
+
+.stepperLink:hover {
+  background: var(--accent-hover);
 }
 
 .stepperLink:disabled {
@@ -397,35 +255,40 @@
   cursor: progress;
 }
 
-.stepperLink:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 158, 122, 0.35);
-}
-
-/* The coral line on the bottom edge: (steps done + half the current one) / 4. */
+/* The ink line on the strip's bottom edge: (steps done + half the current one) / 4. */
 .progressLine {
   position: absolute;
   left: 0;
-  bottom: -1px;
-  height: 2px;
-  background: var(--accent);
+  bottom: -2px;
+  height: 4px;
+  background: var(--ink);
   transition: width 0.6s var(--ease-out);
 }
 
+/* On any other campaign: a one-line pointer back to the walkthrough. */
 .note {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px 10px;
   min-height: 60px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   background: var(--surface);
-  border-bottom: 1px solid var(--line);
-  font-size: 13.5px;
+  border-bottom: 2px solid var(--ink);
+  font-size: 14px;
+}
+
+.note p {
+  flex: 1 1 280px;
+  min-width: 0;
 }
 
 .note a {
-  margin-left: auto;
   font-weight: 700;
-  color: var(--brand);
+  color: var(--ink);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
 }
 
 /* The banner above the demo strip when "Start fresh demo" ran into the cooldown or failed. */
@@ -437,10 +300,10 @@
   min-height: 52px;
   padding-top: 10px;
   padding-bottom: 10px;
-  background: var(--lav);
-  border-bottom: 1px solid var(--lav-2);
+  background: var(--wait-bg);
+  border-bottom: 2px dashed var(--wait-line);
   color: var(--ink);
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -449,62 +312,278 @@
   min-width: 0;
 }
 
-/* Recall header */
-.recall {
+/* ---------- Top bar ---------- */
+.top {
+  background: var(--surface);
+}
+
+.bar {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.barRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px 18px;
-  padding-top: 18px;
+  gap: 4px 28px;
+  min-height: 60px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
-.artTile {
-  flex: none;
-  width: 72px;
-  height: 72px;
-  display: grid;
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font: 800 22px/1 var(--font-display);
+  font-stretch: 80%;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mark {
+  display: inline-grid;
   place-items: center;
-  border-radius: 14px;
-  background: var(--surface-sunk);
-  color: var(--brand);
+  width: 34px;
+  height: 34px;
+  background: var(--on-brand);
+  color: var(--ink);
+  font-size: 20px;
 }
 
-.artTile svg {
-  width: 52px;
-  height: 52px;
+/* The store, set off from the wordmark by a thin rule. */
+.store {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-left: 28px;
+  border-left: 1px solid #4d4b47;
+  white-space: nowrap;
+}
+
+.store span {
+  font: 600 11px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-ground-muted);
+}
+
+.store b {
+  font: 700 16px var(--font-display);
+}
+
+.links {
+  display: flex;
+  gap: 24px;
+  margin-left: auto;
+}
+
+.links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+}
+
+/* ---------- Campaign tabs ---------- */
+.campaignBar {
+  background: var(--surface);
+  border-bottom: 2px solid var(--ink);
+}
+
+.campaignRow {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+}
+
+.label {
+  flex: none;
+  align-self: center;
+  font: 700 11px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.campaigns {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.campaigns li {
+  flex: 1 1 0;
+  min-width: 220px;
+  display: flex;
+}
+
+.campaigns li + li {
+  border-left: 1px solid var(--line);
+}
+
+/* Each tab: the product on top, the recall number and state under it. The current one gets a 4px
+   ink bar on its bottom edge, sitting on the row's own rule. */
+.campaign {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 10px 16px 12px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.campaign:hover {
+  background: var(--ground);
+}
+
+.campaign:focus-visible {
+  outline-offset: -3px;
+}
+
+.campaign[aria-current="page"] {
+  background: var(--ground);
+}
+
+.campaign[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 6px;
+  background: var(--ink);
+}
+
+.campaignTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font: 700 14px/1.25 var(--font-display);
+}
+
+.campaignName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.campaignCount {
+  flex: none;
+  font: 700 12px/1.4 var(--font-mono);
+  color: var(--ink-muted);
+}
+
+.campaign small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 500 12px/1.4 var(--font-mono);
+  color: var(--ink-muted);
+}
+
+/* ---------- Main ---------- */
+.main {
+  flex: 1 0 auto;
+  display: grid;
+  gap: var(--gap);
+  align-content: start;
+  padding-top: 28px;
+  padding-bottom: 40px;
+  min-width: 0;
+}
+
+/* Recall header: the recall on the left, progress in the right-hand column, both the same height. */
+.recall {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gap);
+}
+
+@media (min-width: 1024px) {
+  .recall {
+    grid-template-columns: minmax(0, 1fr) var(--side);
+    align-items: stretch;
+  }
 }
 
 .title {
-  flex: 1 1 380px;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  padding-top: 4px;
+  border-top: 6px solid var(--ink);
 }
 
 .recallMeta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 8px 12px;
+  padding-top: 12px;
+  font: 500 13px var(--font-mono);
   color: var(--ink-muted);
+}
+
+.artTile {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.artTile svg {
+  width: 32px;
+  height: 32px;
+}
+
+.eyebrow {
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 
 .badge {
   padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--recall-bg);
-  color: var(--recall);
-  font: 500 12px var(--font-mono);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font: 700 12px var(--font-mono);
   white-space: nowrap;
 }
 
-.title h2 {
-  margin: 6px 0 4px;
-  font: 700 24px/1.15 var(--font-display);
-}
-
-.sub {
-  font-size: 13px;
-  color: var(--ink-muted);
+.h1 {
+  margin: 14px 0 10px;
+  font: 800 clamp(36px, 4.6vw, 60px) / 0.95 var(--font-display);
+  font-stretch: 75%;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 /* The long official recall title under the product name: two lines at most. */
@@ -513,41 +592,58 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  max-width: 52em;
   margin-bottom: 6px;
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.45;
   color: var(--ink-muted);
 }
 
-.approval {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  font-size: 13px;
+.sub {
+  max-width: 60em;
+  font-size: 14px;
+  color: var(--ink-muted);
 }
 
-/* Progress card */
+.sub b {
+  color: var(--ink);
+}
+
+/* Approval sits at the foot of the column, level with the bottom of the progress card. */
+.approval {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Progress: a receipt-paper card, the one money moment in the header. */
 .progress {
-  flex: 1 1 360px;
-  max-width: 520px;
-  padding: 10px 16px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 20px 18px;
+  background: var(--paper);
+  border-top: 6px solid var(--ink);
+  font-family: var(--font-mono);
 }
 
 .progressHead {
   display: flex;
   align-items: center;
   gap: 8px;
-  font: 700 13px var(--font-body);
+  font: 700 12px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .live {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+  width: 8px;
+  height: 8px;
   background: var(--ok-solid);
 }
 
@@ -557,33 +653,37 @@
   }
 }
 
-.moneyWrap {
-  margin-left: auto;
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
+/* One row per stage: label, a bar for its share of the orders, the count. */
+.rows {
+  display: grid;
+  gap: 2px;
 }
 
-.money {
-  font: 700 28px/1 var(--font-display);
-  color: var(--ok-ink);
+.row {
+  display: grid;
+  grid-template-columns: 9.5em minmax(40px, 1fr) 2.2em;
+  align-items: center;
+  gap: 12px;
+  min-height: 38px;
+  border-bottom: 1px dotted var(--line);
 }
 
-.moneyLabel {
-  font: 400 12px var(--font-body);
+.rowLabel {
+  font-size: 12.5px;
+  line-height: 1.3;
   color: var(--ink-muted);
 }
 
-.segs {
-  display: flex;
-  gap: 4px;
-  margin: 8px 0;
+.row b {
+  font: 800 28px/1 var(--font-display);
+  font-stretch: 75%;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ink);
 }
 
 .seg {
-  flex: 1;
-  height: 8px;
-  border-radius: 4px;
+  height: 10px;
   background: var(--surface-sunk);
   overflow: hidden;
   display: flex;
@@ -592,194 +692,119 @@
 .seg i {
   display: block;
   height: 100%;
-  background: var(--brand);
+  background: var(--ink);
   transition: width 1.3s var(--ease-out);
 }
 
-/* Settled and waiting, in the same green and amber as the status pills. */
+/* Settled and waiting, in the same green and amber as the status marks. */
 .green {
-  background: var(--ok-solid);
+  background: var(--ok-solid) !important;
 }
 
 .amber {
-  background: var(--wait-line);
+  background: var(--wait-line) !important;
 }
 
-.nums {
+/* The total, printed like a receipt total: label, dotted leader, big figure. */
+.moneyWrap {
   display: flex;
-  gap: 4px;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 2px dashed var(--ink);
 }
 
-.nums div {
-  flex: 1;
-  font-size: 12px;
-  color: var(--ink-muted);
+.moneyLabel {
+  font: 700 12px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.nums b {
-  display: block;
-  font: 700 20px/1.1 var(--font-display);
+.moneyWrap::after {
+  content: "";
+  order: 1;
+  flex: 1 1 16px;
+  border-bottom: 2px dotted var(--ink-muted);
+}
+
+.money {
+  order: 2;
+  font: 800 44px/0.9 var(--font-display);
+  font-stretch: 75%;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
   color: var(--ink);
 }
 
-/* Page content under the recall header */
-.content {
-  flex: 1 1 auto;
-  padding-top: 16px;
-  padding-bottom: 24px;
+/* ---------- Footer ---------- */
+.footer {
+  background: var(--brand);
+  color: var(--on-ground-muted);
 }
 
-/* Phones: the demo strip comes first, then a compact plum block (store and campaign chips),
-   then the recall and cases; the links and the disclaimer close the page. The aside and main
-   dissolve (display: contents) so their children can be ordered as one column. */
+.footer p {
+  padding-top: 18px;
+  padding-bottom: 22px;
+  font-size: 13px;
+}
+
+/* ---------- Narrow screens ---------- */
 @media (max-width: 759px) {
   .root {
-    display: flex;
-    flex-direction: column;
+    --gap: 20px;
   }
 
-  .sidebar,
-  .main {
-    display: contents;
-  }
-
-  .resetNotice {
-    order: 0;
-  }
-
-  .stepper,
-  .note {
-    order: 1;
-  }
-
-  .sideTop {
-    order: 2;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 10px 12px;
-    padding: 12px 16px;
-    background: var(--brand);
-    color: var(--on-ground);
-  }
-
-  .recall {
-    order: 3;
-  }
-
-  .content {
-    order: 4;
-  }
-
-  .sideBottom {
-    order: 5;
-    display: grid;
-    gap: 10px;
-    padding: 16px;
-    background: var(--brand);
-    color: var(--on-ground);
+  .barRow {
+    gap: 0 16px;
+    min-height: 56px;
   }
 
   .logo {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .mark {
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
+    width: 30px;
+    height: 30px;
+    font-size: 17px;
   }
 
-  .storeChip {
-    justify-self: end;
-    min-width: 0;
-    padding: 4px 10px 4px 4px;
-    border-radius: 999px;
+  .store {
+    padding-left: 16px;
   }
 
-  .storeChip i {
-    width: 26px;
-    height: 26px;
-    font-size: 11px;
-  }
-
-  .storeChip span {
+  .store span {
     display: none;
   }
 
-  .storeChip b {
-    font-size: 14px;
-    white-space: nowrap;
+  /* The links take their own row under the wordmark. */
+  .links {
+    order: 3;
+    flex: 1 0 100%;
+    gap: 20px;
+    margin-left: 0;
+    border-top: 1px solid #3a3936;
   }
 
-  /* The campaigns: a row of chips that scrolls sideways inside its own strip. */
-  .sideTop > nav[aria-label="Campaigns"] {
-    grid-column: 1 / -1;
-    min-width: 0;
-  }
-
-  .label,
-  .campaign small {
+  .label {
     display: none;
-  }
-
-  .campaigns {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
   }
 
   .campaigns li {
-    flex: none;
+    flex: 0 0 auto;
+    min-width: 0;
+    max-width: 220px;
   }
 
   .campaign {
-    display: block;
-    padding: 7px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 999px;
-  }
-
-  .campaign[aria-current="page"] {
-    border-color: var(--accent);
-    background: rgba(255, 255, 255, 0.14);
-  }
-
-  .campaignTop {
-    gap: 8px;
-    font-size: 13px;
-  }
-
-  .campaignName {
-    max-width: 170px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .links {
-    display: flex;
-    gap: 8px;
-    padding-top: 0;
-    border-top: 0;
-  }
-
-  .links a {
-    align-items: center;
-    gap: 6px;
-    padding: 9px 4px;
-  }
-
-  .disclaimer {
-    margin-top: 0;
+    padding: 10px 14px 12px;
   }
 
   .stepper {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
     padding-top: 12px;
     padding-bottom: 14px;
   }
@@ -787,6 +812,7 @@
   .stepperAct {
     width: 100%;
     max-width: none;
+    flex-wrap: wrap;
   }
 
   .hintLong {
@@ -799,6 +825,7 @@
 
   .stepperActDone .stepperHint {
     display: block;
+    flex-basis: 100%;
     overflow: visible;
   }
 
@@ -808,16 +835,21 @@
   }
 
   .step + .step::before {
-    display: none;
+    width: 8px;
+  }
+
+  .main {
+    padding-top: 20px;
+  }
+
+  .money {
+    font-size: 36px;
   }
 }
 
-@keyframes rrRing {
-  0% {
-    box-shadow: 0 0 0 0 rgba(59, 31, 63, 0.4);
-  }
-  100% {
-    box-shadow: 0 0 0 8px rgba(59, 31, 63, 0);
+@media (max-width: 420px) {
+  .store {
+    display: none;
   }
 }
 
@@ -825,16 +857,14 @@
   0%,
   100% {
     opacity: 1;
-    transform: scale(1);
   }
   50% {
-    opacity: 0.35;
-    transform: scale(0.7);
+    opacity: 0.3;
   }
 }
 
 @keyframes tickIn {
   from {
-    transform: scale(0) rotate(-40deg);
+    opacity: 0;
   }
 }

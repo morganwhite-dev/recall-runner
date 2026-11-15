@@ -37,9 +37,14 @@ function Timeline({ c }: { c: BuyerCase }) {
             key={`${i}-${step.tag}-${step.text}`}
             style={{ "--i": i } as CSSProperties}
           >
-            <Tag kind={step.tag} />
-            <p>{step.text}</p>
-            {step.code && <code>{step.code}</code>}
+            <span className={styles.stepN} aria-hidden="true">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <div>
+              <Tag kind={step.tag} />
+              <p>{step.text}</p>
+              {step.code && <code>{step.code}</code>}
+            </div>
           </li>
         ))}
       </ol>
@@ -58,9 +63,13 @@ function Message({ c }: { c: BuyerCase }) {
         <dd>{c.sent}</dd>
         <dt>Opened</dt>
         <dd>{c.opened ? "Yes" : "No"}</dd>
-        <dt>Remedy</dt>
-        <dd>{remedyLabel(c)}</dd>
       </dl>
+      {/* The one money line, printed like a receipt line: label, dotted leader, value. */}
+      <p className={styles.remedyLine}>
+        <span>Remedy</span>
+        <i aria-hidden="true" />
+        <b>{remedyLabel(c)}</b>
+      </p>
       <p className={styles.subject}>{c.subject || "No notice yet"}</p>
       <div className={styles.body}>
         {c.body.split("\n\n").map((paragraph, i) => (
@@ -94,37 +103,68 @@ export function DetailPanel({ selected }: { selected: BuyerCase }) {
   const toLastStep = useCallback(
     (el: HTMLDivElement | null) => {
       if (!el || !settled || tab !== "why") return;
-      el.scrollTop = el.scrollHeight;
-      const items = [...el.querySelectorAll<HTMLElement>("ol > li")];
-      const top = (li: HTMLElement) => li.offsetTop - el.offsetTop;
-      const at = el.scrollTop;
-      const cut = items.findIndex(
-        (li) => top(li) < at && top(li) + li.offsetHeight > at,
-      );
-      const first = items[cut + 1];
-      if (cut < 0 || !first) return;
-      // Put the first whole step under the tab bar (the body has 14px of top padding). If that
-      // needs more scroll room than there is, the body gets that much extra space at its end.
-      const next = top(first) - 14;
-      const spare = next + el.clientHeight - el.scrollHeight;
-      if (spare > 0) el.style.paddingBottom = `${22 + spare}px`;
-      el.scrollTop = next;
+      const place = () => {
+        el.style.paddingBottom = "";
+        el.scrollTop = el.scrollHeight;
+        const items = [...el.querySelectorAll<HTMLElement>("ol > li")];
+        const top = (li: HTMLElement) => li.offsetTop - el.offsetTop;
+        const at = el.scrollTop;
+        const cut = items.findIndex(
+          (li) => top(li) < at && top(li) + li.offsetHeight > at,
+        );
+        const first = items[cut + 1];
+        if (cut < 0 || !first) return;
+        // Put the first whole step under the tab bar (the body has 14px of top padding). If that
+        // needs more scroll room than there is, the body gets that much extra space at its end.
+        const next = top(first) - 14;
+        const spare = next + el.clientHeight - el.scrollHeight;
+        if (spare > 0) el.style.paddingBottom = `${22 + spare}px`;
+        el.scrollTop = next;
+      };
+      place();
+      // On a wide screen the panel takes the case table's height, and the grid draws its rows
+      // after this first runs, so the body can grow a moment later; the steps can also reflow
+      // when the web fonts arrive. Place it again when either size changes.
+      const list = el.querySelector("ol");
+      const sizes = () => `${el.clientHeight}/${list?.offsetHeight ?? 0}`;
+      let last = sizes();
+      const watch = new ResizeObserver(() => {
+        if (sizes() === last) return;
+        last = sizes();
+        place();
+      });
+      watch.observe(el);
+      if (list) watch.observe(list);
+      return () => watch.disconnect();
     },
     [settled, tab],
   );
   return (
     <aside className={panel.panel} aria-label="Case detail">
-      <div className={panel.head}>
-        <span className={panel.avatarBig} aria-hidden="true">
-          {selected.initials}
-        </span>
-        <div>
+      {/* The selected case as one departures-board row: who, then path, amount and status. */}
+      <div className={`${panel.head} on-plum`}>
+        <div className={panel.headTop}>
+          <span className={panel.avatarBig} aria-hidden="true">
+            {selected.initials}
+          </span>
           <h2>{selected.name}</h2>
-          <p className={panel.headSub}>
-            {selected.path} · {amountLabel(selected)} ·{" "}
-            <StatusBadge status={selected.status} />
-          </p>
         </div>
+        <dl className={panel.headRow}>
+          <div>
+            <dt>Path</dt>
+            <dd>{selected.path}</dd>
+          </div>
+          <div>
+            <dt>Amount</dt>
+            <dd className={panel.headAmt}>{amountLabel(selected)}</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd>
+              <StatusBadge status={selected.status} onDark />
+            </dd>
+          </div>
+        </dl>
       </div>
       <div className={panel.tabs} role="tablist" aria-label="Case detail views">
         {TABS.map((t) => (

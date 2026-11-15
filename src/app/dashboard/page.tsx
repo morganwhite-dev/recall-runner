@@ -14,8 +14,8 @@ import { Funnel } from "./Funnel";
 import { ResetNotice } from "./ResetNotice";
 import { campaignStats, formatDate, formatMoney } from "./data";
 import styles from "./page.module.css";
-import { Sidebar } from "./Sidebar";
 import shell from "./shell.module.css";
+import { TopBar } from "./TopBar";
 import { Workspace } from "./Workspace";
 
 export const metadata: Metadata = {
@@ -36,6 +36,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
     return (
       <main className={styles.wrap}>
         {notice && <ResetNotice notice={notice} key={notice.kind} />}
+        <h1 className={shell.h1}>Merchant dashboard</h1>
         <p className={styles.empty}>
           Nothing here yet. Head back to the home page and choose Start fresh
           demo to set up a store.
@@ -63,50 +64,48 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
 
   return (
     <div className={shell.root}>
-      <Sidebar campaigns={data.campaigns} current={header.recallNumber} />
+      {notice && (
+        <ResetNotice
+          notice={notice}
+          key={notice.kind === "cooldown" ? notice.since : notice.kind}
+        />
+      )}
+      {data.guide && (
+        <DemoGuide
+          guide={data.guide}
+          current={header.recallNumber}
+          waiting={stats.awaiting > 0}
+          settledCents={paidCents}
+        />
+      )}
+      <TopBar campaigns={data.campaigns} current={header.recallNumber} />
 
-      <main className={shell.main}>
-        <h1 className="sr-only">Merchant dashboard</h1>
-        {notice && (
-          <ResetNotice
-            notice={notice}
-            key={notice.kind === "cooldown" ? notice.since : notice.kind}
-          />
-        )}
-        {data.guide && (
-          <DemoGuide
-            guide={data.guide}
-            current={header.recallNumber}
-            waiting={stats.awaiting > 0}
-            settledCents={paidCents}
-          />
-        )}
-
-        <section
-          className={`${shell.recall} ${shell.band}`}
-          aria-labelledby="title"
-        >
-          <div className={shell.artTile}>
-            <svg
-              viewBox="0 0 96 96"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              {ART_PATHS[header.art]}
-            </svg>
-          </div>
+      <main className={`${shell.main} ${shell.band}`}>
+        {/* The recall on the left, its progress on the right: the same two columns as the case
+            table and the detail panel below, so the page reads as one grid. */}
+        <section className={shell.recall} aria-labelledby="title">
           <div className={shell.title}>
             <p className={shell.recallMeta}>
+              <span className={shell.artTile}>
+                <svg
+                  viewBox="0 0 96 96"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  {ART_PATHS[header.art]}
+                </svg>
+              </span>
+              <span className={shell.eyebrow}>Merchant dashboard</span>
               <span className={shell.badge}>CPSC #{header.recallNumber}</span>
               <span>Recall · {formatDate(header.recallDate)}</span>
             </p>
-            <h2 id="title">
+            <h1 id="title" className={shell.h1}>
               {header.productNames.map(shortName).join(", ") || header.title}
-            </h2>
+            </h1>
             {/* The official CPSC wording, kept for the record but out of the way. */}
             <p className={shell.official} title={header.title}>
               {header.title}
@@ -138,66 +137,85 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
               {stats.awaiting > 0 && (
                 <span className={shell.live} aria-hidden="true" />
               )}
-              <span className={shell.moneyWrap}>
-                <TweenMoney className={shell.money} cents={paidCents} />
-                <span className={shell.moneyLabel}>settled</span>
-              </span>
             </p>
-            <div className={shell.segs} aria-hidden="true">
-              <span className={shell.seg}>
-                <i style={{ width: stats.affected ? "100%" : "0%" }} />
-              </span>
-              <span className={shell.seg}>
-                <i
-                  style={{
-                    width: stats.affected ? share(stats.notified) : "0%",
-                  }}
-                />
-              </span>
-              <span className={shell.seg}>
-                <i style={{ width: share(opened) }} />
-              </span>
-              <span className={shell.seg}>
-                <i
-                  className={shell.green}
-                  style={{ width: share(stats.settled) }}
-                />
-                <i
-                  className={shell.amber}
-                  style={{ width: share(stats.awaiting) }}
-                />
-              </span>
-            </div>
-            <div className={shell.nums}>
-              <div title="Orders that contain the recalled product; each one is a case">
-                <b>{stats.affected}</b>Orders
+            {/* One row per stage: what it counts, a bar (its share of the orders), the count. */}
+            <div className={shell.rows}>
+              <div
+                className={shell.row}
+                title="Orders that contain the recalled product; each one is a case"
+              >
+                <span className={shell.rowLabel}>Orders</span>
+                <span className={shell.seg} aria-hidden="true">
+                  <i style={{ width: stats.affected ? "100%" : "0%" }} />
+                </span>
+                <b>{stats.affected}</b>
               </div>
-              <div>
-                <b>{stats.notified}</b>Sent
+              <div className={shell.row}>
+                <span className={shell.rowLabel}>Sent</span>
+                <span className={shell.seg} aria-hidden="true">
+                  <i
+                    style={{
+                      width: stats.affected ? share(stats.notified) : "0%",
+                    }}
+                  />
+                </span>
+                <b>{stats.notified}</b>
               </div>
-              <div title="Buyers who opened the notice, including those since settled">
-                <b>{opened}</b>Read so far
+              <div
+                className={shell.row}
+                title="Buyers who opened the notice, including those since settled"
+              >
+                <span className={shell.rowLabel}>Read so far</span>
+                <span className={shell.seg} aria-hidden="true">
+                  <i style={{ width: share(opened) }} />
+                </span>
+                <b>{opened}</b>
               </div>
-              <div>
+              <div className={shell.row}>
+                <span className={shell.rowLabel}>
+                  Settled
+                  {stats.awaiting > 0 && <> · {stats.awaiting} waiting</>}
+                </span>
+                <span className={shell.seg} aria-hidden="true">
+                  <i
+                    className={shell.green}
+                    style={{ width: share(stats.settled) }}
+                  />
+                  <i
+                    className={shell.amber}
+                    style={{ width: share(stats.awaiting) }}
+                  />
+                </span>
                 <b>{stats.settled}</b>
-                Settled{stats.awaiting > 0 && <> · {stats.awaiting} waiting</>}
               </div>
             </div>
+            <p className={shell.moneyWrap}>
+              <span className={shell.moneyLabel}>settled</span>
+              <TweenMoney className={shell.money} cents={paidCents} />
+            </p>
           </section>
         </section>
 
-        <div className={`${shell.content} ${shell.band}`}>
-          {data.funnel && (
-            <Funnel funnel={data.funnel} current={header.recallNumber} />
-          )}
-          <Workspace
-            cases={CASES}
-            activity={data.activity}
-            approved={approved}
-            key={header.id}
-          />
-        </div>
+        <Workspace
+          cases={CASES}
+          activity={data.activity}
+          approved={approved}
+          funnel={
+            data.funnel && (
+              <Funnel funnel={data.funnel} current={header.recallNumber} />
+            )
+          }
+          key={header.id}
+        />
       </main>
+
+      <footer className={`${shell.footer} on-plum`}>
+        <p className={shell.band}>
+          Demo store. The merchant and order dates are made up; the recalls are
+          real CPSC recalls, with brand names replaced. Not affiliated with CPSC
+          or PayPal.
+        </p>
+      </footer>
     </div>
   );
 }
