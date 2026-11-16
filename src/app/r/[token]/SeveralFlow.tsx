@@ -117,18 +117,20 @@ export function SeveralFlow({
             ))}
           </ol>
           <div className={styles.pg}>
+            {/* aria-disabled, not disabled: a disabled button drops keyboard focus to the page
+                top when Next reaches the last recall; this way focus stays put. */}
             <button
               type="button"
-              disabled={index === 0}
-              onClick={() => go(index - 1)}
+              aria-disabled={index === 0}
+              onClick={() => index > 0 && go(index - 1)}
             >
               <Icon name="left" />
               Back
             </button>
             <button
               type="button"
-              disabled={index === TOTAL - 1}
-              onClick={() => go(index + 1)}
+              aria-disabled={index === TOTAL - 1}
+              onClick={() => index < TOTAL - 1 && go(index + 1)}
             >
               Next
               <Icon name="right" />
@@ -159,8 +161,9 @@ export function SeveralFlow({
                         alt={`Line drawing of ${recall.productName}`}
                       />
                     </span>
-                    {/* Same colours as everywhere else: lilac while it waits on the buyer, green
-                        once settled, the quiet outline of a problem when it couldn't complete. */}
+                    {/* Same marks as everywhere else, each with an icon and a word: an ink outline
+                        while it waits on the buyer, green once settled, a dashed outline when it
+                        couldn't complete. */}
                     <span
                       className={`${styles.stat} ${claimable ? "" : allDone ? styles.statDone : styles.statProblem}`}
                     >

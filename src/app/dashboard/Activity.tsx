@@ -35,7 +35,12 @@ export function Activity({ events }: { events: ActivityEvent[] }) {
           Nothing has happened yet. Approve the campaign to start.
         </p>
       ) : (
-        <ol className={styles.list}>
+        // The list scrolls inside its card, so it takes focus for keyboard scrolling (WCAG 2.1.1).
+        <ol
+          className={styles.list}
+          tabIndex={0}
+          aria-label="Activity, newest first"
+        >
           {events.map((e) => (
             <li
               key={e.id}

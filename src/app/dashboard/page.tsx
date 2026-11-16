@@ -64,6 +64,11 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
 
   return (
     <div className={shell.root}>
+      {/* The demo strip, top bar and campaign tabs come first: about ten Tab stops before the
+          campaign itself. */}
+      <a className="skip-link" href="#main">
+        Skip to the campaign
+      </a>
       {notice && (
         <ResetNotice
           notice={notice}
@@ -80,7 +85,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
       )}
       <TopBar campaigns={data.campaigns} current={header.recallNumber} />
 
-      <main className={`${shell.main} ${shell.band}`}>
+      <main id="main" className={`${shell.main} ${shell.band}`}>
         {/* The recall on the left, its progress on the right: the same two columns as the case
             table and the detail panel below, so the page reads as one grid. */}
         <section className={shell.recall} aria-labelledby="title">
@@ -209,7 +214,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
         />
       </main>
 
-      <footer className={`${shell.footer} on-plum`}>
+      <footer className={`${shell.footer} on-dark`}>
         <p className={shell.band}>
           Demo store. The merchant and order dates are made up; the recalls are
           real CPSC recalls, with brand names replaced. Not affiliated with CPSC

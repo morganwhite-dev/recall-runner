@@ -16,7 +16,7 @@ export function Art({ kind, alt }: { kind: ArtKind; alt: string }) {
 // The store bar: one dark row on every buyer view, above any alert.
 export function StoreBar({ store }: { store: string }) {
   return (
-    <div className={`${styles.top} on-plum`}>
+    <div className={`${styles.top} on-dark`}>
       <nav aria-label="Store">
         <div className={`${styles.wrap} ${styles.navRow}`}>
           <div className={styles.store}>

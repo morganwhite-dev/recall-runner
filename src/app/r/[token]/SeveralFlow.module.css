@@ -112,7 +112,7 @@
   cursor: pointer;
 }
 
-.pager button:disabled {
+.pager button[aria-disabled="true"] {
   border-color: var(--ctl);
   background: transparent;
   color: var(--ink-muted);
@@ -305,7 +305,7 @@
 
 .copt:has(input:checked) {
   border-color: var(--ink);
-  background: var(--lav);
+  background: var(--surface-sunk);
 }
 
 /* The radio: an empty ring, then an ink dot with the tick once chosen. */

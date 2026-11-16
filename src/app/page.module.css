@@ -519,6 +519,14 @@
   border: 2px solid var(--ink);
 }
 
+/* At 320px (or 200% zoom on a small phone) the big "~50%" no longer fits half the width: stack the
+   two figures so the page never scrolls sideways (WCAG 1.4.10). */
+@media (max-width: 359px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+
 .stats > div {
   display: flex;
   flex-direction: column;

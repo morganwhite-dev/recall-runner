@@ -17,7 +17,7 @@ export function TopBar({
 }) {
   return (
     <header className={styles.top}>
-      <div className={`${styles.bar} on-plum`}>
+      <div className={`${styles.bar} on-dark`}>
         <div className={`${styles.barRow} ${styles.band}`}>
           <Link className={`${styles.logo} logo-turn`} href="/">
             <span className={styles.mark}>

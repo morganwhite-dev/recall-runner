@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CopyField } from "./CopyField";
 import { revealJudgeLogin } from "./judge-actions";
 import styles from "./JudgeLogin.module.css";
@@ -17,6 +17,13 @@ export function JudgeLoginReveal({
     password: string;
   } | null>(null);
   const [failed, setFailed] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+
+  // The Show button disappears once the login is in, so keyboard focus moves to the first Copy
+  // button instead of falling back to the top of the page.
+  useEffect(() => {
+    if (login) box.current?.querySelector("button")?.focus();
+  }, [login]);
 
   async function show() {
     try {
@@ -30,7 +37,9 @@ export function JudgeLoginReveal({
 
   return (
     <div
+      ref={box}
       className={`${styles.box} ${compact ? styles.compact : ""} ${className ?? ""}`}
+      role="group"
       aria-label="Sandbox buyer login"
     >
       <p className={styles.title}>

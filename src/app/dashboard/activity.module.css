@@ -59,6 +59,11 @@
   mask-image: linear-gradient(#000 calc(100% - 24px), transparent);
 }
 
+/* The mask would clip an outside ring, so the focus ring sits inside the scroller. */
+.list:focus-visible {
+  outline-offset: -2px;
+}
+
 @media (min-width: 1024px) {
   .list {
     max-height: none;

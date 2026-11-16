@@ -223,7 +223,8 @@ interface CaseGridProps {
   onShown: (shown: number) => void;
 }
 
-// Selection follows keyboard focus, so arrow keys move through the cases.
+// Selection follows keyboard focus, so arrow keys move through the cases. The grid gets a name so
+// a screen reader says which table it is in.
 export function CaseGrid({
   kind,
   rows,
@@ -248,6 +249,7 @@ export function CaseGrid({
     [kind, phone],
   );
   const apiRef = useRef<GridApi<BuyerCase> | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   // The status filter lives outside the grid, so tell the grid when it changes.
   useEffect(() => {
@@ -259,7 +261,7 @@ export function CaseGrid({
     apiRef.current?.redrawRows();
   }, [flashIds]);
   return (
-    <div className={styles.agWrap}>
+    <div className={styles.agWrap} ref={wrapRef}>
       <AgGridReact<BuyerCase>
         theme={gridTheme}
         rowData={rows}
@@ -282,11 +284,17 @@ export function CaseGrid({
           checkboxes: false,
           enableClickSelection: true,
         }}
+        // Tab leaves the table from any row instead of stepping through every cell (four stops a
+        // row); the arrow keys move between rows and cells, as in the ARIA grid pattern.
+        tabToNextCell={() => false}
         quickFilterText={search}
         isExternalFilterPresent={() => status !== "All"}
         doesExternalFilterPass={(node) => node.data?.status === status}
         onGridReady={(e) => {
           apiRef.current = e.api;
+          wrapRef.current
+            ?.querySelector('[role="grid"], [role="treegrid"]')
+            ?.setAttribute("aria-label", kind === "cases" ? "Cases" : "Outbox");
           onApi(e.api);
         }}
         onFilterChanged={(e) => {

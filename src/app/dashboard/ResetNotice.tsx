@@ -36,8 +36,13 @@ export function ResetNotice({ notice }: { notice: Notice }) {
 
   const waiting = leftMs > 0;
   return (
-    <div className={`${styles.resetNotice} ${styles.band}`} role="status">
+    <div className={`${styles.resetNotice} ${styles.band}`}>
       <Icon name="info" />
+      {/* Not a live region itself: the countdown changes every second and would be read out each
+          time. Only the moment the button turns on is announced. */}
+      <span className="sr-only" role="status">
+        {waiting ? "" : "You can start your own fresh demo now."}
+      </span>
       <p>
         {waiting
           ? `Someone started a fresh demo ${secondsLabel(COOLDOWN_MS - leftMs)} ago — you’re seeing their run. You can start your own in ${Math.ceil(leftMs / 1000)} s.`

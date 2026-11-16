@@ -221,7 +221,7 @@ async function Results() {
 
   return (
     <>
-      <header className={`${styles.bar} on-plum`}>
+      <header className={`${styles.bar} on-dark`}>
         <nav aria-label="Primary" className={styles.wrap}>
           <Link className={`${styles.logo} logo-turn`} href="/">
             <span className={styles.mark} aria-hidden="true">
@@ -264,7 +264,7 @@ async function Results() {
           </div>
 
           <aside
-            className={`${styles.run} on-plum`}
+            className={`${styles.run} on-dark`}
             aria-labelledby="run-title"
           >
             <h2 id="run-title">

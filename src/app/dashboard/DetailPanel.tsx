@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+} from "react";
 import { Icon } from "@/components/Icon";
 import { Tag } from "@/components/Tag";
 import { amountLabel, remedyLabel, type BuyerCase } from "./data";
@@ -139,10 +144,27 @@ export function DetailPanel({ selected }: { selected: BuyerCase }) {
     },
     [settled, tab],
   );
+  // The two tabs follow the ARIA tabs pattern: one Tab stop, arrow keys (and Home/End) switch.
+  function onTabKeyDown(e: KeyboardEvent<HTMLButtonElement>) {
+    const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+    if (!keys.includes(e.key)) return;
+    e.preventDefault();
+    const next =
+      e.key === "Home"
+        ? "why"
+        : e.key === "End"
+          ? "msg"
+          : tab === "why"
+            ? "msg"
+            : "why";
+    setTab(next);
+    document.getElementById(`detail-tab-${next}`)?.focus();
+  }
+
   return (
     <aside className={panel.panel} aria-label="Case detail">
       {/* The selected case as one departures-board row: who, then path, amount and status. */}
-      <div className={`${panel.head} on-plum`}>
+      <div className={`${panel.head} on-dark`}>
         <div className={panel.headTop}>
           <span className={panel.avatarBig} aria-hidden="true">
             {selected.initials}
@@ -175,7 +197,9 @@ export function DetailPanel({ selected }: { selected: BuyerCase }) {
             id={`detail-tab-${t.id}`}
             aria-selected={tab === t.id}
             aria-controls="detail-body"
+            tabIndex={tab === t.id ? 0 : -1}
             onClick={() => setTab(t.id)}
+            onKeyDown={onTabKeyDown}
           >
             {t.label}
           </button>
@@ -187,6 +211,8 @@ export function DetailPanel({ selected }: { selected: BuyerCase }) {
         ref={toLastStep}
         id="detail-body"
         role="tabpanel"
+        // Focusable so the keyboard can scroll it when it holds no link (the Message view).
+        tabIndex={0}
         aria-labelledby={`detail-tab-${tab}`}
         key={`${selected.id}-${tab}`}
       >

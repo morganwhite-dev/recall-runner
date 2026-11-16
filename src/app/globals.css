@@ -10,7 +10,7 @@
   --ink: #0f0f0f;
   --ink-muted: #4d4b47; /* 7.7:1 on --ground */
   --line: #d6d2c9;
-  --brand: #0f0f0f; /* dark bars and panels (was plum) */
+  --brand: #0f0f0f; /* dark bars and panels */
   --on-brand: #ffffff;
   /* Burnt orange, deeper than a signal orange so a safety product does not read as an alarm.
      Always carries --on-accent (near-black) text: 4.9:1. Never used as text on light. */
@@ -28,12 +28,7 @@
   --ok-bg: #e3efe6;
   --ok-ink: #1d6b3f;
 
-  /* Older soft tints, now neutral greys so nothing reads as lilac. */
-  --lav: #ebe8e1;
-  --lav-2: #d6d2c9;
-  --cream: #f3f1ec;
-  --ctl: #77736b; /* control borders: 4.2:1 on --ground */
-  --card-shadow: 0 0 0 1px var(--line); /* a hairline, not a soft shadow */
+  --ctl: #77736b; /* control borders: 4.2:1 on --ground, 4.7:1 on white */
 
   /* Case status colours, one set for the dashboard pills, the activity dots, the progress bar and
      the buyer's receipt chip. Status always pairs the colour with an icon and a word. */
@@ -83,8 +78,27 @@ a {
   outline-offset: 2px;
 }
 
-/* Wrap dark areas in .on-plum (old name) so focus rings switch to the orange: 4.9:1 on ink. */
-.on-plum :focus-visible {
+/* Wrap dark areas in .on-dark so focus rings switch to the orange: 4.9:1 on ink. */
+.on-dark :focus-visible {
+  outline-color: var(--accent);
+}
+
+/* Skip link: off screen until it takes keyboard focus, then a black tab at the top left. */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--on-brand);
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
   outline-color: var(--accent);
 }
 
@@ -156,7 +170,7 @@ a {
 }
 
 /* On a dark panel, RULE flips to white so it stays a solid block. */
-.on-plum .tag-rule {
+.on-dark .tag-rule {
   background: var(--on-brand);
   border-color: var(--on-brand);
   color: var(--ink);

@@ -114,7 +114,7 @@ export default async function Home() {
 
   return (
     <>
-      <header className={`${styles.bar} on-plum`}>
+      <header className={`${styles.bar} on-dark`}>
         <nav aria-label="Primary" className={styles.wrap}>
           <Link className={`${styles.logo} logo-turn`} href="/">
             <span className={styles.mark} aria-hidden="true">
