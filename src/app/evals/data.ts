@@ -4,8 +4,6 @@ export type TestGroup = {
   id: string;
   label: string;
   icon: IconName;
-  // Width on the 12-column grid, so every row of cards fills evenly: 3 (four across), 4 (three across) or 6 (two across).
-  span: 3 | 4 | 6;
   tests: { n: number; text: string }[];
 };
 
@@ -15,7 +13,6 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "refund",
     label: "Refund",
     icon: "refund",
-    span: 3,
     tests: [
       { n: 1, text: "an order paid 179 days ago is refunded" },
       { n: 2, text: "an order paid exactly 180 days ago is still refunded (the window includes day 180)" },
@@ -25,7 +22,6 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "payout",
     label: "PayPal Payout",
     icon: "payout",
-    span: 3,
     tests: [
       { n: 3, text: "one millisecond past 180 days switches to PayPal Payouts" },
       { n: 4, text: "an order paid 400 days ago is paid by Payouts, and the reason says so" },
@@ -35,21 +31,18 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "replacement",
     label: "Replacement",
     icon: "truck",
-    span: 3,
     tests: [{ n: 5, text: "a replacement adds tracking and moves no money" }],
   },
   {
     id: "repair",
     label: "Repair",
     icon: "wrench",
-    span: 3,
     tests: [{ n: 6, text: "a repair records the kit request and moves no money" }],
   },
   {
     id: "guard",
     label: "Guard",
     icon: "shield",
-    span: 4,
     tests: [
       { n: 7, text: "a buyer cannot pick a remedy the recall does not offer" },
       { n: 8, text: "no PayPal payment on record means no money, even inside the window" },
@@ -62,7 +55,6 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "identity",
     label: "Identity and settling",
     icon: "lock",
-    span: 4,
     tests: [
       { n: 12, text: "a verified PayPal email is accepted, ignoring case" },
       { n: 13, text: "an email PayPal has not verified is never accepted" },
@@ -79,7 +71,6 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "failures",
     label: "Failures and retries",
     icon: "alert",
-    span: 4,
     tests: [
       { n: 32, text: "a failed, blocked or returned payout names the batch we stored, so the case can be reopened" },
       { n: 33, text: "a failed refund names the refund id, and PayPal's own error text is used when it sends one" },
@@ -93,7 +84,6 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "dashboard",
     label: "Dashboard rules",
     icon: "info",
-    span: 6,
     tests: [
       { n: 19, text: "a refund or payout is Settled only after PayPal's webhook, not when the request is accepted" },
       { n: 20, text: "replacements and repair kits are Settled at once, because PayPal sends no webhook for them" },
@@ -111,7 +101,6 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "buyerhome",
     label: "Buyer page and Home numbers",
     icon: "info",
-    span: 6,
     tests: [
       { n: 29, text: "several orders of the same recall become one group, in order of first appearance" },
       { n: 30, text: "a refund past 180 days is described as a PayPal Payout, inside it as a refund; other remedies say nothing" },
@@ -128,7 +117,6 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "receipt",
     label: "Receipt and Activity",
     icon: "info",
-    span: 6,
     tests: [
       { n: 46, text: "the receipt counts recalls, not orders, and says how many orders it covered" },
       { n: 47, text: "one sign-in that claims two orders is one Activity line, keeping the earliest id" },
@@ -139,7 +127,6 @@ export const MONEY_GROUPS: TestGroup[] = [
     id: "reset",
     label: "Demo reset",
     icon: "alert",
-    span: 6,
     tests: [
       { n: 49, text: "the time left counts down from a minute and stops at zero" },
       { n: 50, text: "a reset time in the future (clock skew) never waits longer than the cooldown" },
@@ -157,7 +144,6 @@ export const AI_GROUPS: TestGroup[] = [
     id: "match",
     label: "Matching",
     icon: "match",
-    span: 3,
     tests: [
       { n: 1, text: "correct match from a reworded title" },
       { n: 2, text: "match by brand plus product type" },
@@ -167,7 +153,6 @@ export const AI_GROUPS: TestGroup[] = [
     id: "refuse",
     label: "Refusal",
     icon: "ban",
-    span: 3,
     tests: [
       { n: 3, text: "near-miss product correctly refused" },
       { n: 4, text: "different brand correctly refused (the Emberly decoy)" },
@@ -177,7 +162,6 @@ export const AI_GROUPS: TestGroup[] = [
     id: "inject",
     label: "Prompt injection",
     icon: "alert",
-    span: 3,
     tests: [
       { n: 5, text: "a product description that tries to instruct the AI (prompt injection) has no effect" },
       { n: 6, text: "a recall text with an injected link adds no link to the buyer notice" },
@@ -187,7 +171,6 @@ export const AI_GROUPS: TestGroup[] = [
     id: "quote",
     label: "Quoting and fallback",
     icon: "quote",
-    span: 3,
     tests: [
       { n: 7, text: "the buyer notice quotes the recall word for word" },
       { n: 8, text: "a missing AI key falls back to templates" },
@@ -220,22 +203,20 @@ export const MONEY_COUNT = count(MONEY_GROUPS);
 export const AI_COUNT = count(AI_GROUPS);
 export const TOTAL_COUNT = MONEY_COUNT + AI_COUNT;
 
-// Ring geometry: one segment per test around a circle of radius 80, 4 units of gap.
-const RADIUS = 80;
-const GAP = 4;
-const PERIOD = (2 * Math.PI * RADIUS) / TOTAL_COUNT;
-const DASH = PERIOD - GAP;
-const r4 = (n: number) => Number(n.toFixed(4));
+// How the group tables sit on the page at two columns: each row is a list of cells, each cell a
+// list of group ids stacked top to bottom. Pairs are chosen so the two cells of a row hold about
+// the same number of tests and end level. Any group not named here is added full width at the end.
+export const MONEY_LAYOUT: string[][][] = [
+  [["refund"], ["payout"]],
+  [["replacement"], ["repair"]],
+  [["guard"], ["failures"]],
+  [["identity"], ["buyerhome"]],
+  [["dashboard"], ["receipt", "reset"]],
+];
 
-// Pale segments for every test, then solid plum on top for each one that passed, in order.
-// A segment that did not pass is skipped in the solid ring, so it stays pale.
-export function ringFor(passed: boolean[]) {
-  const seg = `${r4(DASH)} ${GAP}`;
-  return {
-    radius: RADIUS,
-    all: `${Array.from({ length: TOTAL_COUNT }, () => seg).join(" ")} 0 600`,
-    passed: `${passed.map((ok) => (ok ? seg : `0 ${r4(PERIOD)}`)).join(" ")} 0 600`,
-  };
-}
+export const AI_LAYOUT: string[][][] = [
+  [["match"], ["refuse"]],
+  [["inject"], ["quote"]],
+];
 
 export const pad = (n: number) => String(n).padStart(2, "0");

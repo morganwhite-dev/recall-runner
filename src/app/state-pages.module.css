@@ -1,47 +1,58 @@
+/* The 404 and loading pages: one square card on the page ground, a black block with the code (or a
+   clock) on the left, the words on the right. Same rules as the rest of the app: 2px ink border,
+   no rounding, no shadow, orange only on the one button. */
 .page {
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 24px 16px;
-  background: var(--cream);
+  background: var(--ground);
   color: var(--ink);
 }
 
-/* The seal sits on white here, so its badge takes the lilac face and the chip cuts out to white. */
 .card {
-  --seal-size: 96px;
-  --seal-face: var(--lav);
-  --seal-cut: var(--surface);
-
   display: grid;
-  justify-items: center;
-  gap: 12px;
-  max-width: 460px;
-  padding: 32px 28px;
-  text-align: center;
+  width: 100%;
+  max-width: 620px;
   background: var(--surface);
-  border-radius: 24px;
-  box-shadow: var(--card-shadow);
+  border: 2px solid var(--ink);
 }
 
-.card > svg {
-  margin-bottom: 8px;
-}
-
-.card h1 {
-  font: 800 26px/1.15 var(--font-display);
+.code {
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 800 56px/1 var(--font-display);
+  font-stretch: 75%;
   letter-spacing: -0.02em;
 }
 
-.card p {
+.body {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 24px 24px 26px;
+}
+
+.body h1 {
+  font-weight: 800;
+  font-stretch: 80%;
+  font-size: 32px;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.body p {
   color: var(--ink-muted);
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
+  align-items: center;
+  gap: 12px 20px;
   margin-top: 8px;
 }
 
@@ -50,13 +61,49 @@
   align-items: center;
   min-height: 44px;
   font-weight: 600;
-  color: var(--brand);
+  color: var(--ink);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
-@media (max-width: 480px) {
+/* A plain bar that fills from the left and starts again; still for reduced motion. */
+.progress {
+  display: block;
+  height: 8px;
+  margin-top: 6px;
+  background: var(--surface-sunk);
+  overflow: hidden;
+}
+
+.progress i {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: var(--ink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .progress i {
+    animation: fill 1.6s linear infinite;
+  }
+}
+
+@keyframes fill {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (min-width: 560px) {
   .card {
-    --seal-size: 80px;
+    grid-template-columns: 140px 1fr;
+  }
+
+  .code {
+    align-items: start;
+    padding-top: 26px;
   }
 }

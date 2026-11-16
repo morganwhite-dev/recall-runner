@@ -37,7 +37,7 @@ export type IconName =
   | "copy";
 
 // Inline SVG symbol set. Render <IconSprite /> once per page, then use <Icon />.
-// Every tick is the receipt seal's tick (src/components/Seal.tsx) scaled down, so a check reads the
+// Every tick is drawn from the same path (the old receipt seal's tick), so a check reads the
 // same everywhere: "check" is the outline version, "done" the filled badge (colour = currentColor,
 // tick = --icon-tick) and "tick" the bare tick for a coloured dot such as a finished demo step.
 export function IconSprite() {
