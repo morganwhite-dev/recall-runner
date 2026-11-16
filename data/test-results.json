@@ -1,7 +1,7 @@
 {
-  "ranAt": "2026-10-28T15:58:50.439Z",
-  "durationMs": 235,
-  "total": 54,
+  "ranAt": "2026-11-16T22:07:33.692Z",
+  "durationMs": 400,
+  "total": 63,
   "failing": 0,
   "tests": [
     {
@@ -77,6 +77,21 @@
     {
       "name": "a replay never succeeds for another buyer, an unused sign-in, or an unfinished case",
       "file": "buyer.test.ts",
+      "passed": true
+    },
+    {
+      "name": "isAuthorized fails closed when no secret is configured",
+      "file": "cpsc-sync.test.ts",
+      "passed": true
+    },
+    {
+      "name": "isAuthorized rejects missing or wrong tokens and accepts the right one",
+      "file": "cpsc-sync.test.ts",
+      "passed": true
+    },
+    {
+      "name": "sinceDate steps back the requested number of days",
+      "file": "cpsc-sync.test.ts",
       "passed": true
     },
     {
@@ -157,6 +172,36 @@
     {
       "name": "moments far apart, or of different kinds, stay separate lines",
       "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a scan that saved its count uses that count",
+      "file": "funnel.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an older scan reads the count from its summary",
+      "file": "funnel.test.ts",
+      "passed": true
+    },
+    {
+      "name": "no saved count and no readable summary gives null, so the caller falls back",
+      "file": "funnel.test.ts",
+      "passed": true
+    },
+    {
+      "name": "matched recalls show the product wording, not the company",
+      "file": "funnel.test.ts",
+      "passed": true
+    },
+    {
+      "name": "refused recalls show a plain category, never the CPSC title",
+      "file": "funnel.test.ts",
+      "passed": true
+    },
+    {
+      "name": "refusal reasons never repeat the AI's words, which can name a real brand",
+      "file": "funnel.test.ts",
       "passed": true
     },
     {

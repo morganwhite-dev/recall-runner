@@ -7,7 +7,7 @@ export type TestGroup = {
   tests: { n: number; text: string }[];
 };
 
-// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18, 32 to 37 and 44 to 45 tests/buyer.test.ts, 38 to 43 tests/impact.test.ts, 19 to 31 and 46 to 48 tests/dashboard.test.ts, 49 to 54 tests/reset-notice.test.ts.
+// Numbers 01 to 11 follow tests/policy.test.ts, 12 to 18, 32 to 37 and 44 to 45 tests/buyer.test.ts, 38 to 43 tests/impact.test.ts, 19 to 31 and 46 to 48 tests/dashboard.test.ts, 49 to 54 tests/reset-notice.test.ts, 55 to 57 tests/cpsc-sync.test.ts, 58 to 63 tests/funnel.test.ts.
 export const MONEY_GROUPS: TestGroup[] = [
   {
     id: "refund",
@@ -134,6 +134,22 @@ export const MONEY_GROUPS: TestGroup[] = [
       { n: 52, text: "an old cooldown address says the wait is over" },
       { n: 53, text: "unreadable addresses show no banner" },
       { n: 54, text: "seconds are written in words, singular for one" },
+    ],
+  },
+  {
+    id: "feed",
+    label: "Recall feed and agent funnel",
+    icon: "info",
+    tests: [
+      { n: 55, text: "isAuthorized fails closed when no secret is configured" },
+      { n: 56, text: "isAuthorized rejects missing or wrong tokens and accepts the right one" },
+      { n: 57, text: "sinceDate steps back the requested number of days" },
+      { n: 58, text: "a scan that saved its count uses that count" },
+      { n: 59, text: "an older scan reads the count from its summary" },
+      { n: 60, text: "no saved count and no readable summary gives null, so the caller falls back" },
+      { n: 61, text: "matched recalls show the product wording, not the company" },
+      { n: 62, text: "refused recalls show a plain category, never the CPSC title" },
+      { n: 63, text: "refusal reasons never repeat the AI's words, which can name a real brand" },
     ],
   },
 ];
