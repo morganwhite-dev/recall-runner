@@ -17,6 +17,8 @@ export type PolicyInput = {
   lineAmountCents: number; // price paid for the recalled product line in this order
   orderTotalCents: number; // the whole order's captured total
   hasCapture: boolean; // is there a real PayPal payment on record for this order?
+  // Money the store already gave back for this item (a goodwill refund, say). Only the rest is paid.
+  alreadyRefundedCents?: number;
 };
 
 export type Decision = {
@@ -75,6 +77,14 @@ export function decideRemedy(input: PolicyInput): Decision {
     );
   }
 
+  const already = input.alreadyRefundedCents ?? 0;
+  if (!Number.isInteger(already) || already < 0) {
+    return reject(
+      "INVALID_AMOUNT",
+      "The order's earlier refund record is not a valid amount. Nothing was sent.",
+    );
+  }
+
   // 4. Remedies that move no money.
   if (input.choice === "replacement") {
     return {
@@ -95,24 +105,36 @@ export function decideRemedy(input: PolicyInput): Decision {
     };
   }
 
-  // 5. Refunds: inside PayPal's window, refund the original payment; past it, pay by PayPal Payouts.
+  // 5. An item the store already refunded in part is paid only what is left; in full, nothing.
+  const dueCents = input.lineAmountCents - already;
+  if (dueCents <= 0) {
+    return reject(
+      "ALREADY_REFUNDED",
+      `The store already refunded ${formatUsd(already)} for this item, which covers its ${formatUsd(input.lineAmountCents)} price. Nothing more was sent.`,
+    );
+  }
+  const earlier = already
+    ? ` ${formatUsd(already)} was already refunded, so only the rest is paid.`
+    : "";
+
+  // 6. Refunds: inside PayPal's window, refund the original payment; past it, pay by PayPal Payouts.
   const ageMs = input.now.getTime() - input.orderDate.getTime();
   const ageDays = Math.floor(ageMs / DAY_MS);
-  const amount = formatUsd(input.lineAmountCents);
+  const amount = formatUsd(dueCents);
 
   if (ageMs <= REFUND_WINDOW_DAYS * DAY_MS) {
     return {
       action: "REFUND",
       rule: "WITHIN_REFUND_WINDOW",
-      amountCents: input.lineAmountCents,
-      rationale: `Paid ${ageDays} days ago, inside PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the original payment is refunded: ${amount}.`,
+      amountCents: dueCents,
+      rationale: `Paid ${ageDays} days ago, inside PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the original payment is refunded: ${amount}.${earlier}`,
     };
   }
 
   return {
     action: "PAYOUT",
     rule: "REFUND_WINDOW_EXCEEDED",
-    amountCents: input.lineAmountCents,
-    rationale: `Paid ${ageDays} days ago, past PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the buyer is paid by PayPal Payouts instead: ${amount}.`,
+    amountCents: dueCents,
+    rationale: `Paid ${ageDays} days ago, past PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the buyer is paid by PayPal Payouts instead: ${amount}.${earlier}`,
   };
 }

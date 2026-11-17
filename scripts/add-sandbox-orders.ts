@@ -3,7 +3,8 @@
 // Safe to re-run: a product the buyer already has an order for is skipped. Also opens cases (and
 // notices) for any campaign that is already approved, so the new orders show up straight away.
 // Run: npm run demo:sandbox-orders
-import { and, eq, like } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { DEFAULT_SANDBOX_BUYER } from "../src/lib/sandbox-buyers";
 import {
   buyers,
   campaigns,
@@ -26,7 +27,7 @@ const WANTED: [string, number][] = [
 
 async function main() {
   if (process.env.PAYPAL_ENV !== "sandbox") throw new Error("Refusing to run: PAYPAL_ENV must be 'sandbox'");
-  const [sandbox] = await db.select().from(buyers).where(like(buyers.email, "%@personal.example.com"));
+  const [sandbox] = await db.select().from(buyers).where(eq(buyers.sandboxKey, DEFAULT_SANDBOX_BUYER));
   if (!sandbox) throw new Error("No sandbox buyer found; run npm run db:seed first");
 
   const have = await db

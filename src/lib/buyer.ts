@@ -5,7 +5,7 @@
 // Also: making the token (one per buyer, random), and the email check that decides whether
 // the PayPal account that signed in is the one that paid.
 import { randomBytes } from "node:crypto";
-import { and, eq, inArray, isNull, like } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import {
   buyerLinks,
   buyers,
@@ -20,6 +20,7 @@ import {
   recalls,
 } from "@/db";
 import { formatUsd, type BuyerChoice } from "./policy";
+import { DEFAULT_SANDBOX_BUYER } from "./sandbox-buyers";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -103,6 +104,7 @@ export type BuyerPage = {
   // Only the sandbox buyer can really sign in. For every other (fictional) buyer the page says so
   // and points at the sandbox buyer's page.
   fictional: boolean;
+  sandboxKey: string | null; // which sandbox login this buyer signs in with, if any
   sandboxPath: string | null;
 };
 
@@ -179,14 +181,15 @@ export async function loadBuyerPage(token: string): Promise<BuyerPage | null> {
       rationale: r.kase.rationale,
     };
   });
-  const fictional = !buyer.email.toLowerCase().endsWith("@personal.example.com");
+  // Only buyers with a sandbox login can really sign in; the rest are made up for the demo.
+  const fictional = !buyer.sandboxKey;
   let sandboxPath: string | null = null;
   if (fictional) {
     const [sandbox] = await db
       .select({ token: buyerLinks.token })
       .from(buyerLinks)
       .innerJoin(buyers, eq(buyerLinks.buyerId, buyers.id))
-      .where(like(buyers.email, "%@personal.example.com"));
+      .where(eq(buyers.sandboxKey, DEFAULT_SANDBOX_BUYER));
     sandboxPath = sandbox ? `/r/${sandbox.token}` : null;
   }
   return {
@@ -194,6 +197,7 @@ export async function loadBuyerPage(token: string): Promise<BuyerPage | null> {
     buyerName: buyer.name,
     cases: out,
     fictional,
+    sandboxKey: buyer.sandboxKey,
     sandboxPath,
   };
 }

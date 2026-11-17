@@ -49,6 +49,9 @@ export const buyers = pgTable("buyers", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
+  // Set only for buyers a judge can really sign in as: the key of their PayPal sandbox login in the
+  // SANDBOX_BUYERS setting (for example "recent"). Empty means a made-up buyer nobody can sign in as.
+  sandboxKey: text("sandbox_key").unique(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -91,6 +94,9 @@ export const orderItems = pgTable("order_items", {
     .references(() => products.id, { onDelete: "cascade" }),
   quantity: integer("quantity").notNull().default(1),
   unitPriceCents: integer("unit_price_cents").notNull(),
+  // Money the store already refunded for this line before the recall (the "partly refunded"
+  // buyer). The rules pay only what is left.
+  refundedCents: integer("refunded_cents").notNull().default(0),
 });
 
 // Real product recalls from the US Consumer Product Safety Commission (CPSC).

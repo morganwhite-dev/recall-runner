@@ -96,6 +96,7 @@ export async function executeCase(caseId: string): Promise<ExecutionResult> {
     (sum, l) => sum + l.quantity * l.unitPriceCents,
     0,
   );
+  const alreadyRefundedCents = lines.reduce((sum, l) => sum + l.refundedCents, 0);
 
   const decision = decideRemedy({
     choice: kase.choice as BuyerChoice,
@@ -105,6 +106,7 @@ export async function executeCase(caseId: string): Promise<ExecutionResult> {
     lineAmountCents,
     orderTotalCents: order.amountCents,
     hasCapture: Boolean(order.paypalCaptureId && order.paypalOrderId),
+    alreadyRefundedCents,
   });
 
   const save = async (status: string, paypalRef: string | null = null) => {

@@ -68,7 +68,9 @@ async function BuyerView({ params, searchParams }: PageProps<"/r/[token]">) {
 
   // The sandbox login sits under the Confirm with PayPal button, so only the two flows that have
   // that button get it, and only for the buyer who can really sign in.
-  const judgeLogin = page.fictional ? null : <JudgeLogin compact />;
+  const judgeLogin = page.fictional ? null : (
+    <JudgeLogin token={token} sandboxKey={page.sandboxKey} compact />
+  );
 
   let view;
   // Notices shown as unread offers; the browser marks them opened after the page loads.

@@ -106,3 +106,56 @@ test("refunds only the recalled item, not the whole order", () => {
   );
   assert.equal(d.amountCents, 3400);
 });
+
+// Partly refunded: the store already gave back part of this item's price (a goodwill refund, say).
+// The buyer gets only what is left, so the item is never paid back twice.
+
+test("an item the store already partly refunded pays only what is left", () => {
+  const d = decideRemedy(input({ alreadyRefundedCents: 1000 }));
+  assert.equal(d.action, "REFUND");
+  assert.equal(d.amountCents, 2400);
+  assert.match(d.rationale, /\$10\.00 was already refunded/);
+  assert.match(d.rationale, /\$24\.00/);
+});
+
+test("a partly refunded old order pays the rest by Payouts", () => {
+  const d = decideRemedy(
+    input({ orderDate: daysAgo(250), alreadyRefundedCents: 400 }),
+  );
+  assert.equal(d.action, "PAYOUT");
+  assert.equal(d.amountCents, 3000);
+});
+
+test("an item already refunded in full gets nothing more", () => {
+  const d = decideRemedy(input({ alreadyRefundedCents: 3400 }));
+  assert.equal(d.action, "REJECT");
+  assert.equal(d.rule, "ALREADY_REFUNDED");
+  assert.equal(d.amountCents, 0);
+});
+
+test("a recorded refund larger than the item price is refused, not paid as a negative", () => {
+  assert.equal(
+    decideRemedy(input({ alreadyRefundedCents: 9999 })).rule,
+    "ALREADY_REFUNDED",
+  );
+});
+
+test("a broken refund record (negative or fractional) is refused", () => {
+  for (const bad of [-100, 12.5]) {
+    assert.equal(
+      decideRemedy(input({ alreadyRefundedCents: bad })).rule,
+      "INVALID_AMOUNT",
+    );
+  }
+});
+
+test("an earlier refund does not block a replacement", () => {
+  const d = decideRemedy(
+    input({
+      choice: "replacement",
+      remedyOptions: ["Replace"],
+      alreadyRefundedCents: 1000,
+    }),
+  );
+  assert.equal(d.action, "TRACKING");
+});

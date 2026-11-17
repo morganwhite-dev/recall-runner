@@ -10,7 +10,7 @@
 // Run: npm run demo:failure-drill              (shows which case it would use; changes nothing)
 //      npm run demo:failure-drill -- --go      (does it for real)
 // "Start fresh demo" puts the drill case back to normal.
-import { and, desc, eq, like, not } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import {
   agentDecisions,
   buyers,
@@ -47,7 +47,7 @@ async function main() {
         eq(recalls.recallNumber, FEATURED_RECALL),
         eq(campaigns.status, "APPROVED"),
         eq(cases.status, "OPEN"),
-        not(like(buyers.email, "%@personal.example.com")), // never the real sandbox buyer
+        isNull(buyers.sandboxKey), // never a buyer who can really sign in
       ),
     );
   const old = candidates.filter(

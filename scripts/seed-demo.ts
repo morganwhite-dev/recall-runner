@@ -7,6 +7,7 @@
 import { eq, inArray } from "drizzle-orm";
 import { db, buyers, merchants, orderItems, orders, products } from "../src/db";
 import { pool } from "../src/lib/db";
+import { DEFAULT_SANDBOX_BUYER } from "../src/lib/sandbox-buyers";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -185,7 +186,14 @@ async function main() {
 
   const buyerRows = await db
     .insert(buyers)
-    .values(BUYERS.map(([name, email]) => ({ name, email })))
+    .values(
+      BUYERS.map(([name, email], i) => ({
+        name,
+        email,
+        // The first buyer is the sandbox account a judge signs in as.
+        sandboxKey: i === 0 ? DEFAULT_SANDBOX_BUYER : null,
+      })),
+    )
     .returning();
   const byEmail = new Map(buyerRows.map((b) => [b.email, b]));
 

@@ -6,9 +6,11 @@ import { revealJudgeLogin } from "./judge-actions";
 import styles from "./JudgeLogin.module.css";
 
 export function JudgeLoginReveal({
+  token,
   className,
   compact,
 }: {
+  token: string;
   className?: string;
   compact?: boolean;
 }) {
@@ -27,7 +29,7 @@ export function JudgeLoginReveal({
 
   async function show() {
     try {
-      const result = await revealJudgeLogin();
+      const result = await revealJudgeLogin(token);
       setLogin(result);
       setFailed(result === null);
     } catch {

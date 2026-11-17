@@ -2,7 +2,7 @@
 //
 //   campaign (recall + matched products) -> its cases -> buyer, order, notice, ledger
 //   and, for each case, the "Why this happened" timeline built from the audit trail.
-import { and, asc, desc, eq, inArray, isNull, like } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm";
 import {
   agentDecisions,
   buyerLinks,
@@ -19,6 +19,7 @@ import {
 } from "@/db";
 import type { TagKind } from "@/components/Tag";
 import { FEATURED_RECALL, PRE_APPROVED_BY } from "@/lib/demo-config";
+import { DEFAULT_SANDBOX_BUYER } from "@/lib/sandbox-buyers";
 import { artFor } from "@/components/ProductArt";
 import { loadFunnel, type Funnel } from "@/lib/funnel";
 import {
@@ -305,7 +306,7 @@ export async function loadDashboard(
       draftedBy:
         (notice?.draftedBy as "MODEL" | "TEMPLATE" | undefined) ?? null,
       buyerPath: token ? `/r/${token}` : "",
-      canSignIn: buyer.email.toLowerCase().endsWith("@personal.example.com"),
+      canSignIn: Boolean(buyer.sandboxKey),
       awaitingPayPal: PAID.includes(kase.status) && !kase.settledAt,
       timeline,
     };
@@ -455,7 +456,7 @@ async function loadGuide(
   const [sandbox] = await db
     .select()
     .from(buyers)
-    .where(like(buyers.email, "%@personal.example.com"))
+    .where(eq(buyers.sandboxKey, DEFAULT_SANDBOX_BUYER))
     .limit(1);
   if (!sandbox) return null;
 

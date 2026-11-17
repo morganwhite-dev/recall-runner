@@ -57,6 +57,13 @@
       "when": 1792985876979,
       "tag": "0007_drop_old_login_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794946025753,
+      "tag": "0008_sandbox_buyers",
+      "breakpoints": true
     }
   ]
 }
