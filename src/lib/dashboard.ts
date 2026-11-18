@@ -2,7 +2,7 @@
 //
 //   campaign (recall + matched products) -> its cases -> buyer, order, notice, ledger
 //   and, for each case, the "Why this happened" timeline built from the audit trail.
-import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import {
   agentDecisions,
   buyerLinks,
@@ -20,6 +20,7 @@ import {
 import type { TagKind } from "@/components/Tag";
 import { FEATURED_RECALL, PRE_APPROVED_BY } from "@/lib/demo-config";
 import { DEFAULT_SANDBOX_BUYER } from "@/lib/sandbox-buyers";
+import { DEMO_BUYERS } from "@/lib/demo-buyers";
 import { artFor } from "@/components/ProductArt";
 import { loadFunnel, type Funnel } from "@/lib/funnel";
 import {
@@ -33,6 +34,8 @@ import {
   type CampaignHeader,
   type CampaignOption,
   type DemoGuideState,
+  type GuideBuyer,
+  guideBuyerAccess,
   clip,
   groupBuyerMoments,
   type BuyerMoment,
@@ -499,7 +502,44 @@ async function loadGuide(
     targets.find((t) => t.recall.recallNumber === FEATURED_RECALL) ??
     targets[0];
   const featuredApproved = featured.campaign.status === "APPROVED";
+
+  // The "Pick a buyer" menu: every buyer who can really sign in, with a link once they have a case.
+  const sandboxBuyers = await db.select().from(buyers).where(isNotNull(buyers.sandboxKey));
+  const guideBuyers: GuideBuyer[] = [];
+  for (const b of sandboxBuyers) {
+    const key = b.sandboxKey!;
+    const meta = DEMO_BUYERS.find((d) => d.key === key);
+    const bBought = await db
+      .select({ sku: products.sku })
+      .from(orderItems)
+      .innerJoin(orders, eq(orderItems.orderId, orders.id))
+      .innerJoin(products, eq(orderItems.productId, products.id))
+      .where(eq(orders.buyerId, b.id));
+    const bSkus = new Set(bBought.map((x) => x.sku));
+    const hasCampaign = all.some((a) => a.campaign.matchedSkus.some((s) => bSkus.has(s)));
+    const [anyCase] = await db
+      .select({ id: cases.id })
+      .from(cases)
+      .innerJoin(orders, eq(cases.orderId, orders.id))
+      .where(eq(orders.buyerId, b.id))
+      .limit(1);
+    const [bLink] = await db.select().from(buyerLinks).where(eq(buyerLinks.buyerId, b.id));
+    const access = guideBuyerAccess(hasCampaign, Boolean(anyCase));
+    guideBuyers.push({
+      key,
+      name: b.name,
+      label: meta?.label ?? "All three remedies",
+      story: meta?.story ?? "Three recalls, three remedies: a refund, a replacement and a repair.",
+      path: access.ready && bLink ? `/r/${bLink.token}` : null,
+      note: access.ready && !bLink ? "Link not ready yet." : access.note,
+    });
+  }
+  // The classic walkthrough first, then the scenarios in the order they are defined.
+  const order = ["morgan", ...DEMO_BUYERS.map((d) => d.key)];
+  guideBuyers.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+
   return {
+    buyers: guideBuyers,
     featured: {
       recallNumber: featured.recall.recallNumber,
       label: `${nameOf(featured.campaign.matchedSkus[0] ?? "")} recall`,

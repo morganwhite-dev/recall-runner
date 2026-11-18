@@ -118,7 +118,27 @@ export interface CampaignHeader {
 }
 
 // Where the visitor is in the demo, so the dashboard can say what to do next.
+// One entry in the "Pick a buyer" menu: a sandbox buyer a judge can sign in as.
+export interface GuideBuyer {
+  key: string;
+  name: string;
+  label: string; // the scenario, e.g. "Old order"
+  story: string; // what happens to this buyer, in one sentence
+  path: string | null; // their buyer page, once they have something to claim
+  note: string | null; // why there is no link yet
+}
+
+// Whether a buyer's page can be opened yet, and if not, the plain reason. A buyer has cases only
+// after their recall's campaign is approved, and a campaign exists only once the AI matched the
+// recall to a product they bought.
+export function guideBuyerAccess(hasCampaign: boolean, hasCases: boolean): { ready: boolean; note: string | null } {
+  if (hasCases) return { ready: true, note: null };
+  if (!hasCampaign) return { ready: false, note: "Opens once the AI has matched their recall." };
+  return { ready: false, note: "Opens once their recall is approved." };
+}
+
 export interface DemoGuideState {
+  buyers: GuideBuyer[]; // every sandbox buyer, for the "Pick a buyer" menu
   // The recall the visitor approves themselves, and how many others were approved in advance.
   featured: { recallNumber: string; label: string; approved: boolean };
   preApprovedCount: number;

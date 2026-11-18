@@ -23,7 +23,12 @@ import { FEATURED_RECALL, PRE_APPROVED_BY } from "./demo-config";
 import { createCardOrder } from "./paypal-client";
 import { COOLDOWN_MS } from "./reset-notice";
 
-const MAX_RECAPTURES = 8;
+// Six buyers can now be refunded in one demo (and the walkthrough refunds the featured recall's
+// buyers), so allow more than before. Each new payment is two PayPal calls (create, capture) and
+// PayPal allows about 30 calls a minute, so they are spaced out: 2.5 seconds each is about 24 calls
+// a minute, with room to spare for the rest of the app.
+const MAX_RECAPTURES = 16;
+export const RECAPTURE_GAP_MS = 2500;
 
 export type ResetResult =
   | { reset: true; campaigns: number; newPayments: number }
@@ -102,8 +107,10 @@ export async function resetDemo(): Promise<ResetResult> {
       .set({ paypalOrderId, paypalCaptureId: captureId })
       .where(eq(orders.id, order.id));
     newPayments += 1;
+    if (newPayments < Math.min(refunded.length, MAX_RECAPTURES)) {
+      await new Promise((r) => setTimeout(r, RECAPTURE_GAP_MS));
+    }
   }
-
   // Every recall except the featured one is approved in advance, as if the store had handled it
   // earlier. The visitor approves the featured one themselves. Approving only opens cases and queues
   // notices (the AI draft is cached); it moves no money.

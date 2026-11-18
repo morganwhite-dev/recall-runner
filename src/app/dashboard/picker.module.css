@@ -1,0 +1,114 @@
+.picker {
+  position: relative;
+  flex: none;
+}
+
+.summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 2px solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::after {
+  content: "";
+  margin-left: 8px;
+  border: 5px solid transparent;
+  border-top-color: currentColor;
+  border-bottom-width: 0;
+}
+
+.picker[open] .summary::after {
+  border-top-width: 0;
+  border-bottom: 5px solid currentColor;
+}
+
+.summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  width: min(380px, 92vw);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 2px solid var(--ink);
+  background: var(--surface);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.item {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.item:last-child {
+  border-bottom: 0;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+}
+
+.head span {
+  color: var(--ink-muted);
+}
+
+.story {
+  margin: 4px 0 8px;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  font-weight: 700;
+  color: var(--ink);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+
+.wait {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Below desktop width the list spans the screen, so it can never run off either edge. */
+@media (max-width: 899px) {
+  .picker {
+    position: static;
+  }
+  .list {
+    position: fixed;
+    top: auto;
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+}

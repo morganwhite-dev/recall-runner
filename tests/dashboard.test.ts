@@ -157,3 +157,22 @@ test("moments far apart, or of different kinds, stay separate lines", () => {
     ["Notice sent to Morgan Demo · 2 orders", "Morgan Demo opened the notice", "Morgan Demo opened the notice"],
   );
 });
+
+// The "Pick a buyer" menu keeps every buyer listed and says why a page is not open yet.
+import { guideBuyerAccess } from "../src/app/dashboard/data";
+
+test("a buyer with cases can be opened", () => {
+  assert.deepEqual(guideBuyerAccess(true, true), { ready: true, note: null });
+});
+
+test("a buyer whose recall the AI has not matched yet is listed with that reason", () => {
+  const a = guideBuyerAccess(false, false);
+  assert.equal(a.ready, false);
+  assert.match(a.note ?? "", /matched/);
+});
+
+test("a buyer whose recall is matched but not approved waits for approval", () => {
+  const a = guideBuyerAccess(true, false);
+  assert.equal(a.ready, false);
+  assert.match(a.note ?? "", /approved/);
+});

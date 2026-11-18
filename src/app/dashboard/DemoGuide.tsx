@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { StartFreshDemo } from "@/components/StartFreshDemo";
+import { BuyerPicker } from "./BuyerPicker";
 import { formatMoney, type DemoGuideState } from "./data";
 import styles from "./shell.module.css";
 
@@ -45,6 +46,7 @@ export function DemoGuide({
         <Link href={`/dashboard?campaign=${f.recallNumber}`}>
           Go to the {f.label}
         </Link>
+        <BuyerPicker buyers={guide.buyers} />
       </section>
     );
   }
@@ -102,19 +104,23 @@ export function DemoGuide({
         className={`${styles.stepperAct} ${active < 0 ? styles.stepperActDone : ""}`}
       >
         {active === 1 && guide.buyerPath ? (
-          <a
-            className={styles.stepperLink}
-            href={guide.buyerPath}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open buyer page <Icon name="ext" />
-          </a>
+          <>
+            <a
+              className={styles.stepperLink}
+              href={guide.buyerPath}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open buyer page <Icon name="ext" />
+            </a>
+            <BuyerPicker buyers={guide.buyers} />
+          </>
         ) : active >= 0 ? (
           <>
             <span className={styles.stepperHint} title={hints[active]}>
               {hints[active]}
             </span>
+            <BuyerPicker buyers={guide.buyers} />
             {/* For a judge who closed the buyer tab before confirming. */}
             {active === 2 && guide.buyerPath && (
               <a
@@ -145,11 +151,12 @@ export function DemoGuide({
             <StartFreshDemo
               look={{
                 label: "Replay demo",
-                pendingLabel: "Resetting… about 20 seconds",
+                pendingLabel: "Resetting… about 30 seconds",
                 icon: "loop",
                 className: styles.stepperLink,
               }}
             />
+            <BuyerPicker buyers={guide.buyers} />
             <Link className={styles.stepperSub} href="/#s2">
               How it works
             </Link>

@@ -13,7 +13,7 @@ type Look = {
 
 const DEFAULT_LOOK: Look = {
   label: "Start fresh demo",
-  pendingLabel: "Stocking the demo store… about 20 seconds",
+  pendingLabel: "Stocking the demo store… about 30 seconds",
   icon: "arrow",
   className: "button",
 };
