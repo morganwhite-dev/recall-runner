@@ -201,9 +201,10 @@ export async function loadDashboard(
     const ageDays = Math.floor(
       (now.getTime() - order.effectiveOrderDate.getTime()) / DAY_MS,
     );
+    // What is left to pay: the price minus anything the store already refunded for this line.
     const lineCents = orderLines
       .filter((l) => l.orderId === order.id && l.productId === kase.productId)
-      .reduce((sum, l) => sum + l.quantity * l.unitPriceCents, 0);
+      .reduce((sum, l) => sum + l.quantity * l.unitPriceCents - l.refundedCents, 0);
     const path = remedyPath({
       action: kase.action,
       offers: recall.remedyOptions,

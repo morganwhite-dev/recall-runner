@@ -90,6 +90,7 @@ export type BuyerCase = {
   productName: string;
   sku: string;
   priceCents: number;
+  refundedCents: number; // the store already refunded this much of the price
   daysAgo: number;
   orderRef: string; // PayPal order id, shown on the receipt
   paypalRef: string | null;
@@ -156,6 +157,9 @@ export async function loadBuyerPage(token: string): Promise<BuyerPage | null> {
     const priceCents = lines
       .filter((l) => l.orderId === r.order.id && l.productId === r.product.id)
       .reduce((sum, l) => sum + l.quantity * l.unitPriceCents, 0);
+    const refundedCents = lines
+      .filter((l) => l.orderId === r.order.id && l.productId === r.product.id)
+      .reduce((sum, l) => sum + l.refundedCents, 0);
     return {
       caseId: r.kase.id,
       status: r.kase.status,
@@ -172,6 +176,7 @@ export async function loadBuyerPage(token: string): Promise<BuyerPage | null> {
       productName: r.product.name,
       sku: r.product.sku,
       priceCents,
+      refundedCents,
       daysAgo: Math.floor(
         (now - r.order.effectiveOrderDate.getTime()) / DAY_MS,
       ),

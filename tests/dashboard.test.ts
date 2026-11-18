@@ -90,7 +90,7 @@ test("long timeline lines are cut to one line with an ellipsis, short ones are u
 
 // The buyer page's recall grouping.
 const order = (recallNumber: string, daysAgo: number, caseId: string) =>
-  ({ recallNumber, daysAgo, caseId, priceCents: 3400 }) as unknown as BuyerRow;
+  ({ recallNumber, daysAgo, caseId, priceCents: 3400, refundedCents: 0 }) as unknown as BuyerRow;
 
 test("several orders of the same recall become one group, in order of first appearance", () => {
   const groups = groupByRecall([order("A", 200, "1"), order("B", 5, "2"), order("A", 45, "3")]);

@@ -4,7 +4,7 @@ import { Icon } from "@/components/Icon";
 import type { BuyerCase } from "@/lib/buyer";
 import { formatUsd } from "@/lib/policy";
 import { ConfirmStatus } from "./ConfirmStatus";
-import { groupByRecall, receiptHeadline, remedyCopy } from "./data";
+import { dueCents, groupByRecall, receiptHeadline, remedyCopy } from "./data";
 import styles from "./page.module.css";
 import { ReceiptHead, SectionTitle, SettledStamp, TopBand } from "./parts";
 
@@ -25,7 +25,7 @@ export function MultiSuccess({
   const centsOf = (list: BuyerCase[]) =>
     list
       .filter(isMoney)
-      .reduce((sum, c) => sum + (c.amountCents ?? c.priceCents), 0);
+      .reduce((sum, c) => sum + (c.amountCents ?? dueCents(c)), 0);
   const moneyCents = centsOf(cases);
   const settledAll = cases.every((c) => c.settled || !isMoney(c));
   const anyMoney = cases.some(isMoney);

@@ -4,7 +4,7 @@ import { AutoRefresh } from "@/components/AutoRefresh";
 import { Icon } from "@/components/Icon";
 import { formatUsd } from "@/lib/policy";
 import { ConfirmStatus } from "./ConfirmStatus";
-import { pronounFor, remedyCopy } from "./data";
+import { dueCents, pronounFor, remedyCopy } from "./data";
 import styles from "./page.module.css";
 import {
   ReceiptHead,
@@ -17,7 +17,7 @@ import {
 // What the buyer reads once their choice has been carried out. The wording depends on what
 // actually happened (refund, payout past the 180-day window, replacement or repair kit).
 function outcome(c: BuyerCase) {
-  const money = formatUsd(c.amountCents ?? c.priceCents);
+  const money = formatUsd(c.amountCents ?? dueCents(c));
   switch (c.status) {
     case "PAYOUT_SENT":
       return {

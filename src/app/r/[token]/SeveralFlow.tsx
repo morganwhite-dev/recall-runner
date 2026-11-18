@@ -13,6 +13,8 @@ import {
   howPaidShort,
   isClaimable,
   isDone,
+  dueCents,
+  isPartial,
   loginHref,
   remedyCopy,
   waitingLine,
@@ -73,8 +75,9 @@ export function SeveralFlow({
     .reduce(
       (sum, p) =>
         sum +
-        (GROUPS.flatMap((g) => g.cases).find((c) => c.caseId === p.caseId)
-          ?.priceCents ?? 0),
+        dueCents(
+          GROUPS.flatMap((g) => g.cases).find((c) => c.caseId === p.caseId)!,
+        ),
       0,
     );
   const totalLabel =
@@ -229,9 +232,9 @@ export function SeveralFlow({
                           <Icon name="tick" />
                         </span>
                         <span>
-                          <b>{remedyCopy(recall.offers[0]).short}</b>
+                          <b>{remedyCopy(recall.offers[0], isPartial(open)).short}</b>
                           <span className="sr-only">
-                            . {remedyCopy(recall.offers[0]).detail}
+                            . {remedyCopy(recall.offers[0], isPartial(open)).detail}
                           </span>
                         </span>
                         <span className={styles.a}>
@@ -258,9 +261,9 @@ export function SeveralFlow({
                             <Icon name="tick" />
                           </span>
                           <span>
-                            <b>{remedyCopy(kind).short}</b>
+                            <b>{remedyCopy(kind, isPartial(open)).short}</b>
                             <span className="sr-only">
-                              . {remedyCopy(kind).detail}
+                              . {remedyCopy(kind, isPartial(open)).detail}
                             </span>
                           </span>
                           <span className={styles.a}>

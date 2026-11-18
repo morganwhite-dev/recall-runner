@@ -12,6 +12,7 @@ import {
   groupAmount,
   headline,
   howPaid,
+  isPartial,
   loginHref,
   pronounFor,
   remedyCopy,
@@ -36,7 +37,7 @@ export function RecallFlow({
 }) {
   const recall = recalls[0];
   const kind = recall.offers[0];
-  const remedy = remedyCopy(kind);
+  const remedy = remedyCopy(kind, isPartial(recalls));
   const pronoun = pronounFor(recall.productName);
   const amount = groupAmount(recalls, kind);
   const several = recalls.length > 1;
