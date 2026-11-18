@@ -19,7 +19,9 @@ export function parseSandboxBuyers(env: Env = process.env): Record<string, Sandb
   if (!env.SANDBOX_BUYERS) return out;
   let raw: unknown;
   try {
-    raw = JSON.parse(env.SANDBOX_BUYERS);
+    // In .env.local the value is wrapped in backticks and the loader strips them; on a host such as
+    // Render they arrive as part of the value, so strip one surrounding pair here too.
+    raw = JSON.parse(env.SANDBOX_BUYERS.trim().replace(/^`([\s\S]*)`$/, "$1"));
   } catch {
     // A typo in the setting should hide the logins, not break every buyer page.
     console.error("SANDBOX_BUYERS is not valid JSON; no sandbox logins are offered.");

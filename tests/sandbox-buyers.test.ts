@@ -51,3 +51,10 @@ test("entries missing an email or password are skipped", () => {
 test("nothing set means no buyers", () => {
   assert.deepEqual(parseSandboxBuyers({}), {});
 });
+
+test("backticks around the JSON (as pasted into a host's settings page) are tolerated", () => {
+  const all = parseSandboxBuyers({
+    SANDBOX_BUYERS: "`" + JSON.stringify({ recent: A }) + "`",
+  });
+  assert.deepEqual(all, { recent: A });
+});
