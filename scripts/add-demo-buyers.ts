@@ -5,7 +5,7 @@
 import { and, eq } from "drizzle-orm";
 import { buyers, campaigns, db, merchants, orderItems, orders, products } from "../src/db";
 import { pool } from "../src/lib/db";
-import { DEMO_BUYERS } from "../src/lib/demo-buyers";
+import { DEMO_BUYERS, DEMO_PRODUCTS } from "../src/lib/demo-buyers";
 import { parseSandboxBuyers } from "../src/lib/sandbox-buyers";
 import { createCardOrder } from "../src/lib/paypal-client";
 import { ensureBuyerLink } from "../src/lib/buyer";
@@ -18,6 +18,16 @@ async function main() {
   const logins = parseSandboxBuyers(process.env);
   const [merchant] = await db.select().from(merchants).where(eq(merchants.name, "Brightnest Home"));
   if (!merchant) throw new Error("No demo store; run npm run db:seed first");
+
+  for (const p of DEMO_PRODUCTS) {
+    const [have] = await db
+      .select({ id: products.id })
+      .from(products)
+      .where(and(eq(products.merchantId, merchant.id), eq(products.sku, p.sku)));
+    if (have) continue;
+    await db.insert(products).values({ merchantId: merchant.id, ...p });
+    console.log(`${p.sku}: added to the catalog`);
+  }
 
   for (const d of DEMO_BUYERS) {
     const login = logins[d.key];

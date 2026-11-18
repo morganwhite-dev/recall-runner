@@ -18,6 +18,28 @@ export type DemoBuyer = {
   storeEmail?: string; // used when emailMatchesLogin is false
 };
 
+// Catalog products the extra buyers need that the main seed does not create. Added if missing.
+export type DemoProduct = {
+  sku: string;
+  name: string;
+  description: string;
+  category: string;
+  brand: string;
+  priceCents: number;
+};
+
+export const DEMO_PRODUCTS: DemoProduct[] = [
+  {
+    sku: "BH-TY-FT",
+    name: "Little Orchard Lights & Sounds Fire Truck Activity Board",
+    description:
+      "Compact red plastic fire engine toy with spinning wheels, a white rotating ladder and a black plastic fire hose connector, plus busy-board activities with lights and sounds. Date codes are printed on the packaging.",
+    category: "Toys",
+    brand: "Little Orchard",
+    priceCents: 3000,
+  },
+];
+
 export const DEMO_BUYERS: DemoBuyer[] = [
   {
     key: "recent",
@@ -36,6 +58,16 @@ export const DEMO_BUYERS: DemoBuyer[] = [
     story: "Bought 250 days ago, past the refund window, so PayPal Payouts pays them instead.",
     sku: "BH-HW-2P",
     daysAgo: 250,
+    refundedCents: 0,
+    emailMatchesLogin: true,
+  },
+  {
+    key: "choice",
+    name: "Jordan Ellis",
+    label: "Refund or replace",
+    story: "The toy recall offers a refund or a free replacement; they choose, and a refund moves money.",
+    sku: "BH-TY-FT",
+    daysAgo: 40,
     refundedCents: 0,
     emailMatchesLogin: true,
   },

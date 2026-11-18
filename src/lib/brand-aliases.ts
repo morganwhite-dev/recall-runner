@@ -22,6 +22,8 @@ const ALIASES: [RegExp, string][] = [
   [/Dongguan Meiying Sen Smart Home Co\., Ltd\./gi, "Lindell Smart Home Co., Ltd."],
   [/The Blue Cactus Company|Blue Cactus Company|Blue Cactus/gi, "Juniper Ridge Power Co."],
   [/Kobayashi/gi, "Marlowe Goods Co."],
+  [/melissaanddoug\.com/gi, "littleorchard.example"],
+  [/Melissa (?:&|and) Doug/gi, "Little Orchard"],
   [/Hot ?Hands®?/gi, "Kindlewarm"],
   [/Aitjunz/gi, "Oakhollow"],
   [/Yuyitop/gi, "Fernbrook Home"],
@@ -42,6 +44,8 @@ const FEATURED_TEXT: Record<string, [RegExp, string][]> = {
     [/Amazon\.com/g, "a major online marketplace"],
   ],
   "26794": [[/Amazon\.com, Wayfair, TEMU, and Walmart/g, "major online marketplaces"]],
+  // The refund-or-replace toy recall used by the "choice" sandbox buyer.
+  "26780": [[/Sold Exclusively at Target/g, "Sold Exclusively at a Major Retailer"]],
 };
 const FEATURED_RETAILERS = /\b(?:Amazon(?:\.com)?|Walmart|Wayfair|TEMU|Target|The Home Depot|Bass Pro Shops|Meijer)\b/g;
 
