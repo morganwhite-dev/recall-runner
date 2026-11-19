@@ -48,7 +48,7 @@ The money rules have tests on the live Test results page.
 
 - **CPSC recalls almost never list UPCs or model numbers.** Matching had to work on text, which is why the AI carries the main matching path and shows its evidence.
 - **Keeping the AI away from the money.** We split the system so the model can propose and the rules decide.
-- **Identity.** Card-funded sandbox orders carry no PayPal payer ID, so identity checks match the buyer's email recorded at order time against the verified PayPal email.
+- **Identity.** The app checks the buyer's verified PayPal email against the email recorded on the order before any money moves.
 
 ## Accomplishments we're proud of
 
@@ -62,7 +62,7 @@ Agents work best when the model does the fuzzy reading and fixed code does the i
 
 ## What's next
 
-- Run the daily scan against a real merchant's catalog
+- Run a scheduled AI scan against a real merchant's catalog
 - Add email and SMS delivery for notices (today the notices go to an in-app outbox)
 - Support more recall sources
 
