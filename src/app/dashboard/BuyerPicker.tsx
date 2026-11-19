@@ -2,7 +2,7 @@ import { Icon } from "@/components/Icon";
 import type { GuideBuyer } from "./data";
 import styles from "./picker.module.css";
 
-// "Pick a buyer": the sandbox buyers a judge can sign in as, each with one scenario. A plain
+// "Pick a buyer": the sandbox buyers a demo visitor can sign in as, each with one scenario. A plain
 // <details> element, so it works with the keyboard and without any script. A buyer whose page is
 // not ready yet stays in the list with the reason, rather than disappearing.
 export function BuyerPicker({ buyers }: { buyers: GuideBuyer[] }) {

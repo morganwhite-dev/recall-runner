@@ -49,7 +49,7 @@ export const buyers = pgTable("buyers", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  // Set only for buyers a judge can really sign in as: the key of their PayPal sandbox login in the
+  // Set only for buyers a demo visitor can really sign in as: the key of their PayPal sandbox login in the
   // SANDBOX_BUYERS setting (for example "recent"). Empty means a made-up buyer nobody can sign in as.
   sandboxKey: text("sandbox_key").unique(),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -76,7 +76,7 @@ export const orders = pgTable("orders", {
     withTimezone: true,
   }).notNull(),
   dateIsSimulated: boolean("date_is_simulated").notNull().default(false),
-  // Groups the orders created for one judge's "Start fresh demo" session.
+  // Groups the orders created for one demo visitor's "Start fresh demo" session.
   demoSessionId: text("demo_session_id"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

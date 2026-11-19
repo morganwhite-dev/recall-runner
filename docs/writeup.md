@@ -1,6 +1,6 @@
 # Recall Runner
 
-A project submitted for the PayPal AI Hackathon 2026.
+Built for the PayPal AI Hackathon 2026.
 
 **Tagline:** An AI agent that finds the buyers of recalled products in a store's PayPal orders and gets them their money back with one tap.
 
@@ -26,12 +26,12 @@ A "Why this happened" timeline tags every step as MODEL (AI), RULE (fixed policy
 - **Order records are the buyer list.** The agent finds buyers in PayPal orders.
 - **Log In with PayPal proves the buyer.** Before any money moves, the buyer signs in and the verified PayPal email must match the email on the order. A forwarded link can't claim someone else's refund.
 - **PayPal's 180-day refund window decides the path.** Orders inside the window are refunded. Older orders are paid with PayPal Payouts.
-- **Replacements add tracking to the original order.**
+- **Replacements add tracking to the original order.** The app generates the tracking number (`BH-<case id>`) and adds it to the original PayPal order.
 - **Verified webhooks confirm the money.** A case is only marked settled after PayPal's webhook says so.
 
 ## How the AI is used, and where it is not
 
-**The AI never moves money.** It matches recalls, investigates with read-only tools, drafts the plan and fills the slots of the buyer notice. Fixed, tested rules choose the payment path and the amount, and the amounts come only from captured line items. Safety guards include evidence quotes that must be exact text from the source, a confidence floor, a cap on AI calls per campaign, and a template fallback if the AI fails.
+**The AI never moves money.** It matches recalls, investigates with read-only tools, drafts the plan and fills the slots of the buyer notice. Fixed, tested rules choose the payment path and the amount, and the amounts come only from captured line items. Safety guards: evidence quotes must be exact text from the source; a match needs confidence 0.8 or higher; a scan makes at most 8 match calls; a campaign makes at most 12 AI calls; the investigation makes at most 6 lookups; and **Run the AI again** is limited to one per 30 seconds and 12 per hour. If the AI fails, the app falls back to a code-built plan and a template notice.
 
 The money rules have tests on the live Test results page.
 
@@ -41,7 +41,7 @@ The money rules have tests on the live Test results page.
 - Claude Sonnet 5.5 for matching, investigation and notice drafting
 - PayPal sandbox: Orders v2, Refunds, Payouts, order tracking, Webhooks and Log In with PayPal
 - AG Grid for the dashboard's case grid
-- A scheduled job that pulls new CPSC recalls. It only fetches recalls and never calls the AI.
+- A scheduled GitHub Action pings the site every 10 minutes and pulls recalls from the last 30 days once an hour. It never calls the AI.
 - A Postman collection for testing the API
 
 ## Challenges

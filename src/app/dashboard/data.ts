@@ -118,7 +118,7 @@ export interface CampaignHeader {
 }
 
 // Where the visitor is in the demo, so the dashboard can say what to do next.
-// One entry in the "Pick a buyer" menu: a sandbox buyer a judge can sign in as.
+// One entry in the "Pick a buyer" menu: a sandbox buyer a demo visitor can sign in as.
 export interface GuideBuyer {
   key: string;
   name: string;

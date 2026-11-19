@@ -1,4 +1,4 @@
-// The PayPal sandbox logins judges can use, one per demo buyer, keyed by the buyer's sandbox_key.
+// The PayPal sandbox logins demo visitors can use, one per demo buyer, keyed by the buyer's sandbox_key.
 // They come from one setting, SANDBOX_BUYERS, a JSON object such as
 //   {"morgan": {"email": "sb-...@personal.example.com", "password": "..."}, "recent": {...}}
 // The older JUDGE_BUYER_EMAIL / JUDGE_BUYER_PASSWORD pair still works and becomes "morgan".

@@ -1,4 +1,4 @@
-// The extra sandbox buyers a judge can pick, one per money scenario. Each has its own PayPal sandbox
+// The extra sandbox buyers a demo visitor can pick, one per money scenario. Each has its own PayPal sandbox
 // login (see sandbox-buyers.ts), an order on the hand-warmers recall, and one thing that is special
 // about it. The dates are made up (PayPal's sandbox cannot create a payment in the past).
 //

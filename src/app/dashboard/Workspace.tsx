@@ -43,7 +43,7 @@ export function Workspace({
   const [shown, setShown] = useState(CASES.length);
   const [flashIds, setFlashIds] = useState<string[]>([]);
   // Until a row is picked, show the buyer who can really sign in, so the panel shows the case a
-  // judge will act on. Worked out on every render: the cases only exist once the campaign is
+  // demo visitor will act on. Worked out on every render: the cases only exist once the campaign is
   // approved, after this component first mounted.
   const effectiveId = CASES.some((c) => c.id === selectedId)
     ? selectedId

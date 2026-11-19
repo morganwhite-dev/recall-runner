@@ -1,4 +1,4 @@
-// Devpost forbids third-party trademarks on screen, so three of the real CPSC recalls the demo is
+// The demo avoids third-party trademarks on screen, so three of the real CPSC recalls the demo is
 // built on are shown under invented names. This is the ONE place the mapping lives. The recall
 // numbers, dates, hazards and remedies stay real; only the brand and company names change.
 //

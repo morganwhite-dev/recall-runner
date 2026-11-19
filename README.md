@@ -2,11 +2,7 @@
 
 An AI agent that watches the US product-recall feed (CPSC), finds the buyers of recalled products in a merchant's PayPal orders, and settles refunds, replacements or repairs through PayPal.
 
-Built for the PayPal AI Hackathon 2026.
-
-**Status:** Phases 0–6 are complete; the live check of Phase 5 on Render passed on Oct 26 (refund, replacement and repair all settle). The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing, re-run Oct 28 after the brand names were renamed). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs. The failure path was proven live on Oct 26: a payout to an email with no PayPal account is recorded as unclaimed and never retried. The dashboard redesign is built and merged (sidebar, demo stepper, tabbed detail panel, the Sent / Opened / Waiting on PayPal / Settled statuses, an Activity feed, and a toast plus row flash when PayPal confirms a payment); it passed its first full live check on Render on Oct 28. Unit tests: 54 pass (policy, buyer, dashboard, impact and demo-reset banner suites); the 8 AI tests pass 24 of 24.
-
-**Where things stand:** the full flow works live on Render: Start fresh demo, run the AI, approve, open the buyer page, confirm with PayPal, and the dashboard shows the money as settled. Third-party brand names are replaced throughout the demo data.
+Built for the PayPal AI Hackathon 2026. The full flow works end to end against the PayPal sandbox: recall match, merchant approval, buyer notice, PayPal sign-in, settlement, and webhook confirmation. Live demo: https://recall-runner.onrender.com
 
 ## Demo video and screenshots
 
@@ -18,50 +14,28 @@ Built for the PayPal AI Hackathon 2026.
 
 Consumers act on about 6% of recalls announced only by press release, versus about 50% when buyers are notified directly (CPSC FY2013–16 data, as cited by consumer groups and Sedgwick). A merchant who sells through PayPal already holds every buyer's order record, so it can notify buyers directly and settle the remedy in one step.
 
-## Phase tracker
+## How it works
 
-| #   | Phase                                    | Target                      | Status                          |
-| --- | ---------------------------------------- | --------------------------- | ------------------------------- |
-| 0   | Setup and PayPal spikes                  | Sat Oct 24                  | Done Oct 22                     |
-| 1   | Data and CPSC ingest                     | Sun Oct 25                  | Done Oct 23                     |
-| 2   | Money core and policy tests              | Tue Oct 27                  | Done Oct 23                     |
-| D   | UI design pass (plum, Claude Design tab) | Wed Oct 28                  | Done Oct 24                     |
-| 3   | AI agent                                 | Sat Oct 31                  | Done Oct 25                     |
-| 4   | Buyer page, Log In with PayPal, webhooks | Mon Nov 2                   | Done Oct 25                     |
-| 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)  | Done Oct 26                     |
-| 6   | UI redesign of the pages (Claude Design) | Nov 3–5 (to confirm)        | Done Oct 28 (live check passed) |
-| 7   | Harden and package                       | Fri Nov 6                   | In progress                     |
-| 8   | Video and project write-up               | Mon Nov 9, submit by Nov 12 | Not started                     |
+- `src/lib/agent/`: the AI agent. `scan-recall.ts` and `pipeline.ts` run a scan, `match.ts` matches a recall to the store's products, `investigate.ts` checks the order records with read-only lookups and drafts a plan, `notice.ts` fills the buyer notice, and `llm.ts` wraps the Anthropic calls.
+- `src/lib/policy.ts`: fixed money rules. Orders inside the 180-day `REFUND_WINDOW_DAYS` are refunded; older orders are paid with PayPal Payouts. The AI never picks the path or the amount.
+- `src/lib/executor.ts` and `src/lib/paypal-client.ts`: the PayPal calls (refunds, payouts, order tracking).
+- `src/lib/settle.ts` and `src/app/api/webhooks/paypal`: a verified PayPal webhook is what marks a case settled.
+- `src/app/r/[token]`: the private buyer page, with Log In with PayPal.
+- `src/app/dashboard`: the merchant dashboard. `src/app/evals`: the Test results page.
+- `src/app/api/cron/sync-recalls`: pulls the last 30 days of CPSC recalls. It never calls the AI.
+- CI (`.github/workflows/ci.yml`) runs lint, typegen, `tsc`, tests and a build on every push and pull request.
 
-## Phase 0 checklist
+AI guardrails: a match needs confidence 0.8 or higher, a scan makes at most 8 match calls, and one campaign makes at most 12 AI calls. If the AI fails, the app falls back to a code-built plan and a template notice.
 
-- [x] Repo created and pushed public with the MIT license, detected by GitHub (Oct 22): https://github.com/morganwhite-dev/recall-runner
-- [x] Next.js app deployed on Render (free plan for now): https://recall-runner.onrender.com (Oct 22)
-- [x] Neon database connected: Postgres 18.6, tested from a local script (Oct 22)
-- [x] Sandbox order created and captured with a test card, no 3D Secure step (Oct 22)
-- [x] Refund succeeds (Oct 22)
-- [x] Payout to a sandbox personal account succeeds (Oct 22; PENDING for about 20s, then SUCCESS)
-- [x] Real webhook received and signature verified: PAYMENT.CAPTURE.REFUNDED, verified=true, stored in Neon (Oct 22)
-- [x] Log In with PayPal spike: sandbox personal account signed in on the Render URL, PayPal returned a verified email (email_verified true) (Oct 22)
-- [x] Anthropic call succeeds from a local script; model id `claude-sonnet-5-5` confirmed (Oct 22)
-
-## Decisions and lessons from Phase 0
+## Notes on the PayPal integration
 
 - **Seeding works with a test card.** Orders v2 with a card `payment_source` creates and captures an order in one call, with no buyer approval step. Demo orders can be created in code.
 - **Payouts are enabled** in the sandbox and settle in about 20 seconds.
-- **Webhooks need a registered webhook ID.** Signatures are checked with PayPal's verify endpoint; the simulator's fake events cannot be verified, so test with real refunds.
+- **Webhooks need a registered webhook ID.** Signatures are checked with PayPal's verify endpoint. The simulator's fake events cannot be verified, so test with real refunds.
 - **Log In with PayPal code exchange:** send only `grant_type` and `code`, as PayPal's docs show. Adding `redirect_uri` is kept only as a fallback. Keep the "allow unconfirmed emails" option off.
 - **Neon needs TLS.** The pool asks for it in code, because the connection string's `sslmode` can be lost when pasted into Render.
-- **Render deploys:** the service builds from this GitHub repo and auto-deploys on each push. The free plan sleeps after 15 minutes, so the first visit can take about a minute. The plan moves to a paid instance from Nov 10 through Dec 15.
-- **Keep-awake and live recall pull** (Nov 5): `.github/workflows/keep-awake.yml` pings `/api/health` every 10 minutes (so the free plan never sleeps) and calls `/api/cron/sync-recalls` hourly, which re-pulls the last 30 days from the CPSC API into the `recalls` table (same brand renames as the snapshot path, no AI calls). Needs repo variable `SITE_URL` and secret `CRON_SECRET` (same value on Render).
+- **Render:** the service builds from this GitHub repo and auto-deploys on each push. The free plan sleeps after 15 minutes of no traffic. `.github/workflows/keep-awake.yml` pings `/api/health` every 10 minutes and calls `/api/cron/sync-recalls` hourly. It needs the repo variable `SITE_URL` and the secret `CRON_SECRET` (the same value as on Render).
 - **Spike scripts** (`scripts/spike-*.mjs`) re-run each check against the sandbox: `node --env-file=.env.local scripts/spike-paypal.mjs`.
-
-## Hackathon requirements
-
-- [x] PayPal sandbox plus an AI model, with PayPal central
-- [x] Working demo with run instructions (the live site and "Try the demo" below)
-- [x] Public repo with the MIT license shown in the About section
-- [x] Sandbox test credentials (in the README)
 
 ## Sandbox test logins
 
@@ -74,7 +48,7 @@ These are PayPal **sandbox** buyer accounts (fake money, not real PayPal account
 | Owen Hartley | `sb-ypvbk53965313@personal.example.com` | Bought 250 days ago, past the window, so PayPal Payouts pays them. |
 | Parker Lane | `sb-fjp8653965203@personal.example.com` | The store already refunded $10.00 of $34.00, so only the $24.00 left is paid. |
 | Casey Whitfield | `sb-dpfli53965148@personal.example.com` | The store has a different email on the order, so signing in is refused and nothing is paid. |
-| Jordan Ellis | `sb-wzjvp53965112@personal.example.com` | A toy recall that offers a refund or a replacement; the buyer chooses. Needs the AI scan of that recall (pending). |
+| Jordan Ellis | `sb-wzjvp53965112@personal.example.com` | A toy recall that offers a refund or a replacement; the buyer chooses. |
 
 Passwords are set with the `SANDBOX_BUYERS` setting (see `.env.example`).
 
@@ -86,33 +60,61 @@ Passwords are set with the `SANDBOX_BUYERS` setting (see `.env.example`).
    Note: the demo store is shared by everyone, so if two people use it at once, one person's **Start fresh demo** resets the other's run.
 4. PayPal sends the refund or payout. About a minute later its webhook confirms it, and the dashboard shows the case as **Settled**.
 
+## Prerequisites
+
+- Node 24 (the version CI uses)
+- A Neon Postgres database
+- A PayPal sandbox app (client ID, secret and a webhook ID)
+- An Anthropic API key
+
+## Environment
+
+Copy `.env.example` to `.env.local` and fill in your own values:
+
+- `PAYPAL_ENV`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_WEBHOOK_ID`: your PayPal sandbox app
+- `ANTHROPIC_API_KEY`: used by the AI agent
+- `DATABASE_URL`: your Neon connection string
+- `SANDBOX_BUYERS`: one PayPal sandbox login per demo buyer, as JSON
+- `CRON_SECRET`: protects the scheduled recall sync
+- `AGENT_MODEL` (optional): overrides the default `claude-sonnet-5-5`
+- `JUDGE_BUYER_EMAIL` and `JUDGE_BUYER_PASSWORD` (legacy): still read by `src/lib/sandbox-buyers.ts`, where they become the buyer `morgan`
+
 ## Run locally
 
 ```bash
 npm install
 cp .env.example .env.local   # then fill in your own values
+```
+
+First run, in this order:
+
+```bash
+npm run db:migrate           # create the tables in Neon
+npm run cpsc:ingest          # load the recall snapshot
+npm run db:seed              # build the fictional demo store
+npm run paypal:attach        # give every seeded order a real sandbox payment (calls PayPal sandbox)
+npm run demo:sandbox-orders  # give the sandbox buyer one order of each recalled product
+npm run demo:add-buyers      # add the five extra sandbox buyers
 npm run dev
 ```
 
-Database and data commands (all need `.env.local`):
+`npm test` needs no secrets. `npm run eval` calls the live Anthropic API and costs money. `npm run demo:money` and `npm run paypal:attach` hit the PayPal sandbox.
+
+Other commands (all but `cpsc:fetch`, `test` and `test:record` need `.env.local`):
 
 ```bash
-npm run db:migrate    # create or update the tables in Neon
 npm run cpsc:fetch    # refresh data/cpsc-snapshot.json from the CPSC API
-npm run cpsc:ingest   # load the snapshot into the recalls table
 npm run db:rename-brands # rename real brand names already stored in the database (mapping: src/lib/brand-aliases.ts)
-npm run db:seed       # rebuild the fictional demo store (safe to re-run)
-npm run paypal:attach # give every seeded order a real sandbox payment
-npm run demo:sandbox-orders # give the sandbox buyer one order of each recalled product
-npm run demo:add-buyers # add the five extra sandbox buyers (adds only, never wipes)
 npm run demo:failure-drill  # dry run: shows the one real PayPal failure it would trigger (add -- --go to run it)
-npm test              # policy, buyer-identity and dashboard tests
+npm test              # 97 tests: 96 pass, 1 skipped
 npm run test:record   # run them and save the results the Test results page shows
 npm run demo:money    # run every money path against the sandbox
-npm run agent:run     # run the AI agent on the demo store and print its audit trail
-npm run eval          # run the 8 AI tests, 3 times each
+npm run agent:run     # run the AI agent on the demo store and print its audit trail (calls Anthropic)
+npm run eval          # run the 8 AI tests, 3 times each (calls Anthropic, costs money)
 npm run buyer:links   # give each buyer a private link and print them
 ```
+
+The last full run of the AI tests passed 24 of 24 (8 cases, 3 attempts each) on Oct 28; see `data/eval-results.json`.
 
 ## Tech
 

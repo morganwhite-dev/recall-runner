@@ -51,7 +51,7 @@ export function DemoGuide({
     );
   }
 
-  // Opening the buyer page is ticked from the notice's opened time. A judge who goes straight to
+  // Opening the buyer page is ticked from the notice's opened time. A visitor who goes straight to
   // a receipt (?case=) never marks it opened, so paying ticks it too and the steps stay in order.
   const done = [
     f.approved,
@@ -121,7 +121,7 @@ export function DemoGuide({
               {hints[active]}
             </span>
             <BuyerPicker buyers={guide.buyers} />
-            {/* For a judge who closed the buyer tab before confirming. */}
+            {/* For a visitor who closed the buyer tab before confirming. */}
             {active === 2 && guide.buyerPath && (
               <a
                 className={styles.stepperSub}

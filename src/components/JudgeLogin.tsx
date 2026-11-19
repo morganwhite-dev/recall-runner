@@ -1,7 +1,7 @@
 import { sandboxLogin } from "@/lib/sandbox-buyers";
 import { JudgeLoginReveal } from "./JudgeLoginReveal";
 
-// The buyer's PayPal sandbox login, offered to judges on the buyer page so they never have to
+// The buyer's PayPal sandbox login, offered to demo visitors on the buyer page so they never have to
 // open the README. The values come from the SANDBOX_BUYERS setting (on Render and in .env.local)
 // and are only sent to the browser after the visitor asks. Nothing is shown if this buyer has
 // no login set.

@@ -32,7 +32,7 @@ export function scanChecked(detail: unknown, summary: string): number | null {
 }
 
 // The funnel names products, never companies. Only three recalls have invented brand names
-// (src/lib/brand-aliases.ts); the others keep their real ones, and Devpost forbids third-party
+// (src/lib/brand-aliases.ts); the others keep their real ones, and the demo avoids third-party
 // trademarks on screen.
 //
 // Matched recalls are the aliased ones, so their product wording is safe to show. CPSC titles read

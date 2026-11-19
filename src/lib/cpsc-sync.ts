@@ -29,7 +29,7 @@ export async function fetchCpscRecalls(since: string): Promise<RecallRecord[]> {
   const raw = (await res.json()) as Record<string, unknown>[];
   return raw
     .map(normalizeRecall)
-    .map(renameRecall) // Devpost trademark rule: same renames as the snapshot path
+    .map(renameRecall) // trademark-free demo names: same renames as the snapshot path
     .sort((a, b) => b.recallDate.localeCompare(a.recallDate));
 }
 
