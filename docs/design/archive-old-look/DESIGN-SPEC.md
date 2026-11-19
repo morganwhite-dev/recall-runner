@@ -232,7 +232,7 @@ export const recallGridTheme = themeQuartz.withParams({
 
 Decided by the owner. One page, two layouts, same content and order:
 
-- **Wide screens (1024px and up), the default for judges on laptops:** full page as in `buyer-desktop-full.html`. Store header bar across the top. Content max width 1120px, centered. Two columns: left is the product panel (240px tall), recall badge, 32px headline, order line, hazard, and the "stop using" note; right is a 400px remedy panel with the remedy card, "Confirm with PayPal", the sign-in hint and the three numbered steps. Below: three equal info cards (About this recall, Your order, Questions). Disclaimer once, in the footer.
+- **Wide screens (1024px and up), the default for visitors on laptops:** full page as in `buyer-desktop-full.html`. Store header bar across the top. Content max width 1120px, centered. Two columns: left is the product panel (240px tall), recall badge, 32px headline, order line, hazard, and the "stop using" note; right is a 400px remedy panel with the remedy card, "Confirm with PayPal", the sign-in hint and the three numbered steps. Below: three equal info cards (About this recall, Your order, Questions). Disclaimer once, in the footer.
 - **Phones (under 768px):** single column, in the same order, matching `buyer.html` phone A. The action ("Confirm with PayPal" plus hint) is pinned to the bottom in thumb reach. The three info cards stack below the content.
 - **In between (768 to 1023px):** single column, centered, max width 640px, action not pinned.
 - Multi-recall flow ("Recall 1 of N", Back / Next) and the success and mismatch states use the same responsive rules.
@@ -243,7 +243,7 @@ Decided by the owner. One page, two layouts, same content and order:
 Approved by the owner with these fixes:
 
 1. **No Tailwind.** The project has no Tailwind; build with CSS variables in `app/globals.css` and CSS Modules. The "Tailwind" column in the type table is reference only.
-2. **Real address.** Mockups show `recall-runner.onrender.com/r/…`, the address judges will see.
+2. **Real address.** Mockups show `recall-runner.onrender.com/r/…`, the address visitors will see.
 3. **No Item column** in the cases table. A campaign covers one recalled product, already shown in the recall header, so repeating it on every row added nothing.
 4. **AG Grid theme setting names** beyond the ones the designer confirmed (`accentColor`, `backgroundColor`, `foregroundColor`, `borderColor`, `headerTextColor`, `spacing`, `columnBorder`) must be checked against the installed AG Grid version when the dashboard is built.
 
@@ -268,9 +268,9 @@ Every row uses one 4-column grid (1120px, 16px gaps, columns of 268px), so card 
 3. **Evidence row**. Two equal stat cards (columns 1 and 2): "6%" Press release only, "~50%" Notified directly (the second has a 1.5px `ink` border to mark the stronger number). Columns 3–4: the exact sentence and its source on `bg-subtle`. No other statistics.
 4. **How it works**. 4 equal 104px cards joined by a 16px `line-2` connector in the gaps. Each card: filled step number, actor tag (MODEL, YOU, TOOL, RULE, the same legend as the timeline), title, one-word actor line.
 5. **What PayPal does here**. 6 equal 84px cards, icon tile + title + one line: Order records, Log In with PayPal, Refunds, Payouts, Shipment tracking, Webhooks.
-6. **For judges**. `bg-subtle` box: title + "About 2 minutes" on the left, "Sandbox login is in the README." on the right, then 5 equal numbered step tiles joined by connectors. No credentials on the page.
+6. **For visitors**. `bg-subtle` box: title + "About 2 minutes" on the left, "Sandbox login is in the README." on the right, then 5 equal numbered step tiles joined by connectors. No credentials on the page.
 
-**Phone (under 768px):** single column, 16px gutter. Order: headline, subhead, "Start fresh demo" full width (52px), note under it, demo preview, the two stat cards side by side (2 columns) with the sentence below, the 4 steps stacked (connectors become vertical, 12px tall, left-aligned under the numbers), PayPal cards in 2 columns, judge steps stacked, footer. Header links collapse to the brand plus a "Menu" button (sheet with the three links). **768–1023px:** hero stacks (text then preview), steps and PayPal cards in 2 columns.
+**Phone (under 768px):** single column, 16px gutter. Order: headline, subhead, "Start fresh demo" full width (52px), note under it, demo preview, the two stat cards side by side (2 columns) with the sentence below, the 4 steps stacked (connectors become vertical, 12px tall, left-aligned under the numbers), PayPal cards in 2 columns, visitor steps stacked, footer. Header links collapse to the brand plus a "Menu" button (sheet with the three links). **768–1023px:** hero stacks (text then preview), steps and PayPal cards in 2 columns.
 
 ### 7.3 Test results (`/evals`)
 
@@ -284,7 +284,7 @@ Every row uses one 4-column grid (1120px, 16px gaps, columns of 268px), so card 
 
 ### 7.4 Outbox view (`/dashboard`, Outbox tab)
 
-- Same top bar, recall header and KPI strip as `dashboard.html`. The grid toolbar is replaced by **two equal tabs** (`role="tablist"`, 48px): "Cases 6" and "Outbox 6". Selected tab: `ink`, 2px `accent` underline, count chip in `accent` / `accent-bg`; unselected: `ink-2`. The tab can be kept in the URL (`/dashboard?view=outbox`) so a judge link opens it directly.
+- Same top bar, recall header and KPI strip as `dashboard.html`. The grid toolbar is replaced by **two equal tabs** (`role="tablist"`, 48px): "Cases 6" and "Outbox 6". Selected tab: `ink`, 2px `accent` underline, count chip in `accent` / `accent-bg`; unselected: `ink-2`. The tab can be kept in the URL (`/dashboard?view=outbox`) so a visitor link opens it directly.
 - **Outbox table** (same grid styles; same 6 buyers in the same order): Buyer, Sent to (masked, `ink-2`), Sent, Opened (Yes / No as words), Status (the same Settled / Waiting / Notified pills), and an "Open buyer page" link button (30px, white, `line-2` border, external icon; column 184px). It opens `/r/{token}` in a new tab. Selected row: Alicia Rivera.
 - Footer: "Delivery: in-app outbox (demo). Real email is not sent." (once) and "1 to 6 of 6".
 - **Right panel** = message preview instead of case detail: "Message" eyebrow, buyer name + status pill, a 2×2 facts grid (To, Sent, Opened, Remedy), the subject, then the message on `bg-subtle`: greeting, what was recalled and that it should not be used, the CPSC hazard quoted in a dashed violet quote block, the remedy (full refund, $34.00), the buyer link `recall-runner.onrender.com/r/7f3a91c2`, and the store name. Below: the MODEL note "Drafted by the AI from the CPSC record; hazard and remedy quoted word for word", then a full-width primary "Open buyer page".

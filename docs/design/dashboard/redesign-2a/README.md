@@ -170,7 +170,7 @@ These match `globals.css`; no new colors except the status and bar colors below.
 - **Shadows:** toast 0 12px 32px rgba(31,26,33,.28); CTA hover 0 6px 16px rgba(255,158,122,.35).
 
 ## Placeholders to replace
-- Sandbox email `sb-buyer@personal.example.com`: use the real sandbox login from the README / Devpost.
+- Sandbox email `sb-buyer@personal.example.com`: use the real sandbox login from the README.
 - Activity rows and times: mock data.
 
 ## Files

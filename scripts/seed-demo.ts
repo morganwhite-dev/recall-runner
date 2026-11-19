@@ -190,7 +190,7 @@ async function main() {
       BUYERS.map(([name, email], i) => ({
         name,
         email,
-        // The first buyer is the sandbox account a judge signs in as.
+        // The first buyer is the sandbox account a demo visitor signs in as.
         sandboxKey: i === 0 ? DEFAULT_SANDBOX_BUYER : null,
       })),
     )
