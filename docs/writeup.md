@@ -1,4 +1,6 @@
-# Recall Runner: Devpost write-up
+# Recall Runner
+
+A project submitted for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) 2026.
 
 **Tagline:** An AI agent that finds the buyers of recalled products in a store's PayPal orders and gets them their money back with one tap.
 
@@ -40,7 +42,7 @@ The money rules have tests on the live Test results page.
 - PayPal sandbox: Orders v2, Refunds, Payouts, order tracking, Webhooks and Log In with PayPal
 - AG Grid for the dashboard's case grid
 - A scheduled job that pulls new CPSC recalls. It only fetches recalls and never calls the AI.
-- A Postman collection for judges
+- A Postman collection for testing the API
 
 ## Challenges
 
@@ -68,7 +70,7 @@ Agents work best when the model does the fuzzy reading and fixed code does the i
 
 - Brightnest Home is a fictional store and the order dates are simulated. The recalls are real CPSC recalls with brand names replaced.
 - PayPal is the sandbox only. No real money moves.
-- The main demo path uses saved AI results so every judge sees the same story. The dashboard's **Run the AI again** button calls Claude live (rate-limited).
+- The main demo path uses saved AI results so every visitor sees the same story. The dashboard's **Run the AI again** button calls Claude live (rate-limited).
 
 ## Try it
 
@@ -76,7 +78,7 @@ Agents work best when the model does the fuzzy reading and fixed code does the i
 - Code: https://github.com/morganwhite-dev/recall-runner (MIT license)
 - Demo video (30 s, captions): [docs/media/video/recall-runner-live-captioned.mp4](media/video/recall-runner-live-captioned.mp4)
 
-## Testing instructions (for the Devpost testing field)
+## Try the demo step by step
 
 1. Open https://recall-runner.onrender.com. The first load can take about 30 seconds.
 2. Press **Start fresh demo**, then **Approve campaign** on the dashboard.

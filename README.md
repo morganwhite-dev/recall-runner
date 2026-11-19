@@ -12,7 +12,7 @@ Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (202
 
 - Video (30 s, captions, no narration): [docs/media/video/recall-runner-live-captioned.mp4](docs/media/video/recall-runner-live-captioned.mp4)
 - Screenshots from a live run on Render: [docs/media/screenshots/](docs/media/screenshots/)
-- Devpost write-up: [docs/devpost-writeup.md](docs/devpost-writeup.md)
+- Project write-up: [docs/writeup.md](docs/writeup.md)
 
 ## Why
 
@@ -61,8 +61,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 - [x] PayPal sandbox plus an AI model, with PayPal central
 - [x] Working demo with run instructions (the live site and "Try the demo" below)
 - [x] Public repo with the MIT license shown in the About section
-- [ ] Public YouTube video under 3 minutes
-- [ ] Sandbox test credentials for judges (in the README now; still to paste into the Devpost testing field)
+- [x] Sandbox test credentials (in the README)
 
 ## Sandbox test logins for judges
 
