@@ -8,6 +8,12 @@ Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (202
 
 **Where things stand (Oct 28):** the full live run on Render passed: Start fresh demo, approve, open the buyer page, confirm with PayPal, and the dashboard refreshed itself to Settled $68.00. The redesign is live. Third-party brand names were replaced throughout (Devpost rules forbid third-party trademarks). The submission deadline is Nov 12, 12:00 pm PT. Still to do: the Safe Browsing review (pending), the video, the Devpost write-up and testing field, and the Render paid plan.
 
+## Demo video and screenshots
+
+- Video (30 s, captions, no narration): [docs/media/video/recall-runner-live-captioned.mp4](docs/media/video/recall-runner-live-captioned.mp4)
+- Screenshots from a live run on Render: [docs/media/screenshots/](docs/media/screenshots/)
+- Devpost write-up: [docs/devpost-writeup.md](docs/devpost-writeup.md)
+
 ## Why
 
 Consumers act on about 6% of recalls announced only by press release, versus about 50% when buyers are notified directly (CPSC FY2013–16 data, as cited by consumer groups and Sedgwick). A merchant who sells through PayPal already holds every buyer's order record, so it can notify buyers directly and settle the remedy in one step.
