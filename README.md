@@ -58,12 +58,20 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 - [ ] Public YouTube video under 3 minutes
 - [ ] Sandbox test credentials for judges (in the README now; still to paste into the Devpost testing field)
 
-## Sandbox test login for judges
+## Sandbox test logins for judges
 
-This is a PayPal **sandbox** buyer account (fake money, not a real PayPal account). Use it on PayPal's sandbox sign-in page after you press **Confirm with PayPal** on the buyer page.
+These are PayPal **sandbox** buyer accounts (fake money, not real PayPal accounts). Use one on PayPal's sandbox sign-in page after you press **Confirm with PayPal** on that buyer's page. Each buyer's page has a **Show sandbox login** button that reveals its email and password, so the passwords are not written here. On the dashboard, the **Pick a buyer** menu in the "Try the demo" strip lists them all.
 
-- Email: `sb-cpwe353506970@personal.example.com`
-- Password: `K-+%j-22`
+| Buyer | Sandbox email | What happens |
+|---|---|---|
+| Morgan Demo | `sb-cpwe353506970@personal.example.com` | Three recalls, three remedies: a refund, a replacement and a repair. The main walkthrough. |
+| Riley Brooks | `sb-afmdp53964320@personal.example.com` | Bought 30 days ago, inside PayPal's 180-day window, so the payment is refunded. |
+| Owen Hartley | `sb-ypvbk53965313@personal.example.com` | Bought 250 days ago, past the window, so PayPal Payouts pays them. |
+| Parker Lane | `sb-fjp8653965203@personal.example.com` | The store already refunded $10.00 of $34.00, so only the $24.00 left is paid. |
+| Casey Whitfield | `sb-dpfli53965148@personal.example.com` | The store has a different email on the order, so signing in is refused and nothing is paid. |
+| Jordan Ellis | `sb-wzjvp53965112@personal.example.com` | A toy recall that offers a refund or a replacement; the buyer chooses. Needs the AI scan of that recall (pending). |
+
+Passwords are set with the `SANDBOX_BUYERS` setting (see `.env.example`).
 
 ## Try the demo (about 2 minutes)
 
@@ -91,6 +99,7 @@ npm run db:rename-brands # rename real brand names already stored in the databas
 npm run db:seed       # rebuild the fictional demo store (safe to re-run)
 npm run paypal:attach # give every seeded order a real sandbox payment
 npm run demo:sandbox-orders # give the sandbox buyer one order of each recalled product
+npm run demo:add-buyers # add the five extra sandbox buyers (adds only, never wipes)
 npm run demo:failure-drill  # dry run: shows the one real PayPal failure it would trigger (add -- --go to run it)
 npm test              # policy, buyer-identity and dashboard tests
 npm run test:record   # run them and save the results the Test results page shows
