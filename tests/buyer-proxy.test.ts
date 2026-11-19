@@ -21,3 +21,15 @@ test("unknown buyer links go to the 404 route before the page can stream", async
   rows.push({ token });
   assert.equal((await proxy(request(token))).headers.get("x-middleware-next"), "1");
 });
+
+test("a database error lets the page handle the request instead of failing here", async (t) => {
+  t.mock.method(db, "select", () => ({
+    from: () => ({
+      where: async () => {
+        throw new Error("database down");
+      },
+    }),
+  }));
+  const response = await proxy(new NextRequest(`http://localhost/r/${"a".repeat(43)}`));
+  assert.equal(response.headers.get("x-middleware-next"), "1");
+});

@@ -14,12 +14,16 @@ export async function proxy(request: NextRequest) {
   // Buyer links are generated from 32 random bytes, encoded as unpadded base64url.
   if (!/^[A-Za-z0-9_-]{43}$/.test(token)) return missing();
 
-  const [link] = await db
-    .select({ token: buyerLinks.token })
-    .from(buyerLinks)
-    .where(eq(buyerLinks.token, token));
-
-  return link ? NextResponse.next() : missing();
+  try {
+    const [link] = await db
+      .select({ token: buyerLinks.token })
+      .from(buyerLinks)
+      .where(eq(buyerLinks.token, token));
+    return link ? NextResponse.next() : missing();
+  } catch {
+    // Database trouble must not take buyer pages down here: the page does its own lookup and shows its own error.
+    return NextResponse.next();
+  }
 }
 
 export const config = { matcher: "/r/:token" };
