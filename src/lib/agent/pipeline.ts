@@ -264,7 +264,7 @@ export async function approveCampaign(
   approvedBy = "merchant",
   note = "",
 ) {
-  const [campaign] = await db
+  let [campaign] = await db
     .select()
     .from(campaigns)
     .where(eq(campaigns.id, campaignId));
@@ -279,10 +279,11 @@ export async function approveCampaign(
     .where(eq(recalls.id, campaign.recallId));
 
   if (campaign.status !== "APPROVED") {
-    await db
+    [campaign] = await db
       .update(campaigns)
       .set({ status: "APPROVED", approvedAt: new Date() })
-      .where(eq(campaigns.id, campaignId));
+      .where(eq(campaigns.id, campaignId))
+      .returning(); // Use the draft SKUs current at the moment of approval.
     await log({
       merchantId: campaign.merchantId,
       campaignId,

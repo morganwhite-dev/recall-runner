@@ -8,6 +8,7 @@ import { loadDashboard } from "@/lib/dashboard";
 import { resetNoticeFrom } from "@/lib/reset-notice";
 import { TweenMoney } from "@/components/TweenMoney";
 import { shortName } from "@/app/r/[token]/data";
+import { RerunButton } from "./RerunButton";
 import { ApproveButton } from "./ApproveButton";
 import { DemoGuide } from "./DemoGuide";
 import { Funnel } from "./Funnel";
@@ -41,6 +42,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
           Nothing here yet. Head back to the home page and choose Start fresh
           demo to set up a store.
         </p>
+        <RerunButton />
       </main>
     );
   }
@@ -134,6 +136,7 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
                 <ApproveButton campaignId={header.id} />
               </div>
             )}
+            <RerunButton key={header.id} recallNumber={header.recallNumber} />
           </div>
 
           <section className={shell.progress} aria-label="Campaign progress">

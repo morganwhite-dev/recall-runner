@@ -5,10 +5,9 @@
 //   upsertRecalls:    inserts new recalls and updates ones we already have (matched on recall number)
 //   isAuthorized:     checks the Bearer token on the cron route (fails closed if no secret is set)
 //
-// This only loads the `recalls` table. It never runs the agent, so it spends no AI budget and does
-// not touch campaigns, cases or money.
-import { sql } from "drizzle-orm";
-import { db, recalls } from "@/db";
+import { and, asc, eq, sql } from "drizzle-orm";
+import { agentDecisions, db, merchants, recalls } from "@/db";
+import { PENDING_SCAN, STORE_NAME, scanRecall } from "./agent/scan-recall";
 import { renameRecall } from "./brand-aliases";
 import { CPSC_API, normalizeRecall, type RecallRecord } from "./cpsc";
 
@@ -38,30 +37,54 @@ export type UpsertResult = { inserted: number; updated: number };
 
 export async function upsertRecalls(
   records: RecallRecord[],
+  queueNew = false,
 ): Promise<UpsertResult> {
-  if (records.length === 0) return { inserted: 0, updated: 0 };
-  // xmax is 0 on a freshly inserted row and non-zero on one that was updated by the conflict clause.
-  const rows = await db
-    .insert(recalls)
-    .values(records)
-    .onConflictDoUpdate({
-      target: recalls.recallNumber,
-      set: {
-        title: sql`excluded.title`,
-        description: sql`excluded.description`,
-        hazards: sql`excluded.hazards`,
-        remedyText: sql`excluded.remedy_text`,
-        remedyOptions: sql`excluded.remedy_options`,
-        retailers: sql`excluded.retailers`,
-        manufacturers: sql`excluded.manufacturers`,
-        soldOnline: sql`excluded.sold_online`,
-        products: sql`excluded.products`,
-        url: sql`excluded.url`,
-      },
-    })
-    .returning({ inserted: sql<boolean>`(xmax = 0)` });
-  const inserted = rows.filter((r) => r.inserted).length;
-  return { inserted, updated: rows.length - inserted };
+  return db.transaction(async (tx) => {
+    if (records.length === 0) return { inserted: 0, updated: 0 };
+    // xmax is 0 on a freshly inserted row and non-zero on one that was updated by the conflict clause.
+    const rows = await tx
+      .insert(recalls)
+      .values(records)
+      .onConflictDoUpdate({
+        target: recalls.recallNumber,
+        set: {
+          title: sql`excluded.title`,
+          description: sql`excluded.description`,
+          hazards: sql`excluded.hazards`,
+          remedyText: sql`excluded.remedy_text`,
+          remedyOptions: sql`excluded.remedy_options`,
+          retailers: sql`excluded.retailers`,
+          manufacturers: sql`excluded.manufacturers`,
+          soldOnline: sql`excluded.sold_online`,
+          products: sql`excluded.products`,
+          url: sql`excluded.url`,
+        },
+      })
+      .returning({
+        recallNumber: recalls.recallNumber,
+        inserted: sql<boolean>`(xmax = 0)`,
+      });
+    const inserted = rows.filter((r) => r.inserted).length;
+    if (queueNew && inserted) {
+      const [merchant] = await tx
+        .select()
+        .from(merchants)
+        .where(eq(merchants.name, STORE_NAME));
+      if (!merchant) throw new Error("Demo store missing");
+      await tx.insert(agentDecisions).values(
+        rows
+          .filter((row) => row.inserted)
+          .map((row) => ({
+            merchantId: merchant.id,
+            actor: "RULE",
+            step: PENDING_SCAN,
+            summary: `Queued new CPSC recall #${row.recallNumber} for review.`,
+            detail: { recallNumber: row.recallNumber },
+          })),
+      );
+    }
+    return { inserted, updated: rows.length - inserted };
+  });
 }
 
 export function isAuthorized(
@@ -70,4 +93,66 @@ export function isAuthorized(
 ): boolean {
   if (!secret || !header) return false;
   return header === `Bearer ${secret}`;
+}
+
+export const MAX_SYNC_RECALLS = 4;
+
+async function pendingRecalls() {
+  const rows = await db
+    .select({ number: sql<string>`${agentDecisions.detail}->>'recallNumber'` })
+    .from(agentDecisions)
+    .innerJoin(merchants, eq(merchants.id, agentDecisions.merchantId))
+    .where(
+      and(
+        eq(merchants.name, STORE_NAME),
+        eq(agentDecisions.step, PENDING_SCAN),
+      ),
+    )
+    .orderBy(
+      sql`${agentDecisions.detail}->>'lastAttempt' asc nulls first`,
+      asc(agentDecisions.createdAt),
+      asc(agentDecisions.id),
+    )
+    .limit(MAX_SYNC_RECALLS);
+  return rows.map((row) => row.number);
+}
+
+async function deferRetry(number: string) {
+  const store = db
+    .select({ id: merchants.id })
+    .from(merchants)
+    .where(eq(merchants.name, STORE_NAME));
+  await db
+    .update(agentDecisions)
+    .set({
+      detail: sql`${agentDecisions.detail} || jsonb_build_object('lastAttempt', now())`,
+    })
+    .where(
+      and(
+        eq(agentDecisions.step, PENDING_SCAN),
+        sql`${agentDecisions.merchantId} in (${store})`,
+        sql`${agentDecisions.detail}->>'recallNumber' = ${number}`,
+      ),
+    );
+}
+
+export async function scanPendingRecalls(
+  load = pendingRecalls,
+  scan = scanRecall,
+  retry = deferRetry,
+) {
+  const result = { drafted: 0, unmatched: 0, skipped: 0, failed: 0 };
+  for (const number of (await load()).slice(0, MAX_SYNC_RECALLS)) {
+    try {
+      const outcome = await scan(number, "cron");
+      if (outcome === "draft") result.drafted++;
+      else if (outcome === "no-match") result.unmatched++;
+      else result.skipped++;
+    } catch {
+      // The scan rolled back. Its pending row remains available on the next run.
+      await retry(number);
+      result.failed++;
+    }
+  }
+  return result;
 }
