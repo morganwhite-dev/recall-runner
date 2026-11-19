@@ -52,7 +52,7 @@ The money rules have tests on the live Test results page.
 
 - The full flow works live: AI run, approval, notice, one PayPal sign-in, settled.
 - A merchant can see exactly where the AI acted and where fixed rules did.
-- It handles six different buyers, from a simple refund to one whose order is too old for a refund.
+- It handles buyers in different situations, from a recent order that gets a plain refund to an old order past PayPal's refund window that gets a payout.
 
 ## What we learned
 
@@ -74,11 +74,11 @@ Agents work best when the model does the fuzzy reading and fixed code does the i
 
 - Live demo: https://recall-runner.onrender.com
 - Code: https://github.com/morganwhite-dev/recall-runner (MIT license)
-- Video: <PASTE YOUTUBE LINK>
+- Demo video (30 s, captions): [docs/media/video/recall-runner-live-captioned.mp4](media/video/recall-runner-live-captioned.mp4)
 
 ## Testing instructions (for the Devpost testing field)
 
-1. Open https://recall-runner.onrender.com and press **Try the demo**. The first load can take about 30 seconds.
+1. Open https://recall-runner.onrender.com. The first load can take about 30 seconds.
 2. Press **Start fresh demo**, then **Approve campaign** on the dashboard.
 3. Press **Open buyer page**, then **Confirm with PayPal**.
 4. On the PayPal sandbox sign-in page, use the email and password from **Show sandbox login** on the buyer page. These are sandbox accounts with fake money.
