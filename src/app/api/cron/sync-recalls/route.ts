@@ -4,11 +4,12 @@ import {
   fetchCpscRecalls,
   isAuthorized,
   sinceDate,
+  scanPendingRecalls,
   upsertRecalls,
 } from "@/lib/cpsc-sync";
 
 // Scheduled live pull from the CPSC feed. Called by GitHub Actions with
-// `Authorization: Bearer $CRON_SECRET`. Loads the recalls table only; the agent is not run.
+// `Authorization: Bearer $CRON_SECRET`. New recalls are queued before the bounded draft scan.
 export async function GET(request: NextRequest) {
   if (!isAuthorized(request.headers.get("authorization"))) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
@@ -27,13 +28,18 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await upsertRecalls(records);
-    return Response.json({
-      ok: true,
-      since,
-      fetched: records.length,
-      ...result,
-    });
+    const result = await upsertRecalls(records, true);
+    const scans = await scanPendingRecalls();
+    return Response.json(
+      {
+        ok: scans.failed === 0,
+        scans,
+        since,
+        fetched: records.length,
+        ...result,
+      },
+      { status: scans.failed ? 503 : 200 },
+    );
   } catch (err) {
     console.error(
       "CPSC sync write failed:",
