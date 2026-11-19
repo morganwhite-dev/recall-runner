@@ -1,9 +1,44 @@
 {
-  "ranAt": "2026-11-16T22:07:33.692Z",
-  "durationMs": 400,
-  "total": 63,
+  "ranAt": "2026-11-19T08:04:06.648Z",
+  "durationMs": 836,
+  "total": 90,
   "failing": 0,
   "tests": [
+    {
+      "name": "a normal order is promised the full price",
+      "file": "buyer-amounts.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a partly refunded order is promised only what is left, and says so",
+      "file": "buyer-amounts.test.ts",
+      "passed": true
+    },
+    {
+      "name": "several orders add up what is left on each",
+      "file": "buyer-amounts.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a fully refunded order is promised nothing, never a negative",
+      "file": "buyer-amounts.test.ts",
+      "passed": true
+    },
+    {
+      "name": "non-money remedies are still free, whatever was refunded",
+      "file": "buyer-amounts.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an old partly refunded order says it is paid by Payouts",
+      "file": "buyer-amounts.test.ts",
+      "passed": true
+    },
+    {
+      "name": "pre-confirmation labels distinguish refunds, payouts, and groups that use both",
+      "file": "buyer-amounts.test.ts",
+      "passed": true
+    },
     {
       "name": "a verified PayPal email is accepted, ignoring case",
       "file": "buyer.test.ts",
@@ -175,6 +210,41 @@
       "passed": true
     },
     {
+      "name": "a buyer with cases can be opened",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a buyer whose recall the AI has not matched yet is listed with that reason",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a buyer whose recall is matched but not approved waits for approval",
+      "file": "dashboard.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the toy recall shows an invented brand and no real retailer",
+      "file": "demo-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "every buyer scenario has a unique key and a product that exists",
+      "file": "demo-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "only the changed-email buyer has a store email that differs from the login",
+      "file": "demo-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the partly refunded buyer was refunded less than the item price",
+      "file": "demo-buyers.test.ts",
+      "passed": true
+    },
+    {
       "name": "a scan that saved its count uses that count",
       "file": "funnel.test.ts",
       "passed": true
@@ -290,6 +360,36 @@
       "passed": true
     },
     {
+      "name": "an item the store already partly refunded pays only what is left",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a partly refunded old order pays the rest by Payouts",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an item already refunded in full gets nothing more",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a recorded refund larger than the item price is refused, not paid as a negative",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "a broken refund record (negative or fractional) is refused",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
+      "name": "an earlier refund does not block a replacement",
+      "file": "policy.test.ts",
+      "passed": true
+    },
+    {
       "name": "the time left counts down from a minute and stops at zero",
       "file": "reset-notice.test.ts",
       "passed": true
@@ -317,6 +417,41 @@
     {
       "name": "seconds are written in words, singular for one",
       "file": "reset-notice.test.ts",
+      "passed": true
+    },
+    {
+      "name": "reads every buyer from the JSON setting",
+      "file": "sandbox-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the older two-variable setting still works, as the buyer 'morgan'",
+      "file": "sandbox-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "the JSON setting wins over the older variables for the same key",
+      "file": "sandbox-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "broken JSON gives no buyers instead of crashing the page",
+      "file": "sandbox-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "entries missing an email or password are skipped",
+      "file": "sandbox-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "nothing set means no buyers",
+      "file": "sandbox-buyers.test.ts",
+      "passed": true
+    },
+    {
+      "name": "backticks around the JSON (as pasted into a host's settings page) are tolerated",
+      "file": "sandbox-buyers.test.ts",
       "passed": true
     }
   ]

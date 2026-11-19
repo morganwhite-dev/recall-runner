@@ -110,8 +110,8 @@ Other commands (all but `cpsc:fetch`, `test` and `test:record` need `.env.local`
 npm run cpsc:fetch    # refresh data/cpsc-snapshot.json from the CPSC API
 npm run db:rename-brands # rename real brand names already stored in the database (mapping: src/lib/brand-aliases.ts)
 npm run demo:failure-drill  # dry run: shows the one real PayPal failure it would trigger (add -- --go to run it)
-npm test              # 97 tests: 96 pass, 1 skipped
-npm run test:record   # run them and save the results the Test results page shows
+npm test              # all 97 tests: 96 pass, 1 skipped (needs no secrets)
+npm run test:record   # run the 90 core tests (10 files) and save the results the Test results page shows
 npm run demo:money    # run every money path against the sandbox
 npm run agent:run     # run the AI agent on the demo store and print its audit trail (calls Anthropic)
 npm run eval          # run the 8 AI tests, 3 times each (calls Anthropic, costs money)
