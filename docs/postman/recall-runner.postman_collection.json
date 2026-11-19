@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Recall Runner (PayPal sandbox)",
-    "description": "Five requests that let a judge check Recall Runner's PayPal sandbox activity. Fill in the collection variables first; see README.md next to this file. No real values are stored here.",
+    "description": "Five requests that let you check Recall Runner's PayPal sandbox activity. Fill in the collection variables first; see README.md next to this file. No real values are stored here.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

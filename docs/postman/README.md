@@ -1,4 +1,4 @@
-# Postman collection for judges
+# Postman collection
 
 `recall-runner.postman_collection.json` has five requests. Four ask the PayPal sandbox about money the app moved. One checks that the app refuses a fake PayPal message. Together they show the money movement is real PayPal sandbox activity and that the app does not trust unsigned messages.
 

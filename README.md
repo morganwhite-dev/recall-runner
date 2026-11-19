@@ -2,11 +2,11 @@
 
 An AI agent that watches the US product-recall feed (CPSC), finds the buyers of recalled products in a merchant's PayPal orders, and settles refunds, replacements or repairs through PayPal.
 
-Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) (2026).
+Built for the PayPal AI Hackathon 2026.
 
 **Status:** Phases 0–6 are complete; the live check of Phase 5 on Render passed on Oct 26 (refund, replacement and repair all settle). The money core works end to end against the PayPal sandbox. The AI agent matches real CPSC recalls to the store's products, investigates with read-only tools, and drafts checked buyer notices (8 AI tests, 24 of 24 passing, re-run Oct 28 after the brand names were renamed). Buyers open a private link, sign in with PayPal (the verified email must match the order), and are refunded or paid out; PayPal's webhook then marks the case settled (checked live on Oct 25: one refund, one payout, one wrong-account refusal). The dashboard, Outbox and Test results pages now read the database and real test runs. The failure path was proven live on Oct 26: a payout to an email with no PayPal account is recorded as unclaimed and never retried. The dashboard redesign is built and merged (sidebar, demo stepper, tabbed detail panel, the Sent / Opened / Waiting on PayPal / Settled statuses, an Activity feed, and a toast plus row flash when PayPal confirms a payment); it passed its first full live check on Render on Oct 28. Unit tests: 54 pass (policy, buyer, dashboard, impact and demo-reset banner suites); the 8 AI tests pass 24 of 24.
 
-**Where things stand (Oct 28):** the full live run on Render passed: Start fresh demo, approve, open the buyer page, confirm with PayPal, and the dashboard refreshed itself to Settled $68.00. The redesign is live. Third-party brand names were replaced throughout (Devpost rules forbid third-party trademarks). The submission deadline is Nov 12, 12:00 pm PT. Still to do: the Safe Browsing review (pending), the video, the Devpost write-up and testing field, and the Render paid plan.
+**Where things stand:** the full flow works live on Render: Start fresh demo, run the AI, approve, open the buyer page, confirm with PayPal, and the dashboard shows the money as settled. Third-party brand names are replaced throughout the demo data.
 
 ## Demo video and screenshots
 
@@ -31,7 +31,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 | 5   | AG Grid dashboard and demo reset         | Thu Nov 5 (feature freeze)  | Done Oct 26                     |
 | 6   | UI redesign of the pages (Claude Design) | Nov 3–5 (to confirm)        | Done Oct 28 (live check passed) |
 | 7   | Harden and package                       | Fri Nov 6                   | In progress                     |
-| 8   | Video and Devpost write-up               | Mon Nov 9, submit by Nov 12 | Not started                     |
+| 8   | Video and project write-up               | Mon Nov 9, submit by Nov 12 | Not started                     |
 
 ## Phase 0 checklist
 
@@ -63,7 +63,7 @@ Consumers act on about 6% of recalls announced only by press release, versus abo
 - [x] Public repo with the MIT license shown in the About section
 - [x] Sandbox test credentials (in the README)
 
-## Sandbox test logins for judges
+## Sandbox test logins
 
 These are PayPal **sandbox** buyer accounts (fake money, not real PayPal accounts). Use one on PayPal's sandbox sign-in page after you press **Confirm with PayPal** on that buyer's page. Each buyer's page has a **Show sandbox login** button that reveals its email and password, so the passwords are not written here. On the dashboard, the **Pick a buyer** menu in the "Try the demo" strip lists them all.
 
@@ -82,7 +82,7 @@ Passwords are set with the `SANDBOX_BUYERS` setting (see `.env.example`).
 
 1. Open the live site and press **Start fresh demo**. It resets the store and opens the store dashboard.
 2. **Approve the hand-warmers recall** (you are the store). Nothing is sent or paid until you do. The battery-pack and dresser recalls were approved in advance when the demo was reset, so the buyer sees every remedy: a refund, a replacement and a repair kit.
-3. Press **Open buyer page** in the "Try the demo" strip at the top of the dashboard (you are now the customer: the sandbox buyer, whose orders were set up to cover every remedy; the other buyers on the dashboard are fictional). Press **Confirm with PayPal** and sign in with the sandbox buyer account. Press **Show sandbox login** under the Confirm with PayPal button to see the test email and password (also in the Devpost testing instructions). A wrong account is refused and nothing is sent.
+3. Press **Open buyer page** in the "Try the demo" strip at the top of the dashboard (you are now the customer: the sandbox buyer, whose orders were set up to cover every remedy; the other buyers on the dashboard are fictional). Press **Confirm with PayPal** and sign in with the sandbox buyer account. Press **Show sandbox login** under the Confirm with PayPal button to see the test email and password. A wrong account is refused and nothing is sent.
    Note: the demo store is shared by everyone, so if two people use it at once, one person's **Start fresh demo** resets the other's run.
 4. PayPal sends the refund or payout. About a minute later its webhook confirms it, and the dashboard shows the case as **Settled**.
 
@@ -118,7 +118,7 @@ npm run buyer:links   # give each buyer a private link and print them
 
 Next.js (App Router) and TypeScript, Neon Postgres, AG Grid, PayPal REST APIs, Claude via the Anthropic API.
 
-## Notes for judges
+## Notes
 
 The demo merchant is fictional, seeded order dates are simulated, and the recalls are real CPSC recalls, with brand names replaced. This project is not affiliated with the CPSC or PayPal.
 

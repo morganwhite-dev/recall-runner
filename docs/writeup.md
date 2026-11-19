@@ -1,6 +1,6 @@
 # Recall Runner
 
-A project submitted for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) 2026.
+A project submitted for the PayPal AI Hackathon 2026.
 
 **Tagline:** An AI agent that finds the buyers of recalled products in a store's PayPal orders and gets them their money back with one tap.
 
