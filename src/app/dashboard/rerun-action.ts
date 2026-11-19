@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { scanRecall } from "@/lib/agent/scan-recall";
+import { ScanFailure, scanRecall } from "@/lib/agent/scan-recall";
 import { takeRerunSlot } from "@/lib/rerun-limit";
 
 export async function rerunRecallAction(
@@ -17,9 +17,13 @@ export async function rerunRecallAction(
   let outcome;
   try {
     outcome = await scanRecall(number, "dashboard");
-  } catch {
+  } catch (error) {
+    const reason = error instanceof ScanFailure
+      ? error.message
+      : "The server could not complete the scan transaction.";
+    console.error("Recall scan failed", { recallNumber: number, reason });
     return {
-      message: `The scan for #${number} failed. No campaign changes were saved. Try again.`,
+      message: `#${number}: ${reason} No campaign changes were saved.`,
     };
   }
   if (outcome === "draft") {

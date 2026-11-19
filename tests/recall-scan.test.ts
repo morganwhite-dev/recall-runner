@@ -80,8 +80,9 @@ test("missing model, unverified quote and incomplete investigation cannot produc
   await assert.rejects(
     assessRecall(record, [item], "store", db, {
       ...agent,
-      match: async () => ({ ok: false, reason: "API_ERROR", message: "stub" }),
+      match: async () => ({ ok: false, reason: "API_ERROR", message: "HTTP 400: credit balance is too low. private detail" }),
     }),
+    { message: "Catalog matching failed. Anthropic reported insufficient credits." },
   );
   const refused = await assessRecall(record, [item], "store", db, {
     ...agent,

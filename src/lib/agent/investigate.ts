@@ -240,7 +240,7 @@ export async function investigateRecall(
         });
         return JSON.stringify({ status: data.status, capture_status: capture });
       } catch (err) {
-        if (strictLookups) throw err;
+        if (strictLookups) throw new Error("PAYPAL_LOOKUP", { cause: err });
         calls.push({
           tool: name,
           input,
@@ -284,7 +284,7 @@ export async function investigateRecall(
 
   let toolCallsUsed = 0;
   try {
-    while (toolCallsUsed < MAX_LOOKUPS) {
+    while (true) {
       if (!budget.take())
         return {
           plan: fallbackPlan(),
@@ -297,7 +297,10 @@ export async function investigateRecall(
         max_tokens: 4000,
         system: SYSTEM,
         tools: TOOLS,
-        tool_choice: { type: "auto" },
+        // Reserve a final model turn even when a batch used every lookup.
+        tool_choice: toolCallsUsed >= MAX_LOOKUPS
+          ? { type: "tool", name: "propose_campaign_plan" }
+          : { type: "auto" },
         messages,
         output_config: { effort: "medium" },
         ...fallbackParams(),
@@ -343,7 +346,9 @@ export async function investigateRecall(
       plan: fallbackPlan(),
       byModel: false,
       calls,
-      fallbackReason: `API_ERROR: ${String(err)}`,
+      fallbackReason: err instanceof Error && err.message === "PAYPAL_LOOKUP"
+        ? "PAYPAL_LOOKUP"
+        : `API_ERROR: ${String(err)}`,
     };
   }
   return {

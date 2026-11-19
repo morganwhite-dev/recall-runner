@@ -27,6 +27,35 @@ type Evidence = Pick<
   "step" | "actor" | "summary" | "detail" | "model"
 >;
 
+// Only these curated messages may cross the dashboard boundary. Provider text can
+// contain request details or merchant data.
+export class ScanFailure extends Error {
+  constructor(stage: string, reason: string) {
+    let detail: string;
+    const status = reason.match(/\b(?:HTTP |API_ERROR: )(\d{3})\b/)?.[1];
+    if (/credit balance is too low|credit balance too low/i.test(reason))
+      detail = "Anthropic reported insufficient credits.";
+    else if (reason.startsWith("NO_API_KEY"))
+      detail = "The server has no Anthropic API key configured.";
+    else if (reason.startsWith("PAYPAL_LOOKUP"))
+      detail = "The PayPal order lookup failed.";
+    else if (reason.startsWith("NO_PLAN_PROPOSED"))
+      detail = "The model finished without proposing a campaign plan.";
+    else if (status)
+      detail = `The AI service returned HTTP ${status}.`;
+    else if (reason.startsWith("REFUSED"))
+      detail = "The model declined the request.";
+    else if (reason.startsWith("TRUNCATED"))
+      detail = "The model reached its output limit.";
+    else if (reason.startsWith("BUDGET_EXCEEDED"))
+      detail = "The investigation reached its call limit.";
+    else if (reason.startsWith("INVALID_OUTPUT"))
+      detail = "The model returned an invalid response.";
+    else detail = "The AI request did not complete.";
+    super(`${stage} failed. ${detail}`);
+  }
+}
+
 export async function assessRecall(
   record: Recall,
   catalog: ProductText[],
@@ -46,7 +75,7 @@ export async function assessRecall(
     const match = await agent.match(recall, candidate.candidates, budget, {
       useCache: false,
     });
-    if (!match.ok) throw new Error("Recall matching failed");
+    if (!match.ok) throw new ScanFailure("Catalog matching", `${match.reason}: ${match.message}`);
     const { verified } = verifyMatches(recall, candidate.candidates, match.raw);
     evidence.push({
       step: "MATCH",
@@ -73,7 +102,7 @@ export async function assessRecall(
         reader,
         true,
       );
-      if (!result.byModel) throw new Error("Recall investigation failed");
+      if (!result.byModel) throw new ScanFailure("Order investigation", result.fallbackReason ?? "");
       for (const call of result.calls)
         evidence.push({
           step: "INVESTIGATE",
