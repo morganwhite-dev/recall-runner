@@ -1,18 +1,16 @@
 # Recall Runner
 
-An AI agent that watches the US product-recall feed (CPSC), finds the buyers of recalled products in a merchant's PayPal orders, and settles refunds, replacements or repairs through PayPal.
+> Most people never hear about a product recall. Consumers act on about 6% of recalls announced only by press release, versus about 50% when buyers are notified directly (CPSC FY2013–16 data, as cited by consumer groups and Sedgwick).
 
-Built for the PayPal AI Hackathon 2026. The full flow works end to end against the PayPal sandbox: recall match, merchant approval, buyer notice, PayPal sign-in, settlement, and webhook confirmation. Live demo: https://recall-runner.onrender.com
+The store that sold the product already has every buyer's name, email and payment in its PayPal orders, but nothing connects that list to the recall. **Recall Runner connects it.** An AI agent watches the US recall feed (CPSC), matches each recall to the store's products, and finds the affected buyers in the PayPal orders. The merchant approves once. Each buyer gets a private link, signs in with PayPal, and is refunded, paid out, sent a replacement or given a repair claim, all through PayPal. Fixed rules, not the AI, choose the payment path and the amount.
+
+Built for the PayPal AI Hackathon 2026. The full flow works end to end against the PayPal sandbox. Live demo: https://recall-runner.onrender.com
 
 ## Demo video and screenshots
 
 - Video (30 s, captions, no narration): [docs/media/video/recall-runner-live-captioned.mp4](docs/media/video/recall-runner-live-captioned.mp4)
 - Screenshots from a live run on Render: [docs/media/screenshots/](docs/media/screenshots/)
 - Project write-up: [docs/writeup.md](docs/writeup.md)
-
-## Why
-
-Consumers act on about 6% of recalls announced only by press release, versus about 50% when buyers are notified directly (CPSC FY2013–16 data, as cited by consumer groups and Sedgwick). A merchant who sells through PayPal already holds every buyer's order record, so it can notify buyers directly and settle the remedy in one step.
 
 ## How it works
 
