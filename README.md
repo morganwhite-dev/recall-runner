@@ -4,10 +4,11 @@
 
 The store that sold the product already has every buyer's name, email and payment in its PayPal orders, but nothing connects that list to the recall. **Recall Runner connects it.** An AI agent watches the US recall feed (CPSC), matches each recall to the store's products, and finds the affected buyers in the PayPal orders. The merchant approves once. Each buyer gets a private link, signs in with PayPal, and is refunded, paid out, sent a replacement or given a repair claim, all through PayPal. Fixed rules, not the AI, choose the payment path and the amount.
 
-Built for the PayPal AI Hackathon 2026. The full flow works end to end against the PayPal sandbox. Live demo: https://recall-runner.onrender.com
+Built for the PayPal AI Hackathon 2026. The full flow works end to end against the PayPal sandbox.
 
 ## Demo video and screenshots
 
+- Live demo: https://recall-runner.onrender.com
 - Video (30 s, captions, no narration): [docs/media/video/recall-runner-live-captioned.mp4](docs/media/video/recall-runner-live-captioned.mp4)
 - Screenshots from a live run on Render: [docs/media/screenshots/](docs/media/screenshots/)
 - Project write-up: [docs/writeup.md](docs/writeup.md)
@@ -91,12 +92,17 @@ npm run db:migrate           # create the tables in Neon
 npm run cpsc:ingest          # load the recall snapshot
 npm run db:seed              # build the fictional demo store
 npm run paypal:attach        # give every seeded order a real sandbox payment (calls PayPal sandbox)
-npm run demo:sandbox-orders  # give the sandbox buyer one order of each recalled product
+npm run demo:sandbox-orders  # give the sandbox buyer one order of each recalled product (calls PayPal sandbox)
 npm run demo:add-buyers      # add the five extra sandbox buyers
+```
+
+After the data commands finish, start the local server and leave it running:
+
+```bash
 npm run dev
 ```
 
-`npm test` needs no secrets. `npm run eval` calls the live Anthropic API and costs money. `npm run demo:money` and `npm run paypal:attach` hit the PayPal sandbox.
+`npm test` needs no secrets. `npm run eval` calls the live Anthropic API and costs money. `npm run demo:money`, `npm run paypal:attach` and `npm run demo:sandbox-orders` hit the PayPal sandbox, so fill in the PayPal variables first.
 
 Other commands (all but `cpsc:fetch`, `test` and `test:record` need `.env.local`):
 

@@ -26,7 +26,7 @@ A "Why this happened" timeline tags every step as MODEL (AI), RULE (fixed policy
 - **Order records are the buyer list.** The agent finds buyers in PayPal orders.
 - **Log In with PayPal proves the buyer.** Before any money moves, the buyer signs in and the verified PayPal email must match the email on the order. A forwarded link can't claim someone else's refund.
 - **PayPal's 180-day refund window decides the path.** Orders inside the window are refunded. Older orders are paid with PayPal Payouts.
-- **Replacements add tracking to the original order.** The app generates the tracking number (`BH-<case id>`) and adds it to the original PayPal order.
+- **Replacements add tracking to the original order.** The app generates a tracking number from the case ID (`BH-` plus the first 8 characters, in capitals) and adds it to the original PayPal order.
 - **Verified webhooks confirm the money.** A case is only marked settled after PayPal's webhook says so.
 
 ## How the AI is used, and where it is not
