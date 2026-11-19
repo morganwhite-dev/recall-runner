@@ -4,12 +4,12 @@ import {
   fetchCpscRecalls,
   isAuthorized,
   sinceDate,
-  scanPendingRecalls,
   upsertRecalls,
 } from "@/lib/cpsc-sync";
 
 // Scheduled live pull from the CPSC feed. Called by GitHub Actions with
-// `Authorization: Bearer $CRON_SECRET`. New recalls are queued before the bounded draft scan.
+// `Authorization: Bearer $CRON_SECRET`. Only pulls and stores recalls: it never calls the AI.
+// AI scans run only when the merchant presses "Run the AI again" on the dashboard.
 export async function GET(request: NextRequest) {
   if (!isAuthorized(request.headers.get("authorization"))) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
@@ -28,17 +28,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await upsertRecalls(records, true);
-    const scans = await scanPendingRecalls();
+    const result = await upsertRecalls(records);
     return Response.json(
       {
-        ok: scans.failed === 0,
-        scans,
+        ok: true,
         since,
         fetched: records.length,
         ...result,
       },
-      { status: scans.failed ? 503 : 200 },
+      { status: 200 },
     );
   } catch (err) {
     console.error(
