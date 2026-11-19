@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { scanRecall } from "@/lib/agent/scan-recall";
+import { takeRerunSlot } from "@/lib/rerun-limit";
 
 export async function rerunRecallAction(
   _previous: { message: string; draft?: string },
@@ -10,6 +11,9 @@ export async function rerunRecallAction(
   const number = form.get("recallNumber");
   if (typeof number !== "string" || !/^\d{5}$/.test(number))
     return { message: "Enter a five-digit CPSC recall number." };
+  const slot = takeRerunSlot();
+  if (!slot.ok)
+    return { message: `Too many scans. Try again in ${slot.waitSeconds} seconds.` };
   let outcome;
   try {
     outcome = await scanRecall(number, "dashboard");
