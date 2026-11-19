@@ -99,7 +99,8 @@ test("several orders of the same recall become one group, in order of first appe
 
 test("a refund past 180 days is described as a PayPal Payout, inside it as a refund; other remedies say nothing", () => {
   assert.equal(howPaid(order("A", 200, "1"), "refund"), "paid by PayPal Payouts");
-  assert.equal(howPaid(order("A", 180, "1"), "refund"), "refunded to PayPal");
+  assert.equal(howPaid(order("A", 179, "1"), "refund"), "refunded to PayPal");
+  assert.equal(howPaid(order("A", 180, "1"), "refund"), "paid to your PayPal account");
   assert.equal(howPaid(order("A", 5, "1"), "repair"), null);
 });
 

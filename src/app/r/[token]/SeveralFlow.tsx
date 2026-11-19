@@ -14,7 +14,6 @@ import {
   isClaimable,
   isDone,
   dueCents,
-  isPartial,
   loginHref,
   remedyCopy,
   waitingLine,
@@ -232,9 +231,9 @@ export function SeveralFlow({
                           <Icon name="tick" />
                         </span>
                         <span>
-                          <b>{remedyCopy(recall.offers[0], isPartial(open)).short}</b>
+                          <b>{remedyCopy(recall.offers[0], open).short}</b>
                           <span className="sr-only">
-                            . {remedyCopy(recall.offers[0], isPartial(open)).detail}
+                            . {remedyCopy(recall.offers[0], open).detail}
                           </span>
                         </span>
                         <span className={styles.a}>
@@ -261,9 +260,9 @@ export function SeveralFlow({
                             <Icon name="tick" />
                           </span>
                           <span>
-                            <b>{remedyCopy(kind, isPartial(open)).short}</b>
+                            <b>{remedyCopy(kind, open).short}</b>
                             <span className="sr-only">
-                              . {remedyCopy(kind, isPartial(open)).detail}
+                              . {remedyCopy(kind, open).detail}
                             </span>
                           </span>
                           <span className={styles.a}>
