@@ -35,21 +35,29 @@ export function pronounFor(productName: string): "it" | "them" {
 // What the buyer is paid for a money remedy: the price, less anything the store already refunded.
 export const dueCents = (c: BuyerCase) => Math.max(0, c.priceCents - c.refundedCents);
 
-// True when any of these orders was already partly refunded, so the wording says "what's left".
-export const isPartial = (cases: BuyerCase[]) => cases.some((c) => c.refundedCents > 0);
-
-export function remedyCopy(kind: RemedyKind, partial = false): Remedy {
+export function remedyCopy(kind: RemedyKind, cases: BuyerCase[] = []): Remedy {
   switch (kind) {
-    case "refund":
+    case "refund": {
+      const partial = cases.some((c) => c.refundedCents > 0);
+      const payoutCount = cases.filter((c) => c.daysAgo > REFUND_WINDOW_DAYS).length;
+      let name = partial ? "Refund of what's left" : "Full refund";
+      // The loader gives whole days. Day 180 can fall on either side of the exact cutoff.
+      if (cases.some((c) => c.daysAgo === REFUND_WINDOW_DAYS)) {
+        name = partial ? "Remaining amount back" : "Full amount back";
+      } else if (payoutCount > 0) {
+        name = payoutCount === cases.length ? "PayPal payout" : "Refund and PayPal payout";
+        if (partial) name += " of what's left";
+      }
       return {
         icon: "refund",
-        name: partial ? "Refund of what's left" : "Full refund",
-        short: partial ? "Refund of what's left" : "Full refund",
+        name,
+        short: name,
         detail: partial
           ? "The rest is paid back to your PayPal account."
           : "Paid back to your PayPal account.",
-        rule: "Refund: the recall offers your money back",
+        rule: "The recall offers your money back",
       };
+    }
     case "replace":
       return {
         icon: "box",
@@ -149,13 +157,16 @@ export function receiptHeadline(cases: BuyerCase[]): { title: string; covered: s
 // Only money remedies have anything to say; the others are already named "Free" once on the card.
 export function howPaid(c: BuyerCase, kind: RemedyKind): string | null {
   if (kind !== "refund") return null;
-  const how = c.daysAgo > REFUND_WINDOW_DAYS ? "paid by PayPal Payouts" : "refunded to PayPal";
+  const method = howPaidShort(c, kind);
+  const how = method === "Payout" ? "paid by PayPal Payouts"
+    : method === "Refund" ? "refunded to PayPal" : "paid to your PayPal account";
   return c.refundedCents > 0 ? `${formatUsd(c.refundedCents)} already refunded; rest ${how}` : how;
 }
 
 // The same, in one word, for the tight lines inside the several-recalls cards.
 export function howPaidShort(c: BuyerCase, kind: RemedyKind): string | null {
   if (kind !== "refund") return null;
+  if (c.daysAgo === REFUND_WINDOW_DAYS) return "Money back";
   return c.daysAgo > REFUND_WINDOW_DAYS ? "Payout" : "Refund";
 }
 
