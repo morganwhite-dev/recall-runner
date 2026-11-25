@@ -132,7 +132,7 @@ export function decideRemedy(input: PolicyInput): Decision {
       action: "REFUND",
       rule: "WITHIN_REFUND_WINDOW",
       amountCents: dueCents,
-      rationale: `Paid ${ageDays} days ago, inside PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the original payment is refunded: ${amount}.${earlier}`,
+      rationale: `Paid ${daysAgoLabel(ageDays)}, inside PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the original payment is refunded: ${amount}.${earlier}`,
     };
   }
 
@@ -140,6 +140,6 @@ export function decideRemedy(input: PolicyInput): Decision {
     action: "PAYOUT",
     rule: "REFUND_WINDOW_EXCEEDED",
     amountCents: dueCents,
-    rationale: `Paid ${ageDays} days ago, past PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the buyer is paid by PayPal Payouts instead: ${amount}.${earlier}`,
+    rationale: `Paid ${daysAgoLabel(ageDays)}, past PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the buyer is paid by PayPal Payouts instead: ${amount}.${earlier}`,
   };
 }
