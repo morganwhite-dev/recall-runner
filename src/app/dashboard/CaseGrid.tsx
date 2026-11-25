@@ -19,6 +19,7 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import flash from "./livesettle.module.css";
 import { amountLabel, type BuyerCase, type CaseStatus } from "./data";
+import { daysAgoLabel } from "@/lib/policy";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./page.module.css";
 
@@ -91,7 +92,7 @@ function PathCell({ data }: ICellRendererParams<BuyerCase>) {
   return (
     <span className={styles.pathTwo}>
       <b>{data.path}</b>
-      <span>{data.daysAgo} days ago</span>
+      <span>{daysAgoLabel(data.daysAgo)}</span>
     </span>
   );
 }

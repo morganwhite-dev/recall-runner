@@ -175,7 +175,7 @@
   background: var(--ink);
   color: var(--on-brand);
   font: 700 13px/1.2 var(--font-mono);
-  letter-spacing: 0.1em;
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
 }
 
@@ -248,7 +248,7 @@
 
 .metrics dt {
   font: 700 11px/1.2 var(--font-mono);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--ink-muted);
 }

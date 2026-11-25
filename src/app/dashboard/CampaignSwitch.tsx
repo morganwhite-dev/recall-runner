@@ -31,7 +31,8 @@ export function CampaignSwitch({
                   </span>
                 </span>
                 <small>
-                  #{o.recallNumber} · {o.remedy} · {o.approval}
+                  <span className="recall-no">#{o.recallNumber}</span> ·{" "}
+                  {o.remedy} · {o.approval}
                 </small>
               </Link>
             </li>

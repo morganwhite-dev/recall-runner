@@ -1,6 +1,6 @@
 import type { ArtKind } from "@/components/ProductArt";
 import type { TagKind } from "@/components/Tag";
-import { REFUND_WINDOW_DAYS } from "@/lib/policy";
+import { REFUND_WINDOW_DAYS, formatUsd } from "@/lib/policy";
 
 // Shapes and plain helpers for the dashboard. Nothing here touches the database, so the grid
 // (a client component) can import it. The server builds these shapes in src/lib/dashboard.ts.
@@ -9,7 +9,8 @@ export type RemedyPath = "Refund" | "PayPal Payout" | "Replacement" | "Repair";
 // Sent: notice sent, not opened. Opened: the buyer read it, no money step yet. Waiting on PayPal:
 // PayPal has the request and has not yet confirmed. Settled: confirmed. Problem: the rules refused
 // it or PayPal returned an error.
-export type CaseStatus = "Sent" | "Opened" | "Waiting on PayPal" | "Settled" | "Problem";
+export type CaseStatus =
+  "Sent" | "Opened" | "Waiting on PayPal" | "Settled" | "Problem";
 
 export interface BuyerCase {
   id: string;
@@ -32,7 +33,8 @@ export interface BuyerCase {
 }
 
 // One line in the Activity feed. `when` is worded on the server so server and browser agree.
-export type ActivityKind = "approved" | "sent" | "opened" | "signin" | "paid" | "settled";
+export type ActivityKind =
+  "approved" | "sent" | "opened" | "signin" | "paid" | "settled";
 export interface ActivityEvent {
   id: string; // stable across refreshes, so the feed can tell which events are new
   at: string; // ISO time, for sorting and the title tooltip
@@ -86,7 +88,12 @@ export function groupBuyerMoments(
         : first.kind === "opened"
           ? `${first.name} opened the notice`
           : `${first.name} signed in with PayPal`;
-    return { id: first.id, time: first.time, kind: first.kind, text: text + orders };
+    return {
+      id: first.id,
+      time: first.time,
+      kind: first.kind,
+      text: text + orders,
+    };
   });
 }
 
@@ -131,9 +138,16 @@ export interface GuideBuyer {
 // Whether a buyer's page can be opened yet, and if not, the plain reason. A buyer has cases only
 // after their recall's campaign is approved, and a campaign exists only once the AI matched the
 // recall to a product they bought.
-export function guideBuyerAccess(hasCampaign: boolean, hasCases: boolean): { ready: boolean; note: string | null } {
+export function guideBuyerAccess(
+  hasCampaign: boolean,
+  hasCases: boolean,
+): { ready: boolean; note: string | null } {
   if (hasCases) return { ready: true, note: null };
-  if (!hasCampaign) return { ready: false, note: "Opens once the AI has matched their recall." };
+  if (!hasCampaign)
+    return {
+      ready: false,
+      note: "Opens once the AI has matched their recall.",
+    };
   return { ready: false, note: "Opens once their recall is approved." };
 }
 
@@ -160,9 +174,8 @@ export interface CampaignOption {
 
 export { REFUND_WINDOW_DAYS };
 
-export function formatMoney(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
+// One money format everywhere: see formatUsd in the policy module.
+export const formatMoney = formatUsd;
 
 // Replacement and repair move no money, so the amount column says so instead of "$0.00".
 export function amountLabel(

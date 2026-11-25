@@ -21,7 +21,7 @@ import {
   type RecallGroup,
   type RemedyKind,
 } from "./data";
-import { formatUsd } from "@/lib/policy";
+import { daysAgoLabel, formatUsd } from "@/lib/policy";
 import { Art } from "./parts";
 import styles from "./SeveralFlow.module.css";
 
@@ -186,7 +186,9 @@ export function SeveralFlow({
 
                   <div className={styles.r2}>
                     <p className={styles.meta}>
-                      <span className={styles.badge}>{cpscLabel(recall)}</span>
+                      <span className={`${styles.badge} recall-no`}>
+                        {cpscLabel(recall)}
+                      </span>
                       <span>Recalled {formatDate(recall.recallDate)}</span>
                     </p>
                     <h2 id={`recall-${k}`} title={recall.productName}>
@@ -195,7 +197,7 @@ export function SeveralFlow({
                     <ul className={styles.orders}>
                       {g.cases.map((c) => (
                         <li key={c.caseId}>
-                          Bought {c.daysAgo} days ago &middot;{" "}
+                          Bought {daysAgoLabel(c.daysAgo)} &middot;{" "}
                           {formatUsd(c.priceCents)}
                           {claimable &&
                             choice &&

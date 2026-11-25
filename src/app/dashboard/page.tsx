@@ -107,7 +107,9 @@ async function Dashboard({ searchParams }: PageProps<"/dashboard">) {
                 </svg>
               </span>
               <span className={shell.eyebrow}>Merchant dashboard</span>
-              <span className={shell.badge}>CPSC #{header.recallNumber}</span>
+              <span className={`${shell.badge} recall-no`}>
+                CPSC #{header.recallNumber}
+              </span>
               <span>Recall · {formatDate(header.recallDate)}</span>
             </p>
             <h1 id="title" className={shell.h1}>

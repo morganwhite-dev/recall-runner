@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { formatUsd } from "@/lib/policy";
 
 const DURATION_MS = 900;
 
@@ -38,5 +39,5 @@ export function TweenMoney({
     return () => cancelAnimationFrame(frame);
   }, [cents]);
 
-  return <span className={className}>${(shown / 100).toFixed(2)}</span>;
+  return <span className={className}>{formatUsd(shown)}</span>;
 }

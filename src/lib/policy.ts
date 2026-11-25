@@ -39,6 +39,11 @@ export function formatUsd(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+// "1 day ago", "30 days ago": one wording wherever an order's age is shown.
+export function daysAgoLabel(days: number): string {
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+}
+
 export function decideRemedy(input: PolicyInput): Decision {
   const reject = (rule: string, rationale: string): Decision => ({
     action: "REJECT",

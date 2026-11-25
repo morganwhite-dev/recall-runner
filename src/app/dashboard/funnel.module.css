@@ -101,7 +101,7 @@
 }
 
 .chip b {
-  font: 700 12px var(--font-mono);
+  font-size: 12px;
 }
 
 .chip span {

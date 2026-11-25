@@ -16,7 +16,7 @@ function Chip({
       className={`${styles.chip} ${kind === "matched" ? styles.chipMatched : styles.chipRefused}`}
       aria-current={current ? "true" : undefined}
     >
-      <b>#{r.recallNumber}</b>
+      <b className="recall-no">#{r.recallNumber}</b>
       <span title={r.title}>{clip(r.title, 64)}</span>
       {r.reason && <small>{r.reason}</small>}
       {current && <em>This recall</em>}
