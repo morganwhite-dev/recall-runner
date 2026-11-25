@@ -8,8 +8,10 @@ Built for the PayPal AI Hackathon 2026. The full flow works end to end against t
 
 ## Demo video and screenshots
 
+[![Recall Runner 30-second promo: click to play](docs/media/video/recall-runner-promo-poster.jpg)](docs/media/video/recall-runner-promo.mp4)
+
 - Live demo: https://recall-runner.onrender.com
-- Video (30 s, captions, no narration): [docs/media/video/recall-runner-live-captioned.mp4](docs/media/video/recall-runner-live-captioned.mp4)
+- Video (30 s, narrated): [docs/media/video/recall-runner-promo.mp4](docs/media/video/recall-runner-promo.mp4)
 - Screenshots from a live run on Render: [docs/media/screenshots/](docs/media/screenshots/)
 - Project write-up: [docs/writeup.md](docs/writeup.md)
 
