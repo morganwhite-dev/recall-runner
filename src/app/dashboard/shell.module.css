@@ -225,7 +225,7 @@
   font-weight: 700;
   color: var(--ink);
   white-space: nowrap;
-  text-underline-offset: 4px;
+  text-underline-offset: 5px;
   text-decoration-thickness: 2px;
 }
 
@@ -287,7 +287,7 @@
 .note a {
   font-weight: 700;
   color: var(--ink);
-  text-underline-offset: 4px;
+  text-underline-offset: 5px;
   text-decoration-thickness: 2px;
 }
 
