@@ -167,7 +167,7 @@ export default async function Home() {
           <aside className={styles.board} aria-label="Example case">
             <p className={styles.boardHead}>
               <span>Example</span>
-              <span className={styles.mono}>CPSC #27011</span>
+              <span className={`${styles.mono} recall-no`}>CPSC #27011</span>
             </p>
             <div className={styles.boardBody}>
               <div className={styles.caseHead}>

@@ -18,7 +18,7 @@ import {
 } from "./data";
 import styles from "./page.module.css";
 import { Art, Reassure, RuleLine, SectionTitle, TopBand } from "./parts";
-import { formatUsd } from "@/lib/policy";
+import { daysAgoLabel, formatUsd } from "@/lib/policy";
 
 // The notice for one recall, which may cover several of the buyer's orders of the same product.
 // The recall offers a single remedy, so there is nothing to choose: one button settles it all.
@@ -49,13 +49,17 @@ export function RecallFlow({
           Safety recall notice
         </p>
         <p className={styles.meta}>
-          <span className={styles.badge}>{cpscLabel(recall)}</span>
+          <span className={`${styles.badge} recall-no`}>
+            {cpscLabel(recall)}
+          </span>
           <span>Recalled {formatDate(recall.recallDate)}</span>
         </p>
         <h1 className={styles.h1}>{headline(recall)}</h1>
         <p className={styles.lede}>
           <b>Please stop using {pronoun}.</b> You bought {pronoun} from {store}{" "}
-          {several ? `in ${recalls.length} orders` : `${recall.daysAgo} days ago`}
+          {several
+            ? `in ${recalls.length} orders`
+            : daysAgoLabel(recall.daysAgo)}
           . Here is what the recall says and how to settle{" "}
           {several ? "them" : "it"} in one tap.
         </p>
@@ -70,7 +74,9 @@ export function RecallFlow({
                 <SectionTitle id="s1" icon="info">
                   What the recall says
                 </SectionTitle>
-                <span className={styles.tNo}>{cpscLabel(recall)}</span>
+                <span className={`${styles.tNo} recall-no`}>
+                  {cpscLabel(recall)}
+                </span>
               </div>
               <div className={styles.product}>
                 <span className={styles.thumb}>
@@ -85,7 +91,8 @@ export function RecallFlow({
                 &ldquo;{recall.hazard}&rdquo;
               </blockquote>
               <p className={styles.cap}>
-                From the CPSC recall notice, {cpscLabel(recall)}
+                From the CPSC recall notice,{" "}
+                <span className="recall-no">{cpscLabel(recall)}</span>
               </p>
               <p className={styles.aiNote}>
                 <Tag kind={recall.draftedBy === "MODEL" ? "model" : "rule"} />
@@ -109,7 +116,6 @@ export function RecallFlow({
                 </span>
               </p>
             </section>
-
           </main>
 
           <div className={styles.tStub}>
@@ -138,8 +144,8 @@ export function RecallFlow({
                 {recalls.map((c) => (
                   <li key={c.caseId}>
                     <span>
-                      <b>{c.productName}</b> · bought {c.daysAgo} days ago ·{" "}
-                      {formatUsd(c.priceCents)}
+                      <b>{c.productName}</b> · bought {daysAgoLabel(c.daysAgo)}{" "}
+                      · {formatUsd(c.priceCents)}
                     </span>
                     {howPaid(c, kind) && (
                       <span className={styles.how}>{howPaid(c, kind)}</span>
@@ -163,7 +169,7 @@ export function RecallFlow({
                   {recall.productName} ·{" "}
                   {several
                     ? `${recalls.length} orders from ${store}`
-                    : `bought from ${store} ${recall.daysAgo} days ago`}
+                    : `bought from ${store} ${daysAgoLabel(recall.daysAgo)}`}
                 </p>
               </div>
               <div className={styles.sumAct}>

@@ -15,6 +15,7 @@ export function RerunButton({ recallNumber }: { recallNumber?: string }) {
         CPSC recall number{" "}
         <input
           name="recallNumber"
+          className={`recall-no ${styles.recallInput}`}
           defaultValue={recallNumber}
           size={5}
           maxLength={5}

@@ -39,6 +39,11 @@ export function formatUsd(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+// "1 day ago", "30 days ago": one wording wherever an order's age is shown.
+export function daysAgoLabel(days: number): string {
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+}
+
 export function decideRemedy(input: PolicyInput): Decision {
   const reject = (rule: string, rationale: string): Decision => ({
     action: "REJECT",
@@ -127,7 +132,7 @@ export function decideRemedy(input: PolicyInput): Decision {
       action: "REFUND",
       rule: "WITHIN_REFUND_WINDOW",
       amountCents: dueCents,
-      rationale: `Paid ${ageDays} days ago, inside PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the original payment is refunded: ${amount}.${earlier}`,
+      rationale: `Paid ${daysAgoLabel(ageDays)}, inside PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the original payment is refunded: ${amount}.${earlier}`,
     };
   }
 
@@ -135,6 +140,6 @@ export function decideRemedy(input: PolicyInput): Decision {
     action: "PAYOUT",
     rule: "REFUND_WINDOW_EXCEEDED",
     amountCents: dueCents,
-    rationale: `Paid ${ageDays} days ago, past PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the buyer is paid by PayPal Payouts instead: ${amount}.${earlier}`,
+    rationale: `Paid ${daysAgoLabel(ageDays)}, past PayPal's ${REFUND_WINDOW_DAYS}-day refund window, so the buyer is paid by PayPal Payouts instead: ${amount}.${earlier}`,
   };
 }

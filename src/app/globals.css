@@ -52,6 +52,11 @@
   --font-display: var(--font-archivo), system-ui, sans-serif;
   --font-body: var(--font-archivo), system-ui, sans-serif;
   --font-mono: var(--font-red-hat-mono), ui-monospace, monospace;
+
+  /* Letter-spacing scale. Data identifiers (recall numbers) track a little; small uppercase labels
+     track wide. Use these instead of one-off values. */
+  --track-id: 0.04em;
+  --track-label: 0.12em;
 }
 
 *,
@@ -111,6 +116,17 @@ a {
   stroke-linecap: round;
   stroke-linejoin: round;
   flex: none;
+}
+
+/* Data identifier: a recall number such as "CPSC #27011" or "#27011". One rule everywhere: Red Hat
+   Mono, bold, tabular numerals, a little tracking. The size comes from the surrounding label (12px
+   on the dashboard, 13px on the buyer page), so only put this on the number, never on prose.
+   Inputs do not inherit fonts, so a recall-number field takes this class too. */
+.recall-no {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--track-id);
 }
 
 .sr-only {
@@ -192,7 +208,7 @@ a {
 }
 
 .pill .icon {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 /* Button: the primary action. Burnt orange with near-black text (4.9:1), square corners. */
